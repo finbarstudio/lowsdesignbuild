@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import Reveal from "@/app/components/Reveal";
-import { processSteps, site } from "@/app/lib/site";
+import { areas, processSteps, services, site } from "@/app/lib/site";
 
 const PAD = "mx-auto w-full max-w-[1900px] px-4 sm:px-6";
 
@@ -64,6 +64,21 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* What we do */}
+      <section className={`${PAD} py-24 sm:py-32`}>
+        <Reveal>
+          <p className="label">What we do</p>
+        </Reveal>
+        <div className="mt-12 grid grid-cols-1 gap-x-6 gap-y-12 sm:mt-16 sm:grid-cols-2 lg:grid-cols-12">
+          {services.map((s) => (
+            <Reveal key={s.title} className="lg:col-span-3">
+              <h3 className="serif text-2xl">{s.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted">{s.blurb}</p>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
       {/* Process */}
       <section
         className={`${PAD} flex min-h-[90vh] flex-col justify-center py-24`}
@@ -85,6 +100,18 @@ export default function AboutPage() {
             </Reveal>
           ))}
         </div>
+      </section>
+
+      {/* Areas we cover */}
+      <section
+        className={`${PAD} flex min-h-[70vh] flex-col justify-center py-24 text-center`}
+      >
+        <Reveal>
+          <p className="label">Where we work</p>
+          <p className="serif mx-auto mt-6 max-w-5xl text-2xl leading-relaxed sm:text-3xl">
+            {areas.join(" · ")}
+          </p>
+        </Reveal>
       </section>
 
       {/* Quality guarantee CTA */}

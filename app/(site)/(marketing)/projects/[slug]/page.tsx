@@ -72,6 +72,8 @@ export default async function ProjectPage({
             fill
             priority
             sizes="100vw"
+            placeholder={project.lqip ? "blur" : undefined}
+            blurDataURL={project.lqip ?? undefined}
             className="object-cover"
           />
         )}

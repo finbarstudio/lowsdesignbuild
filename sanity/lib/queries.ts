@@ -27,6 +27,7 @@ export const PROJECT_SLUGS_QUERY = defineQuery(`
 `);
 
 // A single project by its slug, including the full gallery + description.
+// lqip = a tiny base64 blur of the hero, used as an instant placeholder.
 export const PROJECT_QUERY = defineQuery(`
   *[_type == "project" && slug.current == $slug][0] {
     _id,
@@ -36,6 +37,7 @@ export const PROJECT_QUERY = defineQuery(`
     category,
     description,
     mainImage,
+    "lqip": mainImage.asset->metadata.lqip,
     gallery
   }
 `);

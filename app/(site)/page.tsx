@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import HomeChrome from "@/app/components/HomeChrome";
 import Reveal from "@/app/components/Reveal";
-import { areas, processSteps, services, site } from "@/app/lib/site";
+import { site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import { PROJECTS_QUERY } from "@/sanity/lib/queries";
@@ -67,7 +67,7 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
 
 export default async function HomePage() {
   const projects = await client.fetch<ProjectListItem[]>(PROJECTS_QUERY);
-  const featured = projects.slice(0, 6);
+  const featured = projects.slice(0, 3);
 
   return (
     <>
@@ -90,19 +90,6 @@ export default async function HomePage() {
           style={{ opacity: 0 }}
           className="pointer-events-none absolute inset-0 bg-[#424952] transition-opacity duration-700 ease-out"
         />
-      </section>
-
-      {/* ---------------- End-to-end statement (Instrument Serif, centred) -- */}
-      <section
-        className={`${PAD} flex min-h-screen flex-col items-center justify-center py-24 text-center`}
-      >
-        <Reveal>
-          <p className="serif mx-auto max-w-5xl text-3xl leading-[1.25] sm:text-5xl sm:leading-[1.22]">
-            We provide an end-to-end service that covers every part of the
-            build, making the whole process as straightforward as possible —
-            finished to a standard we&apos;re proud to put our name to.
-          </p>
-        </Reveal>
       </section>
 
       {/* Sticky statement + featured projects share a wrapper so the pinned
@@ -150,7 +137,7 @@ export default async function HomePage() {
         )}
       </div>
 
-      {/* ---------------- About ---------------- */}
+      {/* ---------------- People ---------------- */}
       {/* Opaque paper layer above the sticky slogan — covers it during its
           final release so it never pops out below the last project. */}
       <section
@@ -169,7 +156,7 @@ export default async function HomePage() {
             </div>
           </Reveal>
           <Reveal className="lg:col-span-4 lg:col-start-9">
-            <p className="label">Who we are</p>
+            <p className="label">The people</p>
             <h2 className="serif mt-5 text-3xl leading-[1.15] sm:text-4xl">
               A family-run team that treats your home like our own.
             </h2>
@@ -188,90 +175,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---------------- Approach ---------------- */}
-      <section className={`${PAD} py-24 sm:py-32`}>
-        <Reveal>
-          <p className="label">What we do</p>
-        </Reveal>
-        <div className="mt-12 grid grid-cols-1 gap-x-6 gap-y-12 sm:mt-16 sm:grid-cols-2 lg:grid-cols-12">
-          {services.map((s, i) => (
-            <Reveal
-              key={s.title}
-              className={
-                ["lg:col-span-3", "lg:col-span-3", "lg:col-span-3", "lg:col-span-3"][
-                  i
-                ]
-              }
-            >
-              <h3 className="serif text-2xl">{s.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted">{s.blurb}</p>
-            </Reveal>
-          ))}
-        </div>
-
-        <Reveal>
-          <p className="label mt-24">How it works</p>
-        </Reveal>
-        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          {processSteps.map((step) => (
-            <Reveal key={step.n}>
-              <span className="serif text-3xl text-copper">{step.n}</span>
-              <h4 className="mt-3 text-base font-medium">{step.title}</h4>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                {step.text}
-              </p>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ---------------- Areas ---------------- */}
-      <section
-        className={`${PAD} flex min-h-[90vh] flex-col justify-center py-24 text-center`}
-      >
-        <Reveal>
-          <p className="label">Where we work</p>
-          <p className="serif mx-auto mt-6 max-w-5xl text-2xl leading-relaxed sm:text-3xl">
-            {areas.join(" · ")}
-          </p>
-        </Reveal>
-      </section>
-
-      {/* ---------------- Contact CTA ---------------- */}
-      <section className="">
-        <div
-          className={`${PAD} flex min-h-[90vh] flex-col justify-center py-24 text-center`}
-        >
-          <Reveal>
-            <h2 className="serif text-4xl sm:text-6xl">
-              Let&apos;s build something.
-            </h2>
-            <p className="mt-8 text-sm text-muted">
-              Tell us about your project for a free, no-obligation estimate.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm">
-              <Link
-                href="/contact"
-                className="link-underline"
-              >
-                Get in touch
-              </Link>
-              <a
-                href={site.phoneHref}
-                className="link-underline"
-              >
-                {site.phone}
-              </a>
-              <a
-                href={`mailto:${site.email}`}
-                className="link-underline"
-              >
-                {site.email}
-              </a>
-            </div>
-          </Reveal>
-        </div>
-      </section>
     </>
   );
 }
