@@ -14,33 +14,41 @@ export const revalidate = 60;
 // Tight padding, near full-width.
 const PAD = "mx-auto w-full max-w-[1900px] px-4 sm:px-6";
 
-function ProjectCell({
-  p,
-  className,
-}: {
-  p: ProjectListItem;
-  className: string;
-}) {
+function ProjectCard({ p }: { p: ProjectListItem }) {
+  const tags = [p.category, p.location].filter(Boolean) as string[];
   return (
-    <Reveal className={className}>
+    <Reveal>
       <Link href={`/projects/${p.slug}`} className="group block">
-        {/* uniform height so rows align top and bottom; widths vary by column span */}
-        <div className="relative h-[64vw] overflow-hidden bg-line sm:h-[48vw] lg:h-[32rem]">
+        <div className="relative aspect-[3/2] w-full overflow-hidden bg-line">
           {p.mainImage && (
             <Image
-              src={urlFor(p.mainImage).width(1200).height(1200).fit("crop").url()}
+              src={urlFor(p.mainImage).width(1800).height(1200).fit("crop").url()}
               alt={p.title ?? ""}
               fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover transition duration-[1.2s] ease-out group-hover:scale-[1.04]"
+              sizes="(max-width: 1024px) 100vw, 90vw"
+              className="object-cover transition duration-[1.2s] ease-out group-hover:scale-[1.03]"
             />
           )}
-        </div>
-        <div className="mt-4">
-          <p className="label">
-            {[p.category, p.location].filter(Boolean).join(" — ")}
-          </p>
-          <h3 className="serif mt-2 text-2xl sm:text-3xl">{p.title}</h3>
+          {/* simple gradient so the overlay text stays legible */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
+          {/* overlay: title + bubble category/area tags */}
+          <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-6 sm:p-8">
+            <h3 className="serif text-3xl leading-none text-white sm:text-4xl">
+              {p.title}
+            </h3>
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {tags.map((t) => (
+                  <span
+                    key={t}
+                    className="rounded-full border border-white/40 bg-white/10 px-3 py-1 text-xs text-white backdrop-blur-sm"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </Link>
     </Reveal>
@@ -50,8 +58,6 @@ function ProjectCell({
 export default async function HomePage() {
   const projects = await client.fetch<ProjectListItem[]>(PROJECTS_QUERY);
   const featured = projects.slice(0, 6);
-  const rows: ProjectListItem[][] = [];
-  for (let i = 0; i < featured.length; i += 2) rows.push(featured.slice(i, i + 2));
 
   return (
     <>
@@ -115,12 +121,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---------------- Selected work (asymmetric grid) ---------------- */}
+      {/* ---------------- Featured projects (image cards) ---------------- */}
       {featured.length > 0 && (
         <section className={`${PAD} py-24 sm:py-32`}>
           <Reveal>
-            <div className="mb-16 flex items-end justify-between sm:mb-24">
-              <p className="label">Selected work</p>
+            <div className="mb-12 flex items-end justify-between sm:mb-16">
+              <p className="label">Featured projects</p>
               <Link
                 href="/projects"
                 className="text-sm text-muted underline-offset-4 hover:text-copper hover:underline"
@@ -130,35 +136,10 @@ export default async function HomePage() {
             </div>
           </Reveal>
 
-          <div className="space-y-20 sm:space-y-28">
-            {rows.map((row, r) => {
-              const even = r % 2 === 0;
-              return (
-                <div
-                  key={r}
-                  className="grid grid-cols-1 items-start gap-4 sm:gap-6 lg:grid-cols-12"
-                >
-                  <ProjectCell
-                    p={row[0]}
-                    className={
-                      even
-                        ? "lg:col-span-7 lg:col-start-1"
-                        : "lg:col-span-4 lg:col-start-1"
-                    }
-                  />
-                  {row[1] && (
-                    <ProjectCell
-                      p={row[1]}
-                      className={
-                        even
-                          ? "lg:col-span-4 lg:col-start-9"
-                          : "lg:col-span-6 lg:col-start-7"
-                      }
-                    />
-                  )}
-                </div>
-              );
-            })}
+          <div className="space-y-6 sm:space-y-8">
+            {featured.map((p) => (
+              <ProjectCard key={p._id} p={p} />
+            ))}
           </div>
         </section>
       )}
