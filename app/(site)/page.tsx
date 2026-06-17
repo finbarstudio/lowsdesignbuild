@@ -19,14 +19,14 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
   return (
     <Reveal>
       <Link href={`/projects/${p.slug}`} className="group block">
-        <div className="relative aspect-[3/2] w-full overflow-hidden bg-line">
+        <div className="relative aspect-[297/210] w-full overflow-hidden bg-line">
           {p.mainImage && (
             <Image
-              src={urlFor(p.mainImage).width(1800).height(1200).fit("crop").url()}
+              src={urlFor(p.mainImage).width(1600).height(1131).fit("crop").url()}
               alt={p.title ?? ""}
               fill
-              sizes="(max-width: 1024px) 100vw, 90vw"
-              className="object-cover transition duration-[1.2s] ease-out group-hover:scale-[1.03]"
+              sizes="80vw"
+              className="object-cover"
             />
           )}
           {/* simple gradient so the overlay text stays legible */}
@@ -123,7 +123,7 @@ export default async function HomePage() {
 
       {/* ---------------- Featured projects (image cards) ---------------- */}
       {featured.length > 0 && (
-        <section className={`${PAD} py-24 sm:py-32`}>
+        <section className="px-[10%] py-24 sm:py-32">
           <Reveal>
             <div className="mb-12 flex items-end justify-between sm:mb-16">
               <p className="label">Featured projects</p>
@@ -136,7 +136,7 @@ export default async function HomePage() {
             </div>
           </Reveal>
 
-          <div className="space-y-6 sm:space-y-8">
+          <div className="space-y-16 sm:space-y-24">
             {featured.map((p) => (
               <ProjectCard key={p._id} p={p} />
             ))}
