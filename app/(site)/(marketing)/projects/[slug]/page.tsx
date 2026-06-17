@@ -80,9 +80,9 @@ export default async function ProjectPage({
           <h1 className="serif text-5xl text-white sm:text-7xl">
             {project.title}
           </h1>
-          <div className="mt-5 flex justify-between border-t border-white/25 pt-4 text-white/85">
-            <span className="label text-white/85">{project.location}</span>
-            <span className="label text-white/85">{project.category}</span>
+          <div className="mt-5 flex justify-between text-white">
+            <span className="label !text-white">{project.location}</span>
+            <span className="label !text-white">{project.category}</span>
           </div>
         </div>
       </section>

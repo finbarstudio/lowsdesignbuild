@@ -11,22 +11,32 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  // Project detail pages have a full-screen hero: white logo + nav over it,
+  // switching to ink once the page has scrolled past the hero image.
+  const isProjectDetail =
+    Boolean(pathname?.startsWith("/projects/")) && pathname !== "/projects";
+
   useEffect(() => {
-    const f = () => setScrolled(window.scrollY > 40);
+    const f = () => {
+      // On a project detail page stay "over hero" until the hero image clears
+      // the top bar; elsewhere a small threshold is enough.
+      const threshold = isProjectDetail ? window.innerHeight - 64 : 40;
+      setScrolled(window.scrollY > threshold);
+    };
     f();
     window.addEventListener("scroll", f, { passive: true });
-    return () => window.removeEventListener("scroll", f);
-  }, []);
+    window.addEventListener("resize", f);
+    return () => {
+      window.removeEventListener("scroll", f);
+      window.removeEventListener("resize", f);
+    };
+  }, [isProjectDetail]);
 
   if (pathname?.startsWith("/studio")) return null;
   // The home page has its own bespoke chrome (HomeChrome) — no global header.
   if (pathname === "/") return null;
 
-  // Project detail pages have a full-screen hero: transparent white header at
-  // the top, paper header once scrolled.
-  const isProjectDetail =
-    pathname?.startsWith("/projects/") && pathname !== "/projects";
-  const overHero = Boolean(isProjectDetail) && !scrolled;
+  const overHero = isProjectDetail && !scrolled;
 
   return (
     <header
