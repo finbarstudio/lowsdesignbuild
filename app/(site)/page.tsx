@@ -111,9 +111,11 @@ export default async function HomePage() {
         </section>
 
         {/* ---------------- Featured projects (image cards) ------------- */}
-        {/* Scrolls up and sits on top of the sticky statement above */}
+        {/* Transparent: each opaque card wipes over the sticky slogan behind,
+            and the slogan shows in the gaps between them. No bottom padding so
+            the slogan stays hidden behind the last card at the very end. */}
         {featured.length > 0 && (
-          <section className="relative z-10 bg-background px-[10%] py-24 sm:py-32">
+          <section className="relative z-10 px-[10%] pt-24 sm:pt-32">
             <Reveal>
               <div className="mb-12 flex items-end justify-between sm:mb-16">
                 <p className="label">Featured projects</p>
@@ -136,8 +138,10 @@ export default async function HomePage() {
       </div>
 
       {/* ---------------- About ---------------- */}
+      {/* Opaque paper layer above the sticky slogan — covers it during its
+          final release so it never pops out below the last project. */}
       <section
-        className={`${PAD} flex min-h-[90vh] flex-col justify-center py-24`}
+        className={`${PAD} relative z-10 flex min-h-[90vh] flex-col justify-center bg-background py-24`}
       >
         <div className="grid grid-cols-1 items-start gap-4 sm:gap-6 lg:grid-cols-12">
           <Reveal className="lg:col-span-7 lg:col-start-1">
