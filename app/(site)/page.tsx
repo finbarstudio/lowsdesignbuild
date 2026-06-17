@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import HomeChrome from "@/app/components/HomeChrome";
 import Reveal from "@/app/components/Reveal";
-import { site, team } from "@/app/lib/site";
+import { team } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import { PROJECTS_QUERY } from "@/sanity/lib/queries";
@@ -136,42 +136,30 @@ export default async function HomePage() {
       <section
         className={`${PAD} relative z-10 bg-background py-24 sm:py-32`}
       >
-        <Reveal>
-          <p className="label">The people</p>
-        </Reveal>
-        <div className="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-3">
-          {/* left third: the three people across two rows */}
-          <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+          {/* left third: sticky title that stays put as the cards scroll */}
+          <div className="lg:col-span-1">
+            <h2 className="serif sticky top-24 text-5xl sm:text-6xl">Family</h2>
+          </div>
+
+          {/* right two-thirds: people cards in rows of two */}
+          <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:col-span-2">
             {team.map((m) => (
               <Reveal key={m.name}>
-                <div className="relative aspect-[5/6] overflow-hidden bg-line">
+                <div className="relative aspect-[4/5] overflow-hidden bg-line">
                   <Image
                     src={m.img}
                     alt={m.name}
                     fill
-                    sizes="(max-width: 1024px) 50vw, 17vw"
+                    sizes="(max-width: 1024px) 100vw, 33vw"
                     className="object-cover"
                   />
                 </div>
-                <p className="serif mt-3 text-lg">{m.name}</p>
+                <p className="serif mt-4 text-xl">{m.name}</p>
+                <p className="text-sm text-muted">{m.role}</p>
               </Reveal>
             ))}
           </div>
-
-          {/* right two-thirds: the text */}
-          <Reveal className="lg:col-span-2 lg:self-center">
-            <h2 className="serif text-3xl leading-[1.12] sm:text-5xl">
-              A family-run team that treats your home like our own.
-            </h2>
-            <p className="mt-7 max-w-xl text-sm leading-relaxed text-muted">
-              We&apos;re {site.name}, a design and build company in Greater
-              London. From the first conversation to the final finish you work
-              with one team that takes responsibility for the whole project.
-            </p>
-            <Link href="/about" className="mt-7 inline-block text-sm">
-              <span className="link-underline">More about us</span>
-            </Link>
-          </Reveal>
         </div>
       </section>
 

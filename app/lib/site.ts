@@ -19,10 +19,11 @@ export const nav = [
   { label: "Contact", href: "/contact" },
 ];
 
+// NOTE: roles are placeholders — confirm/replace with the real job titles.
 export const team = [
-  { name: "Pat", img: "/team/pat.jpg" },
-  { name: "Shane", img: "/team/shane.jpg" },
-  { name: "Phil", img: "/team/phil.jpg" },
+  { name: "Pat", role: "Founder", img: "/team/pat.jpg" },
+  { name: "Shane", role: "Director", img: "/team/shane.jpg" },
+  { name: "Phil", role: "Project Manager", img: "/team/phil.jpg" },
 ];
 
 export const services = [
