@@ -182,8 +182,8 @@ function Calculator({ config }: { config: Config }) {
         <p className="label">Estimated cost</p>
         <p className="serif mt-3 text-5xl sm:text-6xl">{gbp(total)}</p>
         <p className="mt-5 max-w-xs text-xs leading-relaxed text-muted">
-          Indicative only — a guide based on typical rates, not a quote. For an
-          accurate price we&apos;ll visit and assess your project.
+          This is a guide based on typical rates, not a quote. For an accurate
+          price we&apos;ll visit and assess your project.
         </p>
         <Link
           href="/contact"

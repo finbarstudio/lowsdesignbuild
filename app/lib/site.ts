@@ -34,7 +34,7 @@ export const services = [
   {
     title: "Extensions",
     blurb:
-      "Single and double-storey, rear, side and wrap-around extensions — more space, more light, built to last.",
+      "Single and double-storey rear, side and wrap-around extensions that add space and light and are built to last.",
   },
   {
     title: "Refurbishments",

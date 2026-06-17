@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
  * then the overlay fades up to reveal the page. All timing lives in globals.css
  * (the .preloader* rules) so it's easy to tweak.
  *
- * Only shown on the home page — it's the site's entrance, not every route.
+ * Only shown on the home page; it is the site's entrance, not every route.
  */
 export default function Preloader() {
   const pathname = usePathname();

@@ -21,9 +21,9 @@ export default function EstimatePage() {
             Estimate calculator
           </h1>
           <p className="max-w-md text-sm leading-relaxed text-muted lg:col-span-3 lg:col-start-10 lg:self-end">
-            Get an instant, approximate cost for your project. Pick the options
-            that match your plans and we&apos;ll do the maths — then get in touch
-            for an accurate, tailored quote.
+            Get a rough cost for your project in a few seconds. Pick the options
+            that match your plans and we&apos;ll do the maths, then get in touch
+            for an accurate quote.
           </p>
         </div>
       </Reveal>

@@ -33,7 +33,7 @@ export default function Header({ projectCount }: { projectCount?: number }) {
   }, [isProjectDetail]);
 
   if (pathname?.startsWith("/studio")) return null;
-  // The home page has its own bespoke chrome (HomeChrome) — no global header.
+  // The home page has its own bespoke chrome (HomeChrome), no global header.
   if (pathname === "/") return null;
 
   const overHero = isProjectDetail && !scrolled;
@@ -46,7 +46,7 @@ export default function Header({ projectCount }: { projectCount?: number }) {
         {/* logo left */}
         <Link
           href="/"
-          aria-label={`${site.name} — home`}
+          aria-label={`${site.name}, home`}
           className="flex items-center"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -66,12 +66,8 @@ export default function Header({ projectCount }: { projectCount?: number }) {
           }`}
         >
           {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="link-underline"
-            >
-              {item.label}
+            <Link key={item.href} href={item.href}>
+              <span className="link-underline">{item.label}</span>
               {item.href === "/projects" && projectCount ? (
                 <sup className="ml-0.5 text-[0.6em] font-medium">
                   {projectCount}

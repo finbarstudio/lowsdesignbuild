@@ -7,7 +7,7 @@ import { nav } from "@/app/lib/site";
 
 // Logotype aspect ratio (viewBox 121.71 × 55.33).
 const RATIO = 121.71 / 55.33;
-const BAR = 64; // bar height (h-16) — matches the inner-page header
+const BAR = 64; // bar height (h-16), matches the inner-page header
 
 /**
  * Home chrome: a nav centred in a top bar (same structure as the inner-page
@@ -43,7 +43,7 @@ export default function HomeChrome({
       wrap.style.width = `${baseW}px`;
 
       // Hero may be taller than the viewport (desktop) or shorter (a landscape
-      // image on a narrow phone) — anchor the wordmark to the visible hero.
+      // image on a narrow phone), anchor the wordmark to the visible hero.
       const hero = document.getElementById("home-hero");
       const heroH = hero ? hero.offsetHeight : vh;
 
@@ -53,14 +53,14 @@ export default function HomeChrome({
 
       // The wordmark starts bottom-left of the hero and travels straight up to
       // dock top-left in the bar. transformOrigin is the top-left corner (0 0),
-      // so we interpolate that corner directly — left-aligned throughout.
+      // so we interpolate that corner directly, left-aligned throughout.
       const x = edge;
       const y0 = Math.min(vh, heroH) - edge - baseH; // bottom of the hero
       const y1 = (BAR - targetH) / 2; // vertically centred in the bar
       const y = y0 + (y1 - y0) * p;
       wrap.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
 
-      // grey overlay over the hero — comes softly but fully in past 5% scroll.
+      // grey overlay over the hero, comes softly but fully in past 5% scroll.
       const overlay = document.getElementById("hero-overlay");
       if (overlay) {
         overlay.style.opacity = window.scrollY > vh * 0.05 ? "0.5" : "0";
@@ -103,15 +103,11 @@ export default function HomeChrome({
           className="relative mx-auto flex h-full w-full max-w-[1900px] items-center px-4 transition-colors duration-300 sm:px-6"
           style={{ color: "rgb(255,255,255)" }}
         >
-          {/* desktop nav — top right */}
+          {/* desktop nav, top right */}
           <nav className="ml-auto hidden items-center gap-x-7 font-sans text-sm sm:flex sm:text-base">
             {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="link-underline"
-              >
-                {item.label}
+              <Link key={item.href} href={item.href}>
+                <span className="link-underline">{item.label}</span>
                 {item.href === "/projects" && projectCount ? (
                   <sup className="ml-0.5 text-[0.6em] font-medium">
                     {projectCount}
@@ -162,7 +158,7 @@ export default function HomeChrome({
       <Link
         ref={wrapRef}
         href="/"
-        aria-label="Lows Design and Build — home"
+        aria-label="Lows Design and Build, home"
         className="fixed left-0 top-0 z-50 block"
       >
         <span className="relative block">

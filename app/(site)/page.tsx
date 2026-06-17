@@ -22,26 +22,22 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
   return (
     <Link
       href={`/projects/${p.slug}`}
-      className="group relative block aspect-[16/9] w-full"
+      className="group relative block aspect-[16/9] w-full overflow-hidden bg-line"
     >
-      {/* image layer — the whole image scales up as one piece (not a crop-zoom) */}
-      <div
-        className={`absolute inset-0 overflow-hidden bg-line ${ease} group-hover:scale-[1.03]`}
-      >
-        {p.mainImage && (
-          <Image
-            src={urlFor(p.mainImage).width(1600).height(900).fit("crop").url()}
-            alt={p.title ?? ""}
-            fill
-            sizes="80vw"
-            className="object-cover"
-          />
-        )}
-        {/* simple gradient so the overlay text stays legible */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
-      </div>
+      {/* image zooms inside the fixed frame, no growth past the edges */}
+      {p.mainImage && (
+        <Image
+          src={urlFor(p.mainImage).width(1600).height(900).fit("crop").url()}
+          alt={p.title ?? ""}
+          fill
+          sizes="80vw"
+          className={`object-cover ${ease} group-hover:scale-[1.04]`}
+        />
+      )}
+      {/* simple gradient so the overlay text stays legible */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
 
-      {/* text layer — scales a touch differently for a refined parallax */}
+      {/* text layer, scales a touch differently for a refined parallax */}
       <div
         className={`absolute inset-x-0 bottom-0 flex origin-bottom-left flex-col gap-3 p-6 sm:p-8 ${ease} group-hover:scale-[1.05]`}
       >
@@ -73,7 +69,7 @@ export default async function HomePage() {
     <>
       <HomeChrome projectCount={projects.length} />
 
-      {/* ---------------- Hero (uncropped — scroll for more) ---------------- */}
+      {/* ---------------- Hero (uncropped, scroll for more) ---------------- */}
       <section id="home-hero" className="relative w-full">
         <Image
           src="/hero-main.jpg"
@@ -84,7 +80,7 @@ export default async function HomePage() {
           sizes="100vw"
           className="block h-auto w-full"
         />
-        {/* grey overlay — fades in subtly as scroll begins */}
+        {/* grey overlay, fades in subtly as scroll begins */}
         <div
           id="hero-overlay"
           style={{ opacity: 0 }}
@@ -93,7 +89,7 @@ export default async function HomePage() {
       </section>
 
       {/* Sticky statement + featured projects share a wrapper so the pinned
-          slogan is contained here — it releases and scrolls away once the
+          slogan is contained here; it releases and scrolls away once the
           featured block ends, never overlapping the sections below. */}
       <div className="relative">
         {/* ---------------- Family-run statement (Futura) ---------------- */}
@@ -116,11 +112,8 @@ export default async function HomePage() {
             <Reveal>
               <div className="mb-12 flex items-end justify-between sm:mb-16">
                 <p className="label">Featured projects</p>
-                <Link
-                  href="/projects"
-                  className="link-underline text-sm text-muted"
-                >
-                  All projects
+                <Link href="/projects" className="text-sm text-muted">
+                  <span className="link-underline">All projects</span>
                   <sup className="ml-0.5 text-[0.6em] font-medium">
                     {projects.length}
                   </sup>
@@ -138,47 +131,48 @@ export default async function HomePage() {
       </div>
 
       {/* ---------------- People ---------------- */}
-      {/* Opaque paper layer above the sticky slogan — covers it during its
+      {/* Opaque paper layer above the sticky slogan, covers it during its
           final release so it never pops out below the last project. */}
       <section
         className={`${PAD} relative z-10 bg-background py-24 sm:py-32`}
       >
         <Reveal>
           <p className="label">The people</p>
-          <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 lg:grid-cols-12 lg:items-end">
-            <h2 className="serif text-3xl leading-[1.12] sm:text-5xl lg:col-span-7">
+        </Reveal>
+        <div className="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-3">
+          {/* left third: the three people across two rows */}
+          <div className="grid grid-cols-2 gap-4">
+            {team.map((m) => (
+              <Reveal key={m.name}>
+                <div className="relative aspect-[5/6] overflow-hidden bg-line">
+                  <Image
+                    src={m.img}
+                    alt={m.name}
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 17vw"
+                    className="object-cover"
+                  />
+                </div>
+                <p className="serif mt-3 text-lg">{m.name}</p>
+              </Reveal>
+            ))}
+          </div>
+
+          {/* right two-thirds: the text */}
+          <Reveal className="lg:col-span-2 lg:self-center">
+            <h2 className="serif text-3xl leading-[1.12] sm:text-5xl">
               A family-run team that treats your home like our own.
             </h2>
-            <p className="text-sm leading-relaxed text-muted lg:col-span-4 lg:col-start-9">
-              We&apos;re {site.name} — a design and build company based in
-              Greater London. From the first conversation to the finishing
-              touches you deal with one team, responsible for the whole project.
+            <p className="mt-7 max-w-xl text-sm leading-relaxed text-muted">
+              We&apos;re {site.name}, a design and build company in Greater
+              London. From the first conversation to the final finish you work
+              with one team that takes responsibility for the whole project.
             </p>
-          </div>
-        </Reveal>
-
-        <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-8">
-          {team.map((m) => (
-            <Reveal key={m.name}>
-              <div className="relative aspect-[5/6] overflow-hidden bg-line">
-                <Image
-                  src={m.img}
-                  alt={m.name}
-                  fill
-                  sizes="(max-width: 640px) 100vw, 33vw"
-                  className="object-cover"
-                />
-              </div>
-              <p className="serif mt-4 text-xl">{m.name}</p>
-            </Reveal>
-          ))}
+            <Link href="/about" className="mt-7 inline-block text-sm">
+              <span className="link-underline">More about us</span>
+            </Link>
+          </Reveal>
         </div>
-
-        <Reveal>
-          <Link href="/about" className="mt-12 inline-block text-sm link-underline">
-            More about us
-          </Link>
-        </Reveal>
       </section>
 
     </>

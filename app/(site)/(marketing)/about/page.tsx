@@ -46,19 +46,19 @@ export default function AboutPage() {
           </Reveal>
           <Reveal className="lg:col-span-4 lg:col-start-9">
             <p className="text-sm leading-relaxed text-muted">
-              We provide an end-to-end service that covers all aspects of
-              building works from design to completion — making the process as
-              straightforward as possible for our clients.
+              We handle the whole job, from the first drawings to completion, so
+              there&apos;s only one team to deal with and the process stays
+              simple for you.
             </p>
             <p className="mt-4 text-sm leading-relaxed text-muted">
-              From the first conversation to the finishing touches, you deal
-              with one team that takes responsibility for the whole project: the
-              drawings, the approvals, the construction and the final finish.
+              From the first conversation to the final finish, that same team
+              takes responsibility for everything: the drawings, the approvals,
+              the construction and the finish.
             </p>
             <p className="mt-4 text-sm leading-relaxed text-muted">
-              We&apos;re passionate about the quality of our work and always aim
-              for the highest standard — all of it comes with guarantees, so you
-              have peace of mind that everything is up to specification.
+              We care about the quality of our work and always aim for a high
+              standard. Everything comes with guarantees, so you know it meets
+              the required specification.
             </p>
           </Reveal>
         </div>

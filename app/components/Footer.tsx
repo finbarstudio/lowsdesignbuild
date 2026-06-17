@@ -7,7 +7,7 @@ const YEAR = 2026;
 export default function Footer() {
   return (
     <footer className="flex h-[65vh] min-h-[460px] flex-col justify-between px-4 pb-10 pt-16 sm:px-6">
-      {/* giant logo — scales to fill the available height */}
+      {/* giant logo, scales to fill the available height */}
       <div className="flex min-h-0 flex-1 items-center justify-center py-8">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img

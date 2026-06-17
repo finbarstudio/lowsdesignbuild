@@ -51,7 +51,7 @@ export default function ContactForm() {
       </button>
       {sent && (
         <p className="text-sm text-muted">
-          Thanks — your email app should have opened with your message ready to
+          Thanks. Your email app should have opened with your message ready to
           send. If not, email us directly at {site.email}.
         </p>
       )}

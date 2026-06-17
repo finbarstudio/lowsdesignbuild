@@ -4,7 +4,7 @@ import { PROJECT_COUNT_QUERY } from "@/sanity/lib/queries";
 
 export const revalidate = 60;
 
-// The standard top header — marketing pages only. The home page uses its own
+// The standard top header, marketing pages only. The home page uses its own
 // HomeChrome instead, so it is intentionally outside this group.
 export default async function MarketingLayout({
   children,

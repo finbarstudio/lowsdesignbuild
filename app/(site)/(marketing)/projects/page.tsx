@@ -72,7 +72,7 @@ export default async function ProjectsPage() {
                   </div>
                   <div className="mt-4">
                     <p className="label">
-                      {[p.category, p.location].filter(Boolean).join(" — ")}
+                      {[p.category, p.location].filter(Boolean).join(" · ")}
                     </p>
                     <h2 className="serif mt-2 text-2xl">{p.title}</h2>
                   </div>

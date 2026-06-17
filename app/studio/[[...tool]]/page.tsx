@@ -1,6 +1,6 @@
 /**
  * This route mounts the entire Sanity Studio (the admin UI) at /studio.
- * It's the same app — your friend logs in here to add/edit/delete content.
+ * It's the same app; your friend logs in here to add/edit/delete content.
  */
 import { NextStudio } from "next-sanity/studio";
 
