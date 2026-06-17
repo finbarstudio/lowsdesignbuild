@@ -60,10 +60,10 @@ export default async function HomePage() {
       {/* ---------------- Hero (uncropped — scroll for more) ---------------- */}
       <section id="home-hero" className="relative w-full">
         <Image
-          src="/hero3.png"
+          src="/hero-main.jpg"
           alt="A Lows Design & Build living room"
-          width={4961}
-          height={3508}
+          width={3200}
+          height={2133}
           priority
           sizes="100vw"
           className="block h-auto w-full"
