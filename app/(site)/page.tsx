@@ -16,31 +16,26 @@ const PAD = "mx-auto w-full max-w-[1900px] px-4 sm:px-6";
 
 function ProjectCard({ p }: { p: ProjectListItem }) {
   const tags = [p.category, p.location].filter(Boolean) as string[];
-  // Both layers ease, but scale by slightly different amounts on hover.
-  const ease =
-    "transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]";
   return (
     <Link
       href={`/projects/${p.slug}`}
       className="group relative block aspect-[16/9] w-full overflow-hidden bg-line"
     >
-      {/* image zooms inside the fixed frame, no growth past the edges */}
+      {/* the photo zooms within a fixed frame; nothing else moves */}
       {p.mainImage && (
         <Image
           src={urlFor(p.mainImage).width(1600).height(900).fit("crop").url()}
           alt={p.title ?? ""}
           fill
           sizes="80vw"
-          className={`object-cover ${ease} group-hover:scale-[1.04]`}
+          className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform group-hover:scale-[1.06]"
         />
       )}
       {/* simple gradient so the overlay text stays legible */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
 
-      {/* text layer, scales a touch differently for a refined parallax */}
-      <div
-        className={`absolute inset-x-0 bottom-0 flex origin-bottom-left flex-col gap-3 p-6 sm:p-8 ${ease} group-hover:scale-[1.05]`}
-      >
+      {/* overlay text stays fixed */}
+      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-6 sm:p-8">
         <h3 className="serif text-3xl leading-none text-white sm:text-4xl">
           {p.title}
         </h3>
@@ -121,7 +116,7 @@ export default async function HomePage() {
               </div>
             </Reveal>
 
-            <div className="space-y-28 sm:space-y-44">
+            <div className="space-y-56 sm:space-y-[22rem]">
               {featured.map((p) => (
                 <ProjectCard key={p._id} p={p} />
               ))}

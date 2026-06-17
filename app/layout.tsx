@@ -25,11 +25,31 @@ export const metadata: Metadata = {
   },
   description:
     "Family-run design & build company in South London. We do loft conversions, house extensions and refurbishments, from the first drawing through to completion.",
+  alternates: { canonical: "/" },
+  keywords: [
+    "design and build South London",
+    "loft conversions",
+    "house extensions",
+    "refurbishments",
+    "builders Beckenham",
+    "builders Bromley",
+  ],
   openGraph: {
     title: "Lows Design & Build, South London Builders",
     description:
       "Loft conversions, extensions and refurbishments across South London. Family-run, from design through to completion.",
     type: "website",
+    locale: "en_GB",
+    siteName: "Lows Design & Build",
+    url: "/",
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Lows Design & Build" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lows Design & Build, South London Builders",
+    description:
+      "Loft conversions, extensions and refurbishments across South London. Family-run, from design through to completion.",
+    images: ["/og.jpg"],
   },
 };
 
