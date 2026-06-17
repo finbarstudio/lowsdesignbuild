@@ -95,41 +95,45 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      {/* ---------------- Family-run statement (Futura) ------------------ */}
-      {/* Sticky: stays pinned centre-screen until the image below scrolls over it */}
-      <section className="sticky top-0 flex h-screen flex-col items-center justify-center">
-        <div className={PAD}>
-          <Reveal>
-            <h2 className="mx-auto max-w-6xl text-center font-sans text-5xl font-bold uppercase leading-[1.05] tracking-tight sm:text-7xl">
-              Family Run Construction Services in London and Surrounding Areas
-            </h2>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ---------------- Featured projects (image cards) ---------------- */}
-      {/* Scrolls up and sits on top of the sticky statement above */}
-      {featured.length > 0 && (
-        <section className="relative z-10 bg-background px-[10%] py-24 sm:py-32">
-          <Reveal>
-            <div className="mb-12 flex items-end justify-between sm:mb-16">
-              <p className="label">Featured projects</p>
-              <Link
-                href="/projects"
-                className="text-sm text-muted underline-offset-4 hover:text-copper hover:underline"
-              >
-                All projects
-              </Link>
-            </div>
-          </Reveal>
-
-          <div className="space-y-16 sm:space-y-24">
-            {featured.map((p) => (
-              <ProjectCard key={p._id} p={p} />
-            ))}
+      {/* Sticky statement + featured projects share a wrapper so the pinned
+          slogan is contained here — it releases and scrolls away once the
+          featured block ends, never overlapping the sections below. */}
+      <div className="relative">
+        {/* ---------------- Family-run statement (Futura) ---------------- */}
+        <section className="sticky top-0 flex h-screen flex-col items-center justify-center">
+          <div className={PAD}>
+            <Reveal>
+              <h2 className="mx-auto max-w-6xl text-center font-sans text-5xl font-bold uppercase leading-[1.05] tracking-tight sm:text-7xl">
+                Family Run Construction Services in London and Surrounding Areas
+              </h2>
+            </Reveal>
           </div>
         </section>
-      )}
+
+        {/* ---------------- Featured projects (image cards) ------------- */}
+        {/* Scrolls up and sits on top of the sticky statement above */}
+        {featured.length > 0 && (
+          <section className="relative z-10 bg-background px-[10%] py-24 sm:py-32">
+            <Reveal>
+              <div className="mb-12 flex items-end justify-between sm:mb-16">
+                <p className="label">Featured projects</p>
+                <Link
+                  href="/projects"
+                  className="text-sm text-muted underline-offset-4 hover:text-copper hover:underline"
+                >
+                  All projects
+                </Link>
+              </div>
+            </Reveal>
+
+            <div className="space-y-16 sm:space-y-24">
+              {featured.map((p) => (
+                <ProjectCard key={p._id} p={p} />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
 
       {/* ---------------- About ---------------- */}
       <section
