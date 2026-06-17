@@ -121,7 +121,7 @@ export default async function HomePage() {
               </div>
             </Reveal>
 
-            <div className="space-y-16 sm:space-y-24">
+            <div className="space-y-28 sm:space-y-44">
               {featured.map((p) => (
                 <ProjectCard key={p._id} p={p} />
               ))}
@@ -158,7 +158,7 @@ export default async function HomePage() {
               <div className="mt-4 grid grid-cols-2 gap-x-6">
                 {teamLead.people.map((pp) => (
                   <div key={pp.name}>
-                    <p className="serif text-xl">{pp.name}</p>
+                    <p className="text-base font-medium">{pp.name}</p>
                     <p className="text-sm text-muted">{pp.role}</p>
                   </div>
                 ))}
@@ -176,7 +176,7 @@ export default async function HomePage() {
                     className="object-cover grayscale"
                   />
                 </div>
-                <p className="serif mt-4 text-xl">{m.name}</p>
+                <p className="mt-4 text-base font-medium">{m.name}</p>
                 <p className="text-sm text-muted">{m.role}</p>
               </Reveal>
             ))}

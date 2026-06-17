@@ -8,8 +8,9 @@
   --background: #f4f1ea; /* warm paper */
   --foreground: #424952; /* grey (used in place of black everywhere) */
   --ink: #424952;
-  --copper: #c0593a; /* terracotta accent (cleaner, less muddy) */
-  --copper-deep: #a44424;
+  --tertiary: #fa3719; /* Studio Ag red, the highlight/accent colour */
+  --copper: var(--tertiary); /* highlights map to the tertiary red */
+  --copper-deep: #d62b0f;
   --slate: #424952; /* dark slate */
   --slate-blue: #2b5672;
   --muted: #7c766c; /* warm secondary text */
@@ -23,6 +24,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-ink: var(--ink);
+  --color-tertiary: var(--tertiary);
   --color-copper: var(--copper);
   --color-copper-deep: var(--copper-deep);
   --color-slate: var(--slate);
