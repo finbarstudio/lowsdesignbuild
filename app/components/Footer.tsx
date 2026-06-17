@@ -2,45 +2,37 @@ import { site } from "@/app/lib/site";
 
 const YEAR = 2026;
 
-// MW.S-style footer: the Lows logo set large, filling a ~65vh band, with the
-// credit / company / contact details tucked into the bottom corners.
+// Full-height (100vh) footer: a sparse Swiss grid of essentials sitting just
+// above the LOWS wordmark, which runs full-width flush along the bottom.
 export default function Footer() {
   return (
-    <footer className="flex h-[65vh] min-h-[460px] flex-col justify-between px-4 pb-10 pt-16 sm:px-6">
-      {/* giant logo, scales to fill the available height */}
-      <div className="flex min-h-0 flex-1 items-center justify-center py-8">
+    <footer className="flex h-screen flex-col justify-end overflow-hidden">
+      <div className="px-4 sm:px-6">
+        {/* minimal info, swiss grid */}
+        <div className="mb-8 grid grid-cols-2 gap-y-6 text-sm sm:mb-10 sm:grid-cols-12">
+          <p className="sm:col-span-3">
+            ©{YEAR} {site.name}
+          </p>
+          <p className="sm:col-span-3 sm:col-start-6">South London</p>
+          <div className="text-right sm:col-span-3 sm:col-start-10">
+            <a
+              href={site.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block"
+            >
+              <span className="link-underline">Instagram</span>
+            </a>
+          </div>
+        </div>
+
+        {/* LOWS wordmark, full width, flush to the bottom */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/logotype.svg"
+          src="/lows.svg"
           alt={site.name}
-          className="max-h-full max-w-full object-contain"
+          className="block w-full translate-y-[1.5%]"
         />
-      </div>
-
-      {/* bottom info */}
-      <div className="grid grid-cols-2 gap-6 text-sm sm:grid-cols-3">
-        <p>©{YEAR}</p>
-        <div className="order-last col-span-2 sm:order-none sm:col-span-1">
-          <p>{site.name}</p>
-          <p className="text-muted">Family-run design &amp; build</p>
-          <p className="text-muted">South London</p>
-        </div>
-        <div className="text-right">
-          <a href={`mailto:${site.email}`} className="link-underline block">
-            {site.email}
-          </a>
-          <a href={site.phoneHref} className="link-underline block">
-            {site.phone}
-          </a>
-          <a
-            href={site.instagram}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="link-underline block"
-          >
-            Instagram
-          </a>
-        </div>
       </div>
     </footer>
   );
