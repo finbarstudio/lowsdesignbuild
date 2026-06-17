@@ -19,11 +19,28 @@ export const nav = [
   { label: "Contact", href: "/contact" },
 ];
 
-// NOTE: roles are placeholders — confirm/replace with the real job titles.
+// The two directors share one wide headshot that spans both columns.
+export const teamLead = {
+  img: "/team/sam-james.jpg",
+  alt: "Samuel and James Low",
+  people: [
+    { name: "Samuel Low", role: "Director" },
+    { name: "James Low", role: "Director" },
+  ],
+};
+
 export const team = [
-  { name: "Pat", role: "Founder", img: "/team/pat.jpg" },
-  { name: "Shane", role: "Director", img: "/team/shane.jpg" },
-  { name: "Phil", role: "Project Manager", img: "/team/phil.jpg" },
+  { name: "Patrick Low", role: "Project Manager", img: "/team/pat.jpg" },
+  {
+    name: "Shane (Honorary Low)",
+    role: "Carpentry Specialist",
+    img: "/team/shane.jpg",
+  },
+  {
+    name: "Phil (Honorary Low)",
+    role: "Roofing Specialist",
+    img: "/team/phil.jpg",
+  },
 ];
 
 export const services = [

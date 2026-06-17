@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import HomeChrome from "@/app/components/HomeChrome";
 import Reveal from "@/app/components/Reveal";
-import { team } from "@/app/lib/site";
+import { team, teamLead } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import { PROJECTS_QUERY } from "@/sanity/lib/queries";
@@ -144,6 +144,27 @@ export default async function HomePage() {
 
           {/* right two-thirds: people cards in rows of two */}
           <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:col-span-2">
+            {/* the two directors, one wide headshot spanning both columns */}
+            <Reveal className="sm:col-span-2">
+              <div className="relative aspect-[16/9] overflow-hidden bg-line">
+                <Image
+                  src={teamLead.img}
+                  alt={teamLead.alt}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 66vw"
+                  className="object-cover grayscale"
+                />
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-x-6">
+                {teamLead.people.map((pp) => (
+                  <div key={pp.name}>
+                    <p className="serif text-xl">{pp.name}</p>
+                    <p className="text-sm text-muted">{pp.role}</p>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+
             {team.map((m) => (
               <Reveal key={m.name}>
                 <div className="relative aspect-[4/5] overflow-hidden bg-line">
@@ -152,7 +173,7 @@ export default async function HomePage() {
                     alt={m.name}
                     fill
                     sizes="(max-width: 1024px) 100vw, 33vw"
-                    className="object-cover"
+                    className="object-cover grayscale"
                   />
                 </div>
                 <p className="serif mt-4 text-xl">{m.name}</p>
