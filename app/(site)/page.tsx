@@ -169,8 +169,8 @@ export default async function HomePage() {
               </div>
             </Reveal>
 
-            {team.map((m) => (
-              <Reveal key={m.name}>
+            {team.map((m, i) => (
+              <Reveal key={m.name} delay={i * 90}>
                 <div className="relative aspect-[4/5] overflow-hidden bg-line">
                   <Image
                     src={m.img}

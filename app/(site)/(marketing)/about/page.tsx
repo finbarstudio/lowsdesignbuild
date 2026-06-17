@@ -71,8 +71,8 @@ export default function AboutPage() {
           <p className="label">What we do</p>
         </Reveal>
         <div className="mt-12 grid grid-cols-1 gap-x-6 gap-y-12 sm:mt-16 sm:grid-cols-2 lg:grid-cols-12">
-          {services.map((s) => (
-            <Reveal key={s.title} className="lg:col-span-3">
+          {services.map((s, i) => (
+            <Reveal key={s.title} delay={i * 80} className="lg:col-span-3">
               <h3 className="serif text-2xl">{s.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-muted">{s.blurb}</p>
             </Reveal>
@@ -91,8 +91,8 @@ export default function AboutPage() {
           </h2>
         </Reveal>
         <div className="mt-16 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          {processSteps.map((step) => (
-            <Reveal key={step.n}>
+          {processSteps.map((step, i) => (
+            <Reveal key={step.n} delay={i * 80}>
               <span className="serif text-3xl text-copper">{step.n}</span>
               <h3 className="mt-3 text-base font-medium">{step.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">
