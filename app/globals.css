@@ -1,26 +1,171 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Lows Design & Build — design system
+   Brand tokens from site_plan/BRAND_STYLE.md
+   ============================================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f1ea; /* warm paper */
+  --foreground: #424952; /* grey (used in place of black everywhere) */
+  --ink: #424952;
+  --copper: #c0593a; /* terracotta accent (cleaner, less muddy) */
+  --copper-deep: #a44424;
+  --slate: #424952; /* dark slate */
+  --slate-blue: #2b5672;
+  --muted: #7c766c; /* warm secondary text */
+  --line: #e2dcd0; /* warm hairlines */
+  --white: #ffffff;
+  --font-bricolage-stack: var(--font-bricolage), -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ink: var(--ink);
+  --color-copper: var(--copper);
+  --color-copper-deep: var(--copper-deep);
+  --color-slate: var(--slate);
+  --color-slate-blue: var(--slate-blue);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --font-sans: var(--font-bricolage-stack);
+  --font-serif: var(--font-instrument);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-bricolage-stack);
+  font-weight: 400;
+}
+
+/* Serif display — Instrument Serif italic, the minimal editorial voice */
+.serif {
+  font-family: var(--font-instrument), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Small uppercase label */
+.label {
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Type helpers (minimal/editorial) */
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.display {
+  font-family: var(--font-instrument), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
+}
+
+/* ---- Scroll reveal ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- Path-trace preloader (sharp edges, inverted slate palette) ---- */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--slate);
+  animation: preloader-out 0.7s cubic-bezier(0.76, 0, 0.24, 1) 1.6s forwards;
+}
+.preloader__logo {
+  width: clamp(96px, 13vw, 160px);
+  height: auto;
+  overflow: visible;
+}
+.preloader__path {
+  fill: none;
+  stroke: var(--white);
+  stroke-width: 4px;
+  stroke-linecap: square; /* sharp, extruded */
+  stroke-linejoin: miter;
+  stroke-miterlimit: 10;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: preloader-draw 1.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes preloader-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes preloader-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-12px);
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .preloader {
+    animation: none;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .preloader__path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
 }
