@@ -95,7 +95,7 @@ export default async function ProjectPage({
               <div className="lg:col-span-2">
                 <Link
                   href="/projects"
-                  className="label hover:text-copper"
+                  className="label link-underline"
                 >
                   ← Projects
                 </Link>
@@ -167,7 +167,7 @@ export default async function ProjectPage({
           </h2>
           <Link
             href="/contact"
-            className="mt-7 inline-block border-b border-ink/30 pb-1 text-sm transition-colors hover:border-copper hover:text-copper"
+            className="mt-7 inline-block text-sm link-underline"
           >
             Start your project
           </Link>

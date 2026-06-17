@@ -99,13 +99,13 @@ export default function AboutPage() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm">
             <Link
               href="/contact"
-              className="border-b border-ink/30 pb-1 transition-colors hover:border-copper hover:text-copper"
+              className="link-underline"
             >
               Get in touch
             </Link>
             <a
               href={site.phoneHref}
-              className="border-b border-ink/30 pb-1 transition-colors hover:border-copper hover:text-copper"
+              className="link-underline"
             >
               {site.phone}
             </a>

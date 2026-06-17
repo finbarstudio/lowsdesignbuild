@@ -187,7 +187,7 @@ function Calculator({ config }: { config: Config }) {
         </p>
         <Link
           href="/contact"
-          className="mt-7 inline-block border-b border-ink/30 pb-1 text-sm transition-colors hover:border-copper hover:text-copper"
+          className="mt-7 inline-block text-sm link-underline"
         >
           Get an accurate quote
         </Link>

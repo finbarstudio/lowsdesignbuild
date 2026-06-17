@@ -44,7 +44,7 @@ export default async function ProjectsPage() {
             <p className="serif text-2xl">Projects coming soon</p>
             <p className="mt-3 text-sm text-muted">
               Add projects in the{" "}
-              <Link href="/studio" className="underline hover:text-copper">
+              <Link href="/studio" className="underline link-underline">
                 Studio
               </Link>
               .

@@ -30,7 +30,7 @@ export default function ContactPage() {
             <div>
               <dt className="label">Phone</dt>
               <dd className="mt-1">
-                <a href={site.phoneHref} className="text-lg hover:text-copper">
+                <a href={site.phoneHref} className="text-lg link-underline">
                   {site.phone}
                 </a>
               </dd>
@@ -40,7 +40,7 @@ export default function ContactPage() {
               <dd className="mt-1">
                 <a
                   href={`mailto:${site.email}`}
-                  className="text-lg hover:text-copper"
+                  className="text-lg link-underline"
                 >
                   {site.email}
                 </a>

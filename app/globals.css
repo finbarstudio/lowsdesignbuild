@@ -57,6 +57,19 @@ body {
   letter-spacing: -0.01em;
 }
 
+/* Link underline that draws in from the left on hover, keeping text colour */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  padding-bottom: 2px;
+  transition: background-size 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover {
+  background-size: 100% 1px;
+}
+
 /* Small uppercase label */
 .label {
   font-size: 0.7rem;

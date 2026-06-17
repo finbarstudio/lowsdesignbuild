@@ -25,7 +25,7 @@ export default function Footer() {
             <ul className="mt-4 space-y-2 text-sm">
               {nav.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="hover:text-copper">
+                  <Link href={item.href} className="link-underline">
                     {item.label}
                   </Link>
                 </li>
@@ -46,12 +46,12 @@ export default function Footer() {
             <p className="label">Contact</p>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
-                <a href={site.phoneHref} className="hover:text-copper">
+                <a href={site.phoneHref} className="link-underline">
                   {site.phone}
                 </a>
               </li>
               <li>
-                <a href={`mailto:${site.email}`} className="hover:text-copper">
+                <a href={`mailto:${site.email}`} className="link-underline">
                   {site.email}
                 </a>
               </li>
@@ -60,7 +60,7 @@ export default function Footer() {
                   href={site.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-copper"
+                  className="link-underline"
                 >
                   Instagram
                 </a>

@@ -109,11 +109,11 @@ export default function HomeChrome({
               <Link
                 key={item.href}
                 href={item.href}
-                className="transition-opacity hover:opacity-60"
+                className="link-underline"
               >
                 {item.label}
                 {item.href === "/projects" && projectCount ? (
-                  <sup className="ml-0.5 text-[0.6em] font-medium">
+                  <sup className="ml-0.5 font-serif text-[0.7em] italic">
                     {projectCount}
                   </sup>
                 ) : null}
@@ -149,7 +149,7 @@ export default function HomeChrome({
             >
               {item.label}
               {item.href === "/projects" && projectCount ? (
-                <sup className="ml-0.5 text-[0.6em] font-medium">
+                <sup className="ml-0.5 font-serif text-[0.7em] italic">
                   {projectCount}
                 </sup>
               ) : null}

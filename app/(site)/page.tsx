@@ -131,10 +131,10 @@ export default async function HomePage() {
                 <p className="label">Featured projects</p>
                 <Link
                   href="/projects"
-                  className="text-sm text-muted underline-offset-4 hover:text-copper hover:underline"
+                  className="link-underline text-sm text-muted"
                 >
                   All projects
-                  <sup className="ml-0.5 text-[0.6em] font-medium">
+                  <sup className="ml-0.5 font-serif text-[0.7em] italic">
                     {projects.length}
                   </sup>
                 </Link>
@@ -180,7 +180,7 @@ export default async function HomePage() {
             </p>
             <Link
               href="/about"
-              className="mt-7 inline-block border-b border-ink/25 pb-1 text-sm transition-colors hover:border-copper hover:text-copper"
+              className="mt-7 inline-block text-sm link-underline"
             >
               More about us
             </Link>
@@ -252,19 +252,19 @@ export default async function HomePage() {
             <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm">
               <Link
                 href="/contact"
-                className="border-b border-ink/30 pb-1 transition-colors hover:border-copper hover:text-copper"
+                className="link-underline"
               >
                 Get in touch
               </Link>
               <a
                 href={site.phoneHref}
-                className="border-b border-ink/30 pb-1 transition-colors hover:border-copper hover:text-copper"
+                className="link-underline"
               >
                 {site.phone}
               </a>
               <a
                 href={`mailto:${site.email}`}
-                className="border-b border-ink/30 pb-1 transition-colors hover:border-copper hover:text-copper"
+                className="link-underline"
               >
                 {site.email}
               </a>
