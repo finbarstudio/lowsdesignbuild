@@ -48,7 +48,7 @@ export default function HomeChrome({
       const heroH = hero ? hero.offsetHeight : vh;
 
       const p = Math.min(1, Math.max(0, window.scrollY / (vh * 0.7)));
-      const targetH = 34; // docked logo height (30% larger than the old 26)
+      const targetH = 26; // docked logo height
       const s = 1 + (targetH / baseH - 1) * p;
 
       // The wordmark starts bottom-left of the hero and travels straight up to

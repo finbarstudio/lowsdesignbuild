@@ -10,9 +10,19 @@ export default function Footer() {
       <div className="px-4 sm:px-6">
         {/* minimal info, swiss grid */}
         <div className="mb-8 grid grid-cols-2 gap-y-6 text-sm sm:mb-10 sm:grid-cols-12">
-          <p className="sm:col-span-3">
-            ©{YEAR} {site.name}
-          </p>
+          <div className="sm:col-span-3">
+            <p>
+              ©{YEAR} {site.name}
+            </p>
+            <a
+              href="https://www.finbar.studio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-block"
+            >
+              Site by <span className="link-underline">finbar.studio</span>
+            </a>
+          </div>
           <p className="sm:col-span-3 sm:col-start-6">South London</p>
           <div className="text-right sm:col-span-3 sm:col-start-10">
             <a
