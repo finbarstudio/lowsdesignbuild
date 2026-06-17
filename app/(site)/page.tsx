@@ -121,7 +121,7 @@ export default async function HomePage() {
                   className="link-underline text-sm text-muted"
                 >
                   All projects
-                  <sup className="ml-0.5 font-serif text-[0.7em] italic">
+                  <sup className="ml-0.5 text-[0.6em] font-medium">
                     {projects.length}
                   </sup>
                 </Link>
