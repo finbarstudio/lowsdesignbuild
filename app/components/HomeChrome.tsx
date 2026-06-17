@@ -120,7 +120,7 @@ export default function HomeChrome({
           {/* mobile menu button */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className="ml-auto sm:hidden"
+            className="-mr-2 ml-auto flex h-11 w-11 flex-col items-end justify-center sm:hidden"
             aria-label="Toggle menu"
           >
             {[0, 1, 2].map((i) => (
@@ -141,7 +141,7 @@ export default function HomeChrome({
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="py-1.5"
+              className="py-3"
             >
               {item.label}
               {item.href === "/projects" && projectCount ? (

@@ -1,6 +1,11 @@
 // Central site content. Later this moves into Sanity (siteSettings); for now
 // it's the real copy/contact details pulled from the existing site.
 
+// Single source of truth for the canonical origin. Set NEXT_PUBLIC_SITE_URL in
+// the environment when the custom domain (lowsdesignandbuild.com) goes live.
+export const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lows-site.vercel.app";
+
 export const site = {
   name: "Lows Design & Build",
   tagline: "Family-run design & build in South London",

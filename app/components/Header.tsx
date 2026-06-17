@@ -40,7 +40,11 @@ export default function Header({ projectCount }: { projectCount?: number }) {
 
   return (
     <header
-      className="fixed inset-x-0 top-0 z-40 h-16"
+      className={`fixed inset-x-0 top-0 z-40 h-16 transition-colors duration-300 ${
+        scrolled && !isProjectDetail
+          ? "bg-background/85 backdrop-blur-sm"
+          : ""
+      }`}
     >
       <div className="relative mx-auto flex h-full w-full max-w-[1900px] items-center px-4 sm:px-6">
         {/* logo left */}
@@ -65,22 +69,35 @@ export default function Header({ projectCount }: { projectCount?: number }) {
             overHero ? "text-white" : "text-ink"
           }`}
         >
-          {nav.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <span className="link-underline">{item.label}</span>
-              {item.href === "/projects" && projectCount ? (
-                <sup className="ml-0.5 text-[0.6em] font-medium">
-                  {projectCount}
-                </sup>
-              ) : null}
-            </Link>
-          ))}
+          {nav.map((item) => {
+            const active =
+              pathname === item.href ||
+              pathname?.startsWith(`${item.href}/`);
+            return (
+              <Link key={item.href} href={item.href}>
+                <span
+                  className={
+                    active
+                      ? "underline decoration-tertiary decoration-2 underline-offset-4"
+                      : "link-underline"
+                  }
+                >
+                  {item.label}
+                </span>
+                {item.href === "/projects" && projectCount ? (
+                  <sup className="ml-0.5 text-[0.6em] font-medium">
+                    {projectCount}
+                  </sup>
+                ) : null}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* mobile menu button */}
         <button
           onClick={() => setOpen((v) => !v)}
-          className="ml-auto sm:hidden"
+          className="-mr-2 ml-auto flex h-11 w-11 flex-col items-end justify-center sm:hidden"
           aria-label="Toggle menu"
         >
           {[0, 1, 2].map((i) => (
@@ -101,7 +118,7 @@ export default function Header({ projectCount }: { projectCount?: number }) {
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="py-1.5"
+              className="py-3"
             >
               {item.label}
               {item.href === "/projects" && projectCount ? (

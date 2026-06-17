@@ -6,7 +6,7 @@ const YEAR = 2026;
 // above the LOWS wordmark, which runs full-width flush along the bottom.
 export default function Footer() {
   return (
-    <footer className="flex h-screen flex-col justify-end overflow-hidden text-tertiary">
+    <footer className="flex min-h-[60vh] flex-col justify-end overflow-hidden text-tertiary sm:h-[100svh]">
       <div className="px-4 sm:px-6">
         {/* minimal info, swiss grid */}
         <div className="mb-8 grid grid-cols-2 gap-y-6 text-sm sm:mb-10 sm:grid-cols-12">

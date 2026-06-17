@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+// Keep the CMS out of the index (belt-and-braces alongside robots.ts Disallow).
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
+
 // The Studio needs the full viewport to itself, so it gets its own minimal
 // layout that doesn't inherit the marketing-site chrome.
 export default function StudioLayout({

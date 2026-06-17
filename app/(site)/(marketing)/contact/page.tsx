@@ -10,11 +10,14 @@ export const metadata: Metadata = {
   title: "Contact",
   description:
     "Get in touch with Lows Design & Build for a free, no-obligation estimate on your loft conversion, extension or refurbishment.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {
   return (
-    <main className={`${PAD} flex min-h-screen flex-col justify-center py-24 pt-36`}>
+    <main
+      className={`${PAD} flex min-h-[100svh] flex-col justify-center py-20 pt-28 sm:py-24 sm:pt-36`}
+    >
       <div className="grid grid-cols-1 gap-16 lg:grid-cols-12 lg:gap-6">
         <Reveal className="lg:col-span-5 lg:col-start-1">
           <p className="label">Get in touch</p>
@@ -53,7 +56,7 @@ export default function ContactPage() {
           </dl>
         </Reveal>
 
-        <Reveal className="lg:col-span-5 lg:col-start-8 lg:self-center">
+        <Reveal className="lg:col-span-5 lg:col-start-8">
           <ContactForm />
         </Reveal>
       </div>

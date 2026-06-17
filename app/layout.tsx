@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Serif, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
+import { siteUrl } from "@/app/lib/site";
 
 // Primary sans, Bricolage Grotesque (body, nav, headings).
 const bricolage = Bricolage_Grotesque({
@@ -18,7 +19,7 @@ const instrument = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://lows-site.vercel.app"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Lows Design & Build, South London Builders",
     template: "%s · Lows Design & Build",

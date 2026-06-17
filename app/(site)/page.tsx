@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -10,6 +11,11 @@ import { PROJECTS_QUERY } from "@/sanity/lib/queries";
 import type { ProjectListItem } from "@/sanity/lib/types";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  description:
+    "Family-run design & build across South London. Loft conversions, extensions and refurbishments, from the first drawing through to completion.",
+};
 
 // Tight padding, near full-width.
 const PAD = "mx-auto w-full max-w-[1900px] px-4 sm:px-6";
@@ -25,7 +31,7 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
       {p.mainImage && (
         <Image
           src={urlFor(p.mainImage).width(1600).height(900).fit("crop").url()}
-          alt={p.title ?? ""}
+          alt={[p.title, p.category, p.location].filter(Boolean).join(", ")}
           fill
           sizes="80vw"
           className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform group-hover:scale-[1.06]"
@@ -88,12 +94,12 @@ export default async function HomePage() {
           featured block ends, never overlapping the sections below. */}
       <div className="relative">
         {/* ---------------- Family-run statement (Futura) ---------------- */}
-        <section className="sticky top-0 flex h-screen flex-col items-center justify-center">
+        <section className="sticky top-0 flex h-[100svh] flex-col items-center justify-center">
           <div className={PAD}>
             <Reveal>
-              <h2 className="mx-auto max-w-6xl text-center font-sans text-5xl font-bold uppercase leading-[1.05] tracking-tight sm:text-7xl">
+              <h1 className="mx-auto max-w-6xl text-center font-sans text-4xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
                 Family Run Construction Services in London and Surrounding Areas
-              </h2>
+              </h1>
             </Reveal>
           </div>
         </section>
@@ -108,6 +114,9 @@ export default async function HomePage() {
               <div className="mb-12 flex items-end justify-between sm:mb-16">
                 <p className="label">Featured projects</p>
                 <Link href="/projects" className="text-sm text-muted">
+                  <span aria-hidden="true" className="mr-2 text-tertiary">
+                    ●
+                  </span>
                   <span className="link-underline">All projects</span>
                   <sup className="ml-0.5 text-[0.6em] font-medium">
                     {projects.length}
@@ -116,7 +125,7 @@ export default async function HomePage() {
               </div>
             </Reveal>
 
-            <div className="space-y-56 sm:space-y-[22rem]">
+            <div className="space-y-32 sm:space-y-56 lg:space-y-[22rem]">
               {featured.map((p) => (
                 <ProjectCard key={p._id} p={p} />
               ))}
@@ -150,7 +159,7 @@ export default async function HomePage() {
                   className="object-cover grayscale"
                 />
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-x-6">
+              <div className="mt-4 grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6">
                 {teamLead.people.map((pp) => (
                   <div key={pp.name}>
                     <p className="text-base font-medium">{pp.name}</p>

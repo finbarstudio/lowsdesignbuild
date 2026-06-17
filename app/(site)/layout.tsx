@@ -1,9 +1,9 @@
 import Footer from "@/app/components/Footer";
 import Preloader from "@/app/components/Preloader";
 import SmoothScroll from "@/app/components/SmoothScroll";
-import { areas, services, site } from "@/app/lib/site";
+import { areas, services, site, siteUrl } from "@/app/lib/site";
 
-const BASE = "https://lows-site.vercel.app";
+const BASE = siteUrl;
 
 // LocalBusiness structured data for rich results / local SEO.
 const jsonLd = {

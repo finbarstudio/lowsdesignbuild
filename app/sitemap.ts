@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 
 import { client } from "@/sanity/lib/client";
+import { siteUrl } from "@/app/lib/site";
 import { PROJECT_SLUGS_QUERY } from "@/sanity/lib/queries";
 
-const BASE = "https://lows-site.vercel.app";
+const BASE = siteUrl;
 
 export const revalidate = 3600;
 

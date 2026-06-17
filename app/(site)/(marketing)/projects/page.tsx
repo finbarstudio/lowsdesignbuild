@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: "Projects",
   description:
     "Loft conversions, extensions and refurbishments across South London by Lows Design & Build.",
+  alternates: { canonical: "/projects" },
 };
 
 export default async function ProjectsPage() {
@@ -25,11 +26,11 @@ export default async function ProjectsPage() {
     <main>
       {/* Intro */}
       <section
-        className={`${PAD} flex min-h-[60vh] flex-col justify-end pb-16 pt-36`}
+        className={`${PAD} flex min-h-[50vh] flex-col justify-end pb-16 pt-28 sm:min-h-[60vh] sm:pt-36`}
       >
         <Reveal>
           <p className="label">Our work</p>
-          <h1 className="serif mt-5 text-5xl sm:text-7xl">Projects</h1>
+          <h1 className="serif mt-5 text-4xl sm:text-6xl">Projects</h1>
           <p className="mt-6 max-w-md text-sm leading-relaxed text-muted">
             A selection of recent loft conversions, extensions and full
             refurbishments across South London and Kent.
@@ -40,14 +41,13 @@ export default async function ProjectsPage() {
       {/* Grid */}
       <section className={`${PAD} py-16 sm:py-24`}>
         {projects.length === 0 ? (
-          <div className="rounded-none border border-dashed border-line p-12 text-center">
-            <p className="serif text-2xl">Projects coming soon</p>
+          <div className="border border-dashed border-line p-12 text-center">
+            <p className="serif text-2xl">New projects coming soon</p>
             <p className="mt-3 text-sm text-muted">
-              Add projects in the{" "}
-              <Link href="/studio" className="underline link-underline">
-                Studio
-              </Link>
-              .
+              <Link href="/contact" className="link-underline">
+                Get in touch
+              </Link>{" "}
+              to discuss yours.
             </p>
           </div>
         ) : (
@@ -55,7 +55,7 @@ export default async function ProjectsPage() {
             {projects.map((p) => (
               <Reveal key={p._id}>
                 <Link href={`/projects/${p.slug}`} className="group block">
-                  <div className="relative h-[64vw] overflow-hidden bg-line sm:h-[34vw] lg:h-[26rem]">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-line sm:aspect-auto sm:h-[34vw] lg:h-[26rem]">
                     {p.mainImage && (
                       <Image
                         src={urlFor(p.mainImage)
@@ -63,10 +63,12 @@ export default async function ProjectsPage() {
                           .height(1100)
                           .fit("crop")
                           .url()}
-                        alt={p.title ?? ""}
+                        alt={[p.title, p.category, p.location]
+                          .filter(Boolean)
+                          .join(", ")}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover transition duration-[1.2s] ease-out group-hover:scale-[1.04]"
+                        className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
                       />
                     )}
                   </div>

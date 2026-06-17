@@ -30,11 +30,22 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = await client.fetch<Project | null>(PROJECT_QUERY, { slug });
   if (!project) return { title: "Project" };
+  const description = project.description
+    ? project.description.slice(0, 155).replace(/\s+\S*$/, "")
+    : `${project.category ?? "Building"} project in ${project.location ?? "South London"}.`;
+  const ogImage = project.mainImage
+    ? urlFor(project.mainImage).width(1200).height(630).fit("crop").url()
+    : undefined;
   return {
     title: project.title ?? "Project",
-    description:
-      project.description?.slice(0, 150) ??
-      `${project.category ?? "Building"} project in ${project.location ?? "South London"}.`,
+    description,
+    alternates: { canonical: `/projects/${slug}` },
+    openGraph: {
+      title: project.title ?? "Project",
+      description,
+      type: "article",
+      ...(ogImage ? { images: [{ url: ogImage, width: 1200, height: 630 }] } : {}),
+    },
   };
 }
 
@@ -49,6 +60,11 @@ export default async function ProjectPage({
   const { slug } = await params;
   const project = await client.fetch<Project | null>(PROJECT_QUERY, { slug });
   if (!project) notFound();
+
+  // Descriptive, non-empty alt for SEO + screen readers.
+  const heroAlt = [project.title, project.category, project.location]
+    .filter(Boolean)
+    .join(", ");
 
   const gallery = project.gallery ?? [];
   const rows: { imgs: typeof gallery; size: number; i: number }[] = [];
@@ -68,7 +84,7 @@ export default async function ProjectPage({
         {project.mainImage && (
           <Image
             src={urlFor(project.mainImage).width(2400).height(1600).fit("crop").url()}
-            alt={project.title ?? ""}
+            alt={heroAlt}
             fill
             priority
             sizes="100vw"
@@ -79,10 +95,10 @@ export default async function ProjectPage({
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/15" />
         <div className={`absolute inset-x-0 bottom-0 ${PAD} pb-8`}>
-          <h1 className="serif text-5xl text-white sm:text-7xl">
+          <h1 className="serif text-4xl text-white sm:text-6xl lg:text-7xl">
             {project.title}
           </h1>
-          <div className="mt-5 flex justify-between text-white">
+          <div className="mt-5 flex flex-col gap-1 text-white sm:flex-row sm:justify-between">
             <span className="label !text-white">{project.location}</span>
             <span className="label !text-white">{project.category}</span>
           </div>
@@ -91,18 +107,15 @@ export default async function ProjectPage({
 
       {/* ---------------- Intro statement ---------------- */}
       {project.description && (
-        <section className={`${PAD} py-28 sm:py-40`}>
+        <section className={`${PAD} py-16 sm:py-28 lg:py-40`}>
           <Reveal>
             <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-12 lg:gap-x-6">
               <div className="lg:col-span-2">
-                <Link
-                  href="/projects"
-                  className="label link-underline"
-                >
+                <Link href="/projects" className="label link-underline">
                   ← Projects
                 </Link>
               </div>
-              <p className="serif text-2xl leading-[1.3] sm:text-3xl lg:col-span-7 lg:col-start-3">
+              <p className="serif text-xl leading-[1.3] sm:text-2xl lg:col-span-7 lg:col-start-3 lg:text-3xl">
                 {project.description}
               </p>
               <div className="text-sm text-muted lg:col-span-2 lg:col-start-11 lg:self-end">
@@ -132,7 +145,11 @@ export default async function ProjectPage({
                             : "lg:col-span-6 lg:col-start-7"
                         }
                       >
-                        <GalleryImage img={row.imgs[0]} ratio="aspect-[4/3]" />
+                        <GalleryImage
+                          img={row.imgs[0]}
+                          ratio="aspect-[4/3]"
+                          alt={heroAlt}
+                        />
                       </div>
                     </div>
                   </Reveal>
@@ -146,11 +163,13 @@ export default async function ProjectPage({
                     <GalleryImage
                       img={row.imgs[0]}
                       ratio={wideLeft ? "aspect-[5/4]" : "aspect-[3/4]"}
+                      alt={heroAlt}
                     />
                     {row.imgs[1] && (
                       <GalleryImage
                         img={row.imgs[1]}
                         ratio={wideLeft ? "aspect-[3/4]" : "aspect-[5/4]"}
+                        alt={heroAlt}
                       />
                     )}
                   </div>
@@ -162,7 +181,7 @@ export default async function ProjectPage({
       )}
 
       {/* ---------------- CTA ---------------- */}
-      <section className="">
+      <section>
         <div className={`${PAD} py-24 text-center sm:py-32`}>
           <h2 className="serif text-3xl sm:text-5xl">
             Planning something similar?
@@ -182,15 +201,17 @@ export default async function ProjectPage({
 function GalleryImage({
   img,
   ratio,
+  alt,
 }: {
   img: NonNullable<Project["gallery"]>[number];
   ratio: string;
+  alt: string;
 }) {
   return (
     <div className={`relative overflow-hidden bg-line ${ratio}`}>
       <Image
         src={urlFor(img).width(1400).height(1400).fit("crop").url()}
-        alt=""
+        alt={alt}
         fill
         sizes="(max-width: 640px) 100vw, 50vw"
         className="object-cover"

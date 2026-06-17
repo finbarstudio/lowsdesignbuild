@@ -5,7 +5,7 @@ import { useState } from "react";
 import { site } from "@/app/lib/site";
 
 const field =
-  "w-full rounded-lg border border-line bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-copper";
+  "w-full border border-line bg-white px-4 py-3 text-base outline-none transition-colors focus:border-tertiary sm:text-sm";
 
 export default function ContactForm() {
   const [sent, setSent] = useState(false);
@@ -45,7 +45,7 @@ export default function ContactForm() {
       />
       <button
         type="submit"
-        className="rounded-full bg-copper px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-copper-deep"
+        className="bg-tertiary px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-copper-deep"
       >
         Send enquiry
       </button>

@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "About",
   description:
     "Lows Design & Build is a family-run design and build company based in Greater London, providing an end-to-end service from design to completion.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {
@@ -18,11 +19,11 @@ export default function AboutPage() {
     <main>
       {/* Intro */}
       <section
-        className={`${PAD} flex min-h-[70vh] flex-col justify-end pb-16 pt-36`}
+        className={`${PAD} flex min-h-[55vh] flex-col justify-end pb-16 pt-28 sm:min-h-[70vh] sm:pt-36`}
       >
         <Reveal>
           <p className="label">About us</p>
-          <h1 className="serif mt-5 max-w-4xl text-4xl sm:text-7xl">
+          <h1 className="serif mt-5 max-w-4xl text-4xl sm:text-6xl">
             A family-run design &amp; build company in Greater London.
           </h1>
         </Reveal>
@@ -30,7 +31,7 @@ export default function AboutPage() {
 
       {/* Story */}
       <section
-        className={`${PAD} flex min-h-[90vh] flex-col justify-center py-24`}
+        className={`${PAD} flex min-h-0 flex-col justify-center py-20 sm:min-h-[90vh] sm:py-24`}
       >
         <div className="grid grid-cols-1 items-start gap-4 sm:gap-6 lg:grid-cols-12">
           <Reveal className="lg:col-span-7 lg:col-start-1">
@@ -81,7 +82,7 @@ export default function AboutPage() {
 
       {/* Process */}
       <section
-        className={`${PAD} flex min-h-[90vh] flex-col justify-center py-24`}
+        className={`${PAD} flex min-h-0 flex-col justify-center py-20 sm:min-h-[90vh] sm:py-24`}
       >
         <Reveal>
           <p className="label">Our process</p>
@@ -104,7 +105,7 @@ export default function AboutPage() {
 
       {/* Areas we cover */}
       <section
-        className={`${PAD} flex min-h-[70vh] flex-col justify-center py-24 text-center`}
+        className={`${PAD} flex min-h-0 flex-col justify-center py-20 text-center sm:min-h-[70vh] sm:py-24`}
       >
         <Reveal>
           <p className="label">Where we work</p>
@@ -116,7 +117,7 @@ export default function AboutPage() {
 
       {/* Quality guarantee CTA */}
       <section
-        className={`${PAD} flex min-h-[90vh] flex-col justify-center py-24 text-center`}
+        className={`${PAD} flex min-h-0 flex-col justify-center py-20 sm:min-h-[90vh] sm:py-24 text-center`}
       >
         <Reveal>
           <p className="label">Our quality guarantee</p>

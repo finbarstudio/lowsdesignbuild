@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 
-const BASE = "https://lows-site.vercel.app";
+import { siteUrl } from "@/app/lib/site";
+
+const BASE = siteUrl;
 
 export default function robots(): MetadataRoute.Robots {
   return {

@@ -152,7 +152,9 @@ function Calculator({ config }: { config: Config }) {
             min={0}
             max={200}
             value={sqm}
-            onChange={(e) => setSqm(Math.max(0, Number(e.target.value)))}
+            onChange={(e) =>
+              setSqm(Math.min(200, Math.max(0, Number(e.target.value))))
+            }
             className={selectClass}
           />
         </Field>
@@ -201,14 +203,14 @@ export default function EstimateCalculator() {
 
   return (
     <div>
-      <div className="flex gap-8 border-b border-line">
+      <div className="flex gap-5 border-b border-line sm:gap-8">
         {(["loft", "extension"] as const).map((m) => (
           <button
             key={m}
             onClick={() => setMode(m)}
             className={`serif pb-3 text-xl transition-colors sm:text-2xl ${
               mode === m
-                ? "-mb-px border-b-2 border-copper text-ink"
+                ? "-mb-px border-b-2 border-tertiary text-ink"
                 : "text-muted hover:text-ink"
             }`}
           >
