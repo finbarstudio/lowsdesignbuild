@@ -19,10 +19,10 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
   return (
     <Reveal>
       <Link href={`/projects/${p.slug}`} className="group block">
-        <div className="relative aspect-[297/210] w-full overflow-hidden bg-line">
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-line">
           {p.mainImage && (
             <Image
-              src={urlFor(p.mainImage).width(1600).height(1131).fit("crop").url()}
+              src={urlFor(p.mainImage).width(1600).height(900).fit("crop").url()}
               alt={p.title ?? ""}
               fill
               sizes="80vw"
@@ -107,23 +107,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---------------- Full landscape image (A4) ---------------------- */}
-      {/* Scrolls up and sits on top of the sticky statement above */}
-      <section className="relative z-10 flex min-h-screen items-center justify-center px-[10%] py-24">
-        <div className="relative aspect-[297/210] w-full overflow-hidden">
-          <Image
-            src="/img/about.jpg"
-            alt="A Lows Design & Build project"
-            fill
-            sizes="70vw"
-            className="object-cover"
-          />
-        </div>
-      </section>
-
       {/* ---------------- Featured projects (image cards) ---------------- */}
+      {/* Scrolls up and sits on top of the sticky statement above */}
       {featured.length > 0 && (
-        <section className="px-[10%] py-24 sm:py-32">
+        <section className="relative z-10 bg-background px-[10%] py-24 sm:py-32">
           <Reveal>
             <div className="mb-12 flex items-end justify-between sm:mb-16">
               <p className="label">Featured projects</p>
