@@ -16,42 +16,52 @@ const PAD = "mx-auto w-full max-w-[1900px] px-4 sm:px-6";
 
 function ProjectCard({ p }: { p: ProjectListItem }) {
   const tags = [p.category, p.location].filter(Boolean) as string[];
+  // Both layers ease, but scale by slightly different amounts on hover.
+  const ease =
+    "transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]";
   return (
-    <Reveal>
-      <Link href={`/projects/${p.slug}`} className="group block">
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-line">
-          {p.mainImage && (
-            <Image
-              src={urlFor(p.mainImage).width(1600).height(900).fit("crop").url()}
-              alt={p.title ?? ""}
-              fill
-              sizes="80vw"
-              className="object-cover"
-            />
-          )}
-          {/* simple gradient so the overlay text stays legible */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
-          {/* overlay: title + bubble category/area tags */}
-          <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-6 sm:p-8">
-            <h3 className="serif text-3xl leading-none text-white sm:text-4xl">
-              {p.title}
-            </h3>
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {tags.map((t) => (
-                  <span
-                    key={t}
-                    className="rounded-full border border-white/40 bg-white/10 px-3 py-1 text-xs text-white backdrop-blur-sm"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            )}
+    <Link
+      href={`/projects/${p.slug}`}
+      className="group relative block aspect-[16/9] w-full"
+    >
+      {/* image layer — the whole image scales up as one piece (not a crop-zoom) */}
+      <div
+        className={`absolute inset-0 overflow-hidden bg-line ${ease} group-hover:scale-[1.03]`}
+      >
+        {p.mainImage && (
+          <Image
+            src={urlFor(p.mainImage).width(1600).height(900).fit("crop").url()}
+            alt={p.title ?? ""}
+            fill
+            sizes="80vw"
+            className="object-cover"
+          />
+        )}
+        {/* simple gradient so the overlay text stays legible */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
+      </div>
+
+      {/* text layer — scales a touch differently for a refined parallax */}
+      <div
+        className={`absolute inset-x-0 bottom-0 flex origin-bottom-left flex-col gap-3 p-6 sm:p-8 ${ease} group-hover:scale-[1.05]`}
+      >
+        <h3 className="serif text-3xl leading-none text-white sm:text-4xl">
+          {p.title}
+        </h3>
+        {tags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {tags.map((t) => (
+              <span
+                key={t}
+                className="rounded-full border border-white/40 bg-white/10 px-3 py-1 text-xs text-white backdrop-blur-sm"
+              >
+                {t}
+              </span>
+            ))}
           </div>
-        </div>
-      </Link>
-    </Reveal>
+        )}
+      </div>
+    </Link>
   );
 }
 
