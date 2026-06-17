@@ -15,7 +15,11 @@ const BAR = 64; // bar height (h-16) — matches the inner-page header
  * bottom of the hero and, on scroll, travels up to dock centred in the bar.
  * White over the hero, ink once the bar clears the (possibly taller) hero.
  */
-export default function HomeChrome() {
+export default function HomeChrome({
+  projectCount,
+}: {
+  projectCount?: number;
+}) {
   const wrapRef = useRef<HTMLAnchorElement>(null);
   const whiteRef = useRef<HTMLImageElement>(null);
   const inkRef = useRef<HTMLImageElement>(null);
@@ -108,6 +112,11 @@ export default function HomeChrome() {
                 className="transition-opacity hover:opacity-60"
               >
                 {item.label}
+                {item.href === "/projects" && projectCount ? (
+                  <sup className="ml-0.5 text-[0.6em] font-medium">
+                    {projectCount}
+                  </sup>
+                ) : null}
               </Link>
             ))}
           </nav>
@@ -139,6 +148,11 @@ export default function HomeChrome() {
               className="py-1.5"
             >
               {item.label}
+              {item.href === "/projects" && projectCount ? (
+                <sup className="ml-0.5 text-[0.6em] font-medium">
+                  {projectCount}
+                </sup>
+              ) : null}
             </Link>
           ))}
         </nav>

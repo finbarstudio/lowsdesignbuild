@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { nav, site } from "@/app/lib/site";
 
-export default function Header() {
+export default function Header({ projectCount }: { projectCount?: number }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -72,6 +72,11 @@ export default function Header() {
               className="transition-opacity hover:opacity-60"
             >
               {item.label}
+              {item.href === "/projects" && projectCount ? (
+                <sup className="ml-0.5 text-[0.6em] font-medium">
+                  {projectCount}
+                </sup>
+              ) : null}
             </Link>
           ))}
         </nav>
@@ -103,6 +108,11 @@ export default function Header() {
               className="py-1.5"
             >
               {item.label}
+              {item.href === "/projects" && projectCount ? (
+                <sup className="ml-0.5 text-[0.6em] font-medium">
+                  {projectCount}
+                </sup>
+              ) : null}
             </Link>
           ))}
         </nav>

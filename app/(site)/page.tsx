@@ -71,7 +71,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <HomeChrome />
+      <HomeChrome projectCount={projects.length} />
 
       {/* ---------------- Hero (uncropped — scroll for more) ---------------- */}
       <section id="home-hero" className="relative w-full">
@@ -134,6 +134,9 @@ export default async function HomePage() {
                   className="text-sm text-muted underline-offset-4 hover:text-copper hover:underline"
                 >
                   All projects
+                  <sup className="ml-0.5 text-[0.6em] font-medium">
+                    {projects.length}
+                  </sup>
                 </Link>
               </div>
             </Reveal>

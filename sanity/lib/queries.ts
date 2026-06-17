@@ -16,6 +16,11 @@ export const PROJECTS_QUERY = defineQuery(`
   }
 `);
 
+// How many published projects there are — shown as a superscript count.
+export const PROJECT_COUNT_QUERY = defineQuery(`
+  count(*[_type == "project" && defined(slug.current)])
+`);
+
 // Just the slugs — used to pre-build the detail pages.
 export const PROJECT_SLUGS_QUERY = defineQuery(`
   *[_type == "project" && defined(slug.current)]{ "slug": slug.current }
