@@ -139,7 +139,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           {/* left third: sticky title that stays put as the cards scroll */}
           <div className="lg:col-span-1">
-            <h2 className="serif sticky top-24 text-5xl sm:text-6xl">Family</h2>
+            <h2 className="label sticky top-24 !text-ink">Family</h2>
           </div>
 
           {/* right two-thirds: people cards in rows of two */}

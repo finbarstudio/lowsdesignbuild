@@ -53,7 +53,7 @@ export default function Header({ projectCount }: { projectCount?: number }) {
           <img
             src="/logotype.svg"
             alt={site.name}
-            className={`h-[26px] w-auto transition-[filter] duration-300 ${
+            className={`h-[34px] w-auto transition-[filter] duration-300 ${
               overHero ? "brightness-0 invert" : ""
             }`}
           />
