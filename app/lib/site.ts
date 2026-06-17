@@ -19,6 +19,12 @@ export const nav = [
   { label: "Contact", href: "/contact" },
 ];
 
+export const team = [
+  { name: "Pat", img: "/team/pat.jpg" },
+  { name: "Shane", img: "/team/shane.jpg" },
+  { name: "Phil", img: "/team/phil.jpg" },
+];
+
 export const services = [
   {
     title: "Loft Conversions",

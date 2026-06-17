@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import HomeChrome from "@/app/components/HomeChrome";
 import Reveal from "@/app/components/Reveal";
-import { site } from "@/app/lib/site";
+import { site, team } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import { PROJECTS_QUERY } from "@/sanity/lib/queries";
@@ -141,38 +141,44 @@ export default async function HomePage() {
       {/* Opaque paper layer above the sticky slogan — covers it during its
           final release so it never pops out below the last project. */}
       <section
-        className={`${PAD} relative z-10 flex min-h-[90vh] flex-col justify-center bg-background py-24`}
+        className={`${PAD} relative z-10 bg-background py-24 sm:py-32`}
       >
-        <div className="grid grid-cols-1 items-start gap-4 sm:gap-6 lg:grid-cols-12">
-          <Reveal className="lg:col-span-7 lg:col-start-1">
-            <div className="relative aspect-[16/11] overflow-hidden">
-              <Image
-                src="/img/about.jpg"
-                alt="Open-plan kitchen extension with Crittall doors"
-                fill
-                sizes="(max-width: 1024px) 100vw, 60vw"
-                className="object-cover"
-              />
-            </div>
-          </Reveal>
-          <Reveal className="lg:col-span-4 lg:col-start-9">
-            <p className="label">The people</p>
-            <h2 className="serif mt-5 text-3xl leading-[1.15] sm:text-4xl">
+        <Reveal>
+          <p className="label">The people</p>
+          <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 lg:grid-cols-12 lg:items-end">
+            <h2 className="serif text-3xl leading-[1.12] sm:text-5xl lg:col-span-7">
               A family-run team that treats your home like our own.
             </h2>
-            <p className="mt-7 text-sm leading-relaxed text-muted">
+            <p className="text-sm leading-relaxed text-muted lg:col-span-4 lg:col-start-9">
               We&apos;re {site.name} — a design and build company based in
               Greater London. From the first conversation to the finishing
               touches you deal with one team, responsible for the whole project.
             </p>
-            <Link
-              href="/about"
-              className="mt-7 inline-block text-sm link-underline"
-            >
-              More about us
-            </Link>
-          </Reveal>
+          </div>
+        </Reveal>
+
+        <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-8">
+          {team.map((m) => (
+            <Reveal key={m.name}>
+              <div className="relative aspect-[5/6] overflow-hidden bg-line">
+                <Image
+                  src={m.img}
+                  alt={m.name}
+                  fill
+                  sizes="(max-width: 640px) 100vw, 33vw"
+                  className="object-cover"
+                />
+              </div>
+              <p className="serif mt-4 text-xl">{m.name}</p>
+            </Reveal>
+          ))}
         </div>
+
+        <Reveal>
+          <Link href="/about" className="mt-12 inline-block text-sm link-underline">
+            More about us
+          </Link>
+        </Reveal>
       </section>
 
     </>
