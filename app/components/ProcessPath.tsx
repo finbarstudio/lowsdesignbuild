@@ -4,51 +4,46 @@ import { useEffect, useRef, useState } from "react";
 
 import { processSteps } from "@/app/lib/site";
 
-const LANE = 56; // px width of the path lane on the left
-const NODE_X = 28; // centre of the lane
+type Pt = { x: number; y: number };
 
 /**
- * Our process, as a scroll-linked pathway: a winding line connects the four
- * stages and an active dot travels down it as you scroll, drawing a red trail
- * and lighting up each stage as it arrives.
+ * Our process as a scroll-linked pathway. The four stages sit in a responsive
+ * grid (single column on mobile, 2×2 on desktop landscape) and a winding line
+ * connects them. As you scroll, an active dot travels the line, draws a red
+ * trail and lights up each stage as it arrives.
  */
 export default function ProcessPath() {
   const wrapRef = useRef<HTMLDivElement>(null);
-  const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const basePathRef = useRef<SVGPathElement>(null);
+  const nodeRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const baseRef = useRef<SVGPathElement>(null);
   const trailRef = useRef<SVGPathElement>(null);
   const dotRef = useRef<SVGGElement>(null);
+  const nodeLen = useRef<number[]>([]);
 
   const [d, setD] = useState("");
-  const [height, setHeight] = useState(0);
-  const [nodes, setNodes] = useState<number[]>([]);
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  const [pts, setPts] = useState<Pt[]>([]);
   const [active, setActive] = useState(-1);
 
-  // Build the winding path through the measured centres of each step.
+  // Build the path through the measured centre of each stage's node.
   useEffect(() => {
     const build = () => {
       const wrap = wrapRef.current;
       if (!wrap) return;
-      const top = wrap.getBoundingClientRect().top + window.scrollY;
-      const ys = stepRefs.current.map((el) => {
-        if (!el) return 0;
-        const r = el.getBoundingClientRect();
-        return r.top + window.scrollY - top + r.height / 2;
+      const wr = wrap.getBoundingClientRect();
+      const p: Pt[] = nodeRefs.current.map((el) => {
+        const r = el!.getBoundingClientRect();
+        return { x: r.left - wr.left + r.width / 2, y: r.top - wr.top + r.height / 2 };
       });
-      let dd = `M ${NODE_X} ${ys[0].toFixed(1)}`;
-      for (let i = 1; i < ys.length; i++) {
-        const y0 = ys[i - 1];
-        const y1 = ys[i];
-        const bow = i % 2 === 1 ? LANE - 8 : 8; // alternate the wave side
-        const c1y = y0 + (y1 - y0) * 0.25;
-        const c2y = y0 + (y1 - y0) * 0.75;
-        dd += ` C ${bow} ${c1y.toFixed(1)}, ${bow} ${c2y.toFixed(1)}, ${NODE_X} ${y1.toFixed(1)}`;
+      let dd = `M ${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`;
+      for (let i = 1; i < p.length; i++) {
+        const my = (p[i - 1].y + p[i].y) / 2;
+        dd += ` C ${p[i - 1].x.toFixed(1)} ${my.toFixed(1)}, ${p[i].x.toFixed(1)} ${my.toFixed(1)}, ${p[i].x.toFixed(1)} ${p[i].y.toFixed(1)}`;
       }
       setD(dd);
-      setNodes(ys);
-      setHeight(wrap.offsetHeight);
+      setPts(p);
+      setSize({ w: wr.width, h: wr.height });
     };
-
     build();
     window.addEventListener("resize", build);
     const t = setTimeout(build, 300); // after fonts settle
@@ -58,13 +53,36 @@ export default function ProcessPath() {
     };
   }, []);
 
-  // Scroll → move the dot, draw the trail, light up stages.
+  // Measure each node's distance along the path, wire the trail + scroll.
   useEffect(() => {
-    const base = basePathRef.current;
+    const base = baseRef.current;
     const trail = trailRef.current;
-    if (!base || !d) return;
+    if (!base || !d || pts.length === 0) return;
 
     const total = base.getTotalLength();
+    // sample the path to find where (along its length) each node sits
+    const N = 260;
+    const samples: { x: number; y: number; l: number }[] = [];
+    for (let i = 0; i <= N; i++) {
+      const l = (i / N) * total;
+      const pt = base.getPointAtLength(l);
+      samples.push({ x: pt.x, y: pt.y, l });
+    }
+    nodeLen.current = pts.map((p) => {
+      let best = 0;
+      let bd = Infinity;
+      for (const s of samples) {
+        const dx = s.x - p.x;
+        const dy = s.y - p.y;
+        const dist = dx * dx + dy * dy;
+        if (dist < bd) {
+          bd = dist;
+          best = s.l;
+        }
+      }
+      return best;
+    });
+
     if (trail) {
       trail.style.strokeDasharray = `${total}`;
       trail.style.strokeDashoffset = `${total}`;
@@ -80,19 +98,15 @@ export default function ProcessPath() {
         1,
         Math.max(0, (vh * 0.5 - rect.top) / rect.height),
       );
-      const pt = base.getPointAtLength(progress * total);
+      const L = progress * total;
+      const pt = base.getPointAtLength(L);
       if (dotRef.current) {
-        dotRef.current.setAttribute(
-          "transform",
-          `translate(${pt.x} ${pt.y})`,
-        );
+        dotRef.current.setAttribute("transform", `translate(${pt.x} ${pt.y})`);
       }
-      if (trail) trail.style.strokeDashoffset = `${total * (1 - progress)}`;
-
-      // active = last node the dot has reached
+      if (trail) trail.style.strokeDashoffset = `${total - L}`;
       let a = -1;
-      for (let i = 0; i < nodes.length; i++) {
-        if (pt.y >= nodes[i] - 6) a = i;
+      for (let i = 0; i < nodeLen.current.length; i++) {
+        if (L >= nodeLen.current[i] - 2) a = i;
       }
       setActive((prev) => (prev === a ? prev : a));
     };
@@ -109,40 +123,25 @@ export default function ProcessPath() {
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [d, nodes]);
+  }, [d, pts]);
 
   return (
     <div ref={wrapRef} className="relative">
-      {/* the path */}
       <svg
-        className="pointer-events-none absolute left-0 top-0"
-        width={LANE}
-        height={height || 1}
-        viewBox={`0 0 ${LANE} ${height || 1}`}
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        viewBox={`0 0 ${size.w || 1} ${size.h || 1}`}
         fill="none"
         aria-hidden="true"
       >
         {d && (
           <>
-            <path
-              ref={basePathRef}
-              d={d}
-              stroke="var(--line)"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            <path
-              ref={trailRef}
-              d={d}
-              stroke="var(--tertiary)"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            {nodes.map((y, i) => (
+            <path ref={baseRef} d={d} stroke="var(--line)" strokeWidth="2" strokeLinecap="round" />
+            <path ref={trailRef} d={d} stroke="var(--tertiary)" strokeWidth="2" strokeLinecap="round" />
+            {pts.map((p, i) => (
               <circle
                 key={i}
-                cx={NODE_X}
-                cy={y}
+                cx={p.x}
+                cy={p.y}
                 r={active >= i ? 5 : 3.5}
                 fill={active >= i ? "var(--tertiary)" : "var(--background)"}
                 stroke={active >= i ? "var(--tertiary)" : "var(--line)"}
@@ -158,33 +157,36 @@ export default function ProcessPath() {
         )}
       </svg>
 
-      {/* the stages */}
-      <div style={{ paddingLeft: LANE + 28 }}>
+      <div className="grid grid-cols-1 gap-x-16 lg:grid-cols-2">
         {processSteps.map((step, i) => (
           <div
             key={step.n}
-            data-step
-            ref={(el) => {
-              stepRefs.current[i] = el;
-            }}
-            className="flex min-h-[34vh] flex-col justify-center"
+            className="flex min-h-[32vh] flex-col justify-center lg:min-h-[42vh]"
           >
-            <span
-              className={`font-mono text-sm font-medium tracking-[0.1em] transition-colors duration-500 ${
-                active >= i ? "text-tertiary" : "text-muted"
-              }`}
-            >
-              {step.n}
-            </span>
+            <div className="flex items-center gap-4">
+              <span
+                ref={(el) => {
+                  nodeRefs.current[i] = el;
+                }}
+                className="block h-3 w-3 shrink-0"
+              />
+              <span
+                className={`font-mono text-sm font-medium tracking-[0.1em] transition-colors duration-500 ${
+                  active >= i ? "text-tertiary" : "text-muted"
+                }`}
+              >
+                {step.n}
+              </span>
+            </div>
             <h3
-              className={`mt-3 text-xl font-semibold tracking-tight transition-opacity duration-500 sm:text-2xl ${
+              className={`mt-3 pl-7 text-xl font-semibold tracking-tight transition-opacity duration-500 sm:text-2xl ${
                 active >= i ? "opacity-100" : "opacity-40"
               }`}
             >
               {step.title}
             </h3>
             <p
-              className={`mt-3 max-w-md text-sm leading-relaxed text-muted transition-opacity duration-500 ${
+              className={`mt-3 max-w-md pl-7 text-sm leading-relaxed text-muted transition-opacity duration-500 ${
                 active >= i ? "opacity-100" : "opacity-40"
               }`}
             >
