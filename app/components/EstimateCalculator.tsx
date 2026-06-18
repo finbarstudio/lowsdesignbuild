@@ -182,7 +182,9 @@ function Calculator({ config }: { config: Config }) {
 
       <div className="self-start pt-8 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-1">
         <p className="label">Estimated cost</p>
-        <p className="serif mt-3 text-5xl sm:text-6xl">{gbp(total)}</p>
+        <p className="mt-3 text-5xl font-bold tracking-tight sm:text-6xl">
+          {gbp(total)}
+        </p>
         <p className="mt-5 max-w-xs text-xs leading-relaxed text-muted">
           This is a guide based on typical rates, not a quote. For an accurate
           price we&apos;ll visit and assess your project.
@@ -208,7 +210,7 @@ export default function EstimateCalculator() {
           <button
             key={m}
             onClick={() => setMode(m)}
-            className={`serif pb-3 text-xl transition-colors sm:text-2xl ${
+            className={`pb-3 text-lg font-semibold tracking-tight transition-colors sm:text-xl ${
               mode === m
                 ? "-mb-px border-b-2 border-tertiary text-ink"
                 : "text-muted hover:text-ink"

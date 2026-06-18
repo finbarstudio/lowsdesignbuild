@@ -14,6 +14,10 @@ export default function SmoothScroll() {
   useEffect(() => {
     if (pathname?.startsWith("/studio")) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Touch devices already scroll with native inertia. Running Lenis on top of
+    // that fights the browser and feels laggy/jagged on mobile, so we leave
+    // phones and tablets on their native scroll and only smooth on pointers.
+    if (window.matchMedia("(pointer: coarse)").matches) return;
 
     // Tuned to the buttery, slightly heavy glide of studioagriculture.co:
     // a longer ease with an exponential-out curve and a lightly damped wheel.
