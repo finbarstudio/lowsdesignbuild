@@ -9,7 +9,7 @@ function InstagramIcon() {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
-      className="h-5 w-5"
+      className="h-[1.05em] w-[1.05em] shrink-0"
       aria-hidden="true"
     >
       <rect x="3" y="3" width="18" height="18" rx="5" />
@@ -24,7 +24,7 @@ function FacebookIcon() {
     <svg
       viewBox="0 0 24 24"
       fill="currentColor"
-      className="h-5 w-5"
+      className="h-[1.05em] w-[1.05em] shrink-0"
       aria-hidden="true"
     >
       <path d="M13.5 21v-7.3h2.45l.37-2.84H13.5V9.04c0-.82.23-1.38 1.41-1.38h1.5V5.12a20.3 20.3 0 0 0-2.19-.11c-2.17 0-3.65 1.32-3.65 3.76v2.1H8.1v2.83h2.48V21h2.92z" />
@@ -75,25 +75,25 @@ export default function Footer() {
             </a>
           </div>
 
-          {/* social icons */}
-          <div className="flex items-start gap-4 sm:col-span-3 sm:col-start-10 sm:justify-end">
+          {/* socials — icon inline with its label */}
+          <div className="flex flex-col items-start gap-2 sm:col-span-3 sm:col-start-10 sm:items-end">
             <a
               href={site.instagram}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Instagram"
-              className="transition-opacity hover:opacity-60"
+              className="inline-flex items-center gap-1.5"
             >
               <InstagramIcon />
+              <span className="link-underline">Instagram</span>
             </a>
             <a
               href={site.facebook}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Facebook"
-              className="transition-opacity hover:opacity-60"
+              className="inline-flex items-center gap-1.5"
             >
               <FacebookIcon />
+              <span className="link-underline">Facebook</span>
             </a>
           </div>
         </div>
