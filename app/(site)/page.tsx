@@ -89,10 +89,9 @@ export default async function HomePage() {
           style={{ opacity: 0 }}
           className="pointer-events-none absolute inset-0 bg-[#424952] transition-opacity duration-700 ease-out"
         />
-        {/* Standout serif tagline — the editorial voice over the hero, sits
-            top-left under the bar so it never clashes with the wordmark that
-            docks bottom-left. Shows on every breakpoint. */}
-        <p className="serif pointer-events-none absolute left-4 top-20 z-10 max-w-[15rem] text-2xl leading-[1.1] text-white sm:left-6 sm:top-28 sm:max-w-md sm:text-4xl lg:text-5xl">
+        {/* Standout serif tagline — the editorial voice, anchored bottom-left
+            of the hero image. Shows on every breakpoint. */}
+        <p className="serif pointer-events-none absolute bottom-6 left-4 z-10 max-w-[15rem] text-2xl leading-[1.1] text-white sm:bottom-8 sm:left-6 sm:max-w-md sm:text-4xl lg:text-5xl">
           Family-run design &amp; build across South London.
         </p>
       </section>
@@ -139,14 +138,14 @@ export default async function HomePage() {
             </div>
           </section>
         )}
-      </div>
 
-      {/* ---------------- People ---------------- */}
-      {/* Opaque paper layer above the sticky slogan, covers it during its
-          final release so it never pops out below the last project. */}
-      <section
-        className={`${PAD} relative z-10 bg-background py-24 sm:py-32`}
-      >
+        {/* ---------------- People ---------------- */}
+        {/* Kept inside the sticky wrapper and given an opaque paper background:
+            it slides up over the pinned slogan as a continuous cover, so the
+            slogan never re-emerges in the gap below the last project. */}
+        <section
+          className={`${PAD} relative z-10 bg-background py-24 sm:py-32`}
+        >
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           {/* left third: sticky title that stays put as the cards scroll */}
           <div className="lg:col-span-1">
@@ -193,8 +192,8 @@ export default async function HomePage() {
             ))}
           </div>
         </div>
-      </section>
-
+        </section>
+      </div>
     </>
   );
 }
