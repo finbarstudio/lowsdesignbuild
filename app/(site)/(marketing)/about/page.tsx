@@ -70,49 +70,47 @@ export default function AboutPage() {
         <Reveal>
           <p className="label">What we do</p>
         </Reveal>
-        <Reveal className="mt-12 grid grid-cols-1 gap-x-10 gap-y-12 sm:mt-16 sm:grid-cols-2">
+        <Reveal className="mt-12 grid grid-cols-2 gap-x-8 gap-y-12 sm:mt-16 sm:grid-cols-3 lg:grid-cols-4">
           {services.map((s) => (
-            <div key={s.title} className="group relative flex gap-4 hover:z-30">
-                {s.img ? (
-                  <div className="relative w-14 shrink-0 sm:w-16">
-                    {/* small 9:16 thumbnail */}
-                    <div className="aspect-[9/16] overflow-hidden bg-line">
+            <div key={s.title} className="flex flex-col">
+              {s.img ? (
+                // group is the thumbnail only — the overlay never spawns from
+                // hovering the text.
+                <div className="group relative w-24 hover:z-20 sm:w-28">
+                  <div className="aspect-[3/4] overflow-hidden bg-line">
+                    <Image
+                      src={s.img}
+                      alt={s.title}
+                      width={720}
+                      height={960}
+                      sizes="112px"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  {/* larger overlay that grows from the centre of the thumbnail */}
+                  <div className="pointer-events-none absolute left-1/2 top-1/2 z-30 w-56 -translate-x-1/2 -translate-y-1/2 scale-50 opacity-0 transition-all duration-300 ease-out group-hover:scale-100 group-hover:opacity-100">
+                    <div className="aspect-[3/4] overflow-hidden bg-line shadow-2xl ring-1 ring-black/5">
                       <Image
                         src={s.img}
-                        alt={s.title}
+                        alt=""
                         width={720}
-                        height={1280}
-                        sizes="64px"
+                        height={960}
+                        sizes="224px"
                         className="h-full w-full object-cover"
                       />
                     </div>
-                    {/* hover overlay: grows from the thumbnail without shifting
-                        the layout (absolute, pointer-events-none) */}
-                    <div className="pointer-events-none absolute left-0 top-0 z-30 w-14 opacity-0 transition-all duration-300 ease-out group-hover:w-44 group-hover:opacity-100 sm:w-16 sm:group-hover:w-56">
-                      <div className="aspect-[9/16] overflow-hidden bg-line shadow-2xl ring-1 ring-black/5">
-                        <Image
-                          src={s.img}
-                          alt=""
-                          width={720}
-                          height={1280}
-                          sizes="224px"
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                    </div>
                   </div>
-                ) : (
-                  <div className="w-14 shrink-0 sm:w-16" />
-                )}
-                <div>
-                  <h3 className="text-base font-semibold tracking-tight">
-                    {s.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">
-                    {s.blurb}
-                  </p>
                 </div>
-              </div>
+              ) : (
+                <div className="aspect-[3/4] w-24 sm:w-28" />
+              )}
+              <h3 className="mt-4 text-base font-semibold tracking-tight">
+                {s.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                {s.blurb}
+              </p>
+            </div>
           ))}
         </Reveal>
       </section>
