@@ -68,53 +68,56 @@ export default function AboutPage() {
 
       {/* What we do */}
       <section className={`${PAD} py-24 sm:py-32`}>
-        <Reveal>
-          <p className="label">What we do</p>
-        </Reveal>
-        <Reveal className="mt-12 grid grid-cols-1 gap-x-10 gap-y-12 sm:mt-16 sm:grid-cols-2 lg:grid-cols-3">
-          {services.map((s) => (
-            <div key={s.title} className="flex gap-5">
-              {s.img ? (
-                // group is the thumbnail only — the overlay never spawns from
-                // hovering the text.
-                <div className="group relative w-28 shrink-0 hover:z-20 sm:w-32">
-                  <div className="aspect-[3/4] overflow-hidden bg-line">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+          {/* left: sticky title */}
+          <div className="lg:col-span-1">
+            <h2 className="label sticky top-24 !text-ink">What we do</h2>
+          </div>
+
+          {/* right: two columns of services */}
+          <Reveal className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:col-span-2">
+            {services.map((s) => (
+              <div key={s.title} className="flex gap-5">
+                {/* group is the thumbnail only — the overlay never spawns from
+                    hovering the text. */}
+                <div className="group relative w-28 shrink-0 hover:z-20">
+                  <div className="aspect-[4/5] overflow-hidden bg-line">
                     <Image
                       src={s.img}
                       alt={s.title}
-                      width={720}
-                      height={960}
-                      sizes="128px"
+                      width={800}
+                      height={1000}
+                      sizes="112px"
                       className="h-full w-full object-cover"
                     />
                   </div>
                   {/* larger overlay that grows from the centre of the thumbnail */}
                   <div className="pointer-events-none absolute left-1/2 top-1/2 z-30 w-56 -translate-x-1/2 -translate-y-1/2 scale-50 opacity-0 transition-all duration-300 ease-out group-hover:scale-100 group-hover:opacity-100">
-                    <div className="aspect-[3/4] overflow-hidden bg-line shadow-2xl ring-1 ring-black/5">
+                    <div className="aspect-[4/5] overflow-hidden bg-line shadow-2xl ring-1 ring-black/5">
                       <Image
                         src={s.img}
                         alt=""
-                        width={720}
-                        height={960}
+                        width={800}
+                        height={1000}
                         sizes="224px"
                         className="h-full w-full object-cover"
                       />
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className="aspect-[3/4] w-28 shrink-0 sm:w-32" />
-              )}
-              {/* title aligned to the top of the image, copy to the bottom */}
-              <div className="flex flex-col justify-between py-0.5">
-                <h3 className="text-base font-semibold tracking-tight">
-                  {s.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-muted">{s.blurb}</p>
+                {/* title aligned to the top of the image, copy to the bottom */}
+                <div className="flex flex-col justify-between py-0.5">
+                  <h3 className="text-base font-semibold tracking-tight">
+                    {s.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-muted">
+                    {s.blurb}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
-        </Reveal>
+            ))}
+          </Reveal>
+        </div>
       </section>
 
       {/* Process */}

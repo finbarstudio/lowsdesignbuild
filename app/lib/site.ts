@@ -84,11 +84,6 @@ export const services = [
     blurb: "High-detail planning drawings for your planning-permission needs.",
     img: "/services/architectural.jpg",
   },
-  {
-    title: "Landscaping",
-    blurb: "Landscaping services, creating patios and garden spaces.",
-    img: null,
-  },
 ];
 
 export const processSteps = [
