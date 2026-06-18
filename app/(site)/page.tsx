@@ -50,7 +50,7 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
             {tags.map((t) => (
               <span
                 key={t}
-                className="rounded-full border border-white/40 bg-white/10 px-3 py-1 text-xs text-white backdrop-blur-sm"
+                className="rounded-full border border-white/40 bg-white/10 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.08em] text-white backdrop-blur-sm"
               >
                 {t}
               </span>

@@ -107,7 +107,7 @@ body {
 .label,
 .eyebrow {
   font-family: var(--font-mono-stack);
-  font-size: 0.72rem;
+  font-size: 0.84rem;
   font-weight: 400;
   letter-spacing: 0.18em;
   text-transform: uppercase;
