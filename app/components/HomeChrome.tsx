@@ -111,7 +111,7 @@ export default function HomeChrome({
           >
             {nav.map((item) => (
               <Link key={item.href} href={item.href}>
-                <span className="link-underline">{item.label}</span>
+                <span className="link-underline is-tracked">{item.label}</span>
                 {item.href === "/projects" && projectCount ? (
                   <sup className="ml-0.5 text-[0.6em] font-medium">
                     {projectCount}

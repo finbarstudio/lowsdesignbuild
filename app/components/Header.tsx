@@ -68,7 +68,9 @@ export default function Header({ projectCount }: { projectCount?: number }) {
               pathname === item.href || pathname?.startsWith(`${item.href}/`);
             return (
               <Link key={item.href} href={item.href}>
-                <span className={active ? "link-underline link-active" : "link-underline"}>
+                <span
+                  className={`link-underline is-tracked ${active ? "link-active" : ""}`}
+                >
                   {item.label}
                 </span>
                 {item.href === "/projects" && projectCount ? (

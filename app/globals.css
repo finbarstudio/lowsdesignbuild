@@ -76,13 +76,18 @@ body {
   content: "";
   position: absolute;
   left: 0;
+  right: 0;
   bottom: -1px;
   height: 1px;
-  width: 100%;
   background-color: currentColor;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Tracked (letter-spaced) text leaves trailing space after the last glyph;
+   pull the line in so it matches the visible text. */
+.link-underline.is-tracked::after {
+  right: 0.14em;
 }
 .link-underline:hover::after,
 .link-active::after {

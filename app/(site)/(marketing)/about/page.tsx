@@ -70,20 +70,20 @@ export default function AboutPage() {
         <Reveal>
           <p className="label">What we do</p>
         </Reveal>
-        <Reveal className="mt-12 grid grid-cols-2 gap-x-8 gap-y-12 sm:mt-16 sm:grid-cols-3 lg:grid-cols-4">
+        <Reveal className="mt-12 grid grid-cols-1 gap-x-10 gap-y-12 sm:mt-16 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s) => (
-            <div key={s.title} className="flex flex-col">
+            <div key={s.title} className="flex gap-5">
               {s.img ? (
                 // group is the thumbnail only — the overlay never spawns from
                 // hovering the text.
-                <div className="group relative w-24 hover:z-20 sm:w-28">
+                <div className="group relative w-28 shrink-0 hover:z-20 sm:w-32">
                   <div className="aspect-[3/4] overflow-hidden bg-line">
                     <Image
                       src={s.img}
                       alt={s.title}
                       width={720}
                       height={960}
-                      sizes="112px"
+                      sizes="128px"
                       className="h-full w-full object-cover"
                     />
                   </div>
@@ -102,14 +102,15 @@ export default function AboutPage() {
                   </div>
                 </div>
               ) : (
-                <div className="aspect-[3/4] w-24 sm:w-28" />
+                <div className="aspect-[3/4] w-28 shrink-0 sm:w-32" />
               )}
-              <h3 className="mt-4 text-base font-semibold tracking-tight">
-                {s.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                {s.blurb}
-              </p>
+              {/* title aligned to the top of the image, copy to the bottom */}
+              <div className="flex flex-col justify-between py-0.5">
+                <h3 className="text-base font-semibold tracking-tight">
+                  {s.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-muted">{s.blurb}</p>
+              </div>
             </div>
           ))}
         </Reveal>
