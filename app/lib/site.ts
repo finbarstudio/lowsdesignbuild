@@ -48,41 +48,43 @@ export const team = [
   },
 ];
 
+// `imgs` is an array so a service can show several example photos. On hover the
+// first reveals, then it cycles through the rest with the same wipe.
 export const services = [
   {
     title: "Loft Conversions",
     blurb:
       "Extend up into your unused loft space to maximise the potential of your home.",
-    img: "/services/loft.jpg",
+    imgs: ["/services/loft.jpg"],
   },
   {
     title: "Extensions",
     blurb:
       "Open up your home and create a new space that can be tailored to your wants and needs.",
-    img: "/services/extensions.jpg",
+    imgs: ["/services/extensions.jpg"],
   },
   {
     title: "Renovations",
     blurb:
       "Update your home with a fresh new design. We help our clients design and build their dream spaces, adapting their existing properties to create something entirely new.",
-    img: "/services/renovations.jpg",
+    imgs: ["/services/renovations.jpg"],
   },
   {
     title: "Roofing",
     blurb:
       "Roofing services that ensure not only a water-tight building, but a design that works for our clients, using only the best quality materials.",
-    img: "/services/roofing.jpg",
+    imgs: ["/services/roofing.jpg"],
   },
   {
     title: "3D Visualisation",
     blurb:
       "A high-end 3D visualisation service to help clients understand their projects before they begin, so they can make the right design choices.",
-    img: "/services/threed.jpg",
+    imgs: ["/services/threed.jpg"],
   },
   {
     title: "Architectural Services",
     blurb: "High-detail planning drawings for your planning-permission needs.",
-    img: "/services/architectural.jpg",
+    imgs: ["/services/architectural.jpg"],
   },
 ];
 

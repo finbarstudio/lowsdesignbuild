@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import ProcessPath from "@/app/components/ProcessPath";
 import Reveal from "@/app/components/Reveal";
+import ServiceCard from "@/app/components/ServiceCard";
 import { areas, services, site } from "@/app/lib/site";
 
 
@@ -77,45 +78,7 @@ export default function AboutPage() {
           {/* right: two columns of services */}
           <Reveal className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:col-span-2">
             {services.map((s) => (
-              <div key={s.title} className="flex gap-5">
-                {/* group is the thumbnail only — the overlay never spawns from
-                    hovering the text. */}
-                <div className="group relative w-28 shrink-0 hover:z-20">
-                  <div className="aspect-[4/5] overflow-hidden bg-line">
-                    <Image
-                      src={s.img}
-                      alt={s.title}
-                      width={800}
-                      height={1000}
-                      sizes="112px"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  {/* larger overlay that draws in top→bottom on hover (a clip
-                      wipe — no opacity or scale) */}
-                  <div className="pointer-events-none absolute left-1/2 top-1/2 z-30 w-56 -translate-x-1/2 -translate-y-1/2 [clip-path:inset(0_0_100%_0)] transition-[clip-path] duration-[650ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:[clip-path:inset(0_0_0_0)]">
-                    <div className="aspect-[4/5] overflow-hidden bg-line shadow-2xl ring-1 ring-black/5">
-                      <Image
-                        src={s.img}
-                        alt=""
-                        width={800}
-                        height={1000}
-                        sizes="224px"
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  </div>
-                </div>
-                {/* title aligned to the top of the image, copy to the bottom */}
-                <div className="flex flex-col justify-between py-0.5">
-                  <h3 className="text-base font-semibold tracking-tight">
-                    {s.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-muted">
-                    {s.blurb}
-                  </p>
-                </div>
-              </div>
+              <ServiceCard key={s.title} service={s} />
             ))}
           </Reveal>
         </div>
