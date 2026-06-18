@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Bricolage_Grotesque } from "next/font/google";
+import { Bricolage_Grotesque, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { siteUrl } from "@/app/lib/site";
 
@@ -10,12 +10,11 @@ const bricolage = Bricolage_Grotesque({
   weight: ["400", "500", "600", "700"],
 });
 
-// Highlight font, Instrument Serif (used italic for accents).
-const instrument = Instrument_Serif({
-  variable: "--font-instrument",
+// Mono, Space Mono — used tracked + uppercase for labels / sub-headings.
+const spaceMono = Space_Mono({
+  variable: "--font-space-mono",
   subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -62,7 +61,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${bricolage.variable} ${instrument.variable} antialiased`}
+      className={`${bricolage.variable} ${spaceMono.variable} antialiased`}
     >
       <body>{children}</body>
     </html>

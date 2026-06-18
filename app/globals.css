@@ -16,8 +16,14 @@
   --muted: #7c766c; /* warm secondary text */
   --line: #e2dcd0; /* warm hairlines */
   --white: #ffffff;
-  --font-bricolage-stack: var(--font-bricolage), -apple-system,
-    BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  /* ---- Type tokens ----
+     --font-sans : Bricolage Grotesque — body, nav, headings, display
+     --font-mono : Space Mono — labels / sub-headings (tracked, uppercase) */
+  --font-sans-stack: var(--font-bricolage), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono-stack: var(--font-space-mono), ui-monospace, "SFMono-Regular",
+    Menlo, monospace;
 }
 
 @theme inline {
@@ -31,8 +37,8 @@
   --color-slate-blue: var(--slate-blue);
   --color-muted: var(--muted);
   --color-line: var(--line);
-  --font-sans: var(--font-bricolage-stack);
-  --font-serif: var(--font-instrument);
+  --font-sans: var(--font-sans-stack);
+  --font-mono: var(--font-mono-stack);
 }
 
 * {
@@ -47,15 +53,16 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-bricolage-stack);
+  font-family: var(--font-sans-stack);
   font-weight: 400;
 }
 
-/* Serif display — Instrument Serif italic, the minimal editorial voice */
-.serif {
-  font-family: var(--font-instrument), Georgia, serif;
-  font-style: italic;
-  font-weight: 400;
+/* Legacy display hooks — now sans (Instrument Serif removed). Kept so existing
+   markup keeps working; display headings will be retuned in the type pass. */
+.serif,
+.display {
+  font-family: var(--font-sans-stack);
+  font-style: normal;
   letter-spacing: -0.01em;
 }
 
@@ -81,11 +88,13 @@ body {
   text-decoration-skip-ink: auto;
 }
 
-/* Small uppercase label */
-.label {
-  font-size: 0.7rem;
+/* Sub-heading / label — Space Mono, tracked, all caps */
+.label,
+.eyebrow {
+  font-family: var(--font-mono-stack);
+  font-size: 0.72rem;
   font-weight: 400;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -100,22 +109,6 @@ html.lenis body {
 }
 .lenis.lenis-stopped {
   overflow: hidden;
-}
-
-/* Type helpers (minimal/editorial) */
-.eyebrow {
-  font-size: 0.7rem;
-  font-weight: 400;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.display {
-  font-family: var(--font-instrument), Georgia, serif;
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  line-height: 1.12;
 }
 
 /* ---- Scroll reveal ---- */
