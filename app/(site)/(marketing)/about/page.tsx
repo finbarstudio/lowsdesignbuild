@@ -91,8 +91,9 @@ export default function AboutPage() {
                       className="h-full w-full object-cover"
                     />
                   </div>
-                  {/* larger overlay that grows from the centre of the thumbnail */}
-                  <div className="pointer-events-none absolute left-1/2 top-1/2 z-30 w-56 -translate-x-1/2 -translate-y-1/2 scale-50 opacity-0 transition-all duration-300 ease-out group-hover:scale-100 group-hover:opacity-100">
+                  {/* larger overlay that draws in top→bottom on hover (a clip
+                      wipe — no opacity or scale) */}
+                  <div className="pointer-events-none absolute left-1/2 top-1/2 z-30 w-56 -translate-x-1/2 -translate-y-1/2 [clip-path:inset(0_0_100%_0)] transition-[clip-path] duration-[650ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:[clip-path:inset(0_0_0_0)]">
                     <div className="aspect-[4/5] overflow-hidden bg-line shadow-2xl ring-1 ring-black/5">
                       <Image
                         src={s.img}
