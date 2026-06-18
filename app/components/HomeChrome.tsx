@@ -1,15 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { nav, site } from "@/app/lib/site";
 
+// Logotype aspect ratio (viewBox 121.71 × 55.33).
+const RATIO = 121.71 / 55.33;
+const BAR = 64; // bar height (h-16)
+
 /**
- * Home chrome: a top bar with the wordmark docked left and the nav right —
- * the same structure as the inner-page header. The logo stays put at the top
- * (no scroll-linked travel); it's white over the hero and flips to ink once
- * the bar clears the hero image, when the paper bar background fades in.
+ * Home chrome.
+ * - Desktop (sm+): the wordmark starts large near the bottom of the hero and
+ *   travels up on scroll to dock top-left in the bar (scroll-linked).
+ * - Mobile: no travel — a small static wordmark in the bar, and the editorial
+ *   serif tagline (in page.tsx) carries the hero instead.
+ * The wordmark is white over the hero and flips to ink once the bar clears it.
  */
 export default function HomeChrome({
   projectCount,
@@ -19,11 +25,21 @@ export default function HomeChrome({
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  // sliding (desktop) wordmark refs
+  const wrapRef = useRef<HTMLAnchorElement>(null);
+  const whiteRef = useRef<HTMLImageElement>(null);
+  const inkRef = useRef<HTMLImageElement>(null);
+
   useEffect(() => {
-    const onScroll = () => {
+    const wrap = wrapRef.current;
+    if (wrap) wrap.style.transformOrigin = "0 0";
+    let raf = 0;
+
+    const update = () => {
       const hero = document.getElementById("home-hero");
       const heroH = hero ? hero.offsetHeight : window.innerHeight;
-      setScrolled(window.scrollY >= heroH - 64);
+      const dark = window.scrollY >= heroH - BAR;
+      setScrolled(dark);
 
       // grey overlay over the hero, comes softly but fully in past 5% scroll.
       const overlay = document.getElementById("hero-overlay");
@@ -31,14 +47,40 @@ export default function HomeChrome({
         overlay.style.opacity =
           window.scrollY > window.innerHeight * 0.05 ? "0.5" : "0";
       }
+
+      // desktop sliding wordmark
+      if (wrap && window.innerWidth >= 640) {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const edge = 24;
+        const baseW = Math.min(vw * 0.52, 460);
+        const baseH = baseW / RATIO;
+        wrap.style.width = `${baseW}px`;
+        const p = Math.min(1, Math.max(0, window.scrollY / (vh * 0.7)));
+        const targetH = 26;
+        const s = 1 + (targetH / baseH - 1) * p;
+        const x = edge;
+        const y0 = Math.min(vh, heroH) - edge - baseH; // bottom of the hero
+        const y1 = (BAR - targetH) / 2; // centred in the bar
+        const y = y0 + (y1 - y0) * p;
+        wrap.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
+        if (whiteRef.current) whiteRef.current.style.opacity = dark ? "0" : "1";
+        if (inkRef.current) inkRef.current.style.opacity = dark ? "1" : "0";
+      }
     };
 
-    onScroll();
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(raf);
     };
   }, []);
 
@@ -52,11 +94,12 @@ export default function HomeChrome({
         }`}
       >
         <div className="relative mx-auto flex h-full w-full max-w-[1900px] items-center px-4 sm:px-6">
-          {/* wordmark, docked top-left */}
+          {/* mobile: static wordmark, docked top-left (hidden on desktop, where
+              the sliding wordmark takes over) */}
           <Link
             href="/"
             aria-label={`${site.name}, home`}
-            className="flex items-center"
+            className="flex items-center sm:hidden"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -103,6 +146,33 @@ export default function HomeChrome({
           </button>
         </div>
       </header>
+
+      {/* desktop: scroll-linked sliding wordmark (white over hero → ink on bar) */}
+      <Link
+        ref={wrapRef}
+        href="/"
+        aria-label={`${site.name}, home`}
+        className="fixed left-0 top-0 z-50 hidden sm:block"
+      >
+        <span className="relative block">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            ref={inkRef}
+            src="/logotype.svg"
+            alt={site.name}
+            style={{ opacity: 0 }}
+            className="block w-full transition-opacity duration-300 will-change-transform"
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            ref={whiteRef}
+            src="/logotype.svg"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full brightness-0 invert transition-opacity duration-300"
+          />
+        </span>
+      </Link>
 
       {/* mobile menu panel */}
       {open && (

@@ -89,9 +89,9 @@ export default async function HomePage() {
           style={{ opacity: 0 }}
           className="pointer-events-none absolute inset-0 bg-[#424952] transition-opacity duration-700 ease-out"
         />
-        {/* Standout serif tagline — the editorial voice, anchored bottom-left
-            of the hero image. Shows on every breakpoint. */}
-        <p className="serif pointer-events-none absolute bottom-6 left-4 z-10 max-w-[15rem] text-2xl leading-[1.1] text-white sm:bottom-8 sm:left-6 sm:max-w-md sm:text-4xl lg:text-5xl">
+        {/* Serif tagline carries the hero on mobile; on desktop the sliding
+            wordmark takes over, so the tagline is hidden there. */}
+        <p className="serif pointer-events-none absolute bottom-6 left-4 z-10 max-w-[15rem] text-2xl leading-[1.1] text-white sm:hidden">
           Family-run design &amp; build across South London.
         </p>
       </section>

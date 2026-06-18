@@ -59,17 +59,26 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* Link underline that draws in from the left on hover, keeping text colour */
+/* Hover underline: tight to the text, same colour, with a gap around
+   descenders (skip-ink). Fades in on hover. */
 .link-underline {
-  background-image: linear-gradient(currentColor, currentColor);
-  background-position: 0 100%;
-  background-repeat: no-repeat;
-  background-size: 0% 1px;
-  padding-bottom: 2px;
-  transition: background-size 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-skip-ink: auto;
+  transition: text-decoration-color 0.3s ease;
 }
 .link-underline:hover {
-  background-size: 100% 1px;
+  text-decoration-color: currentColor;
+}
+/* Persistent variant for the current page — same tight, skip-ink underline. */
+.link-active {
+  text-decoration-line: underline;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-skip-ink: auto;
 }
 
 /* Small uppercase label */
