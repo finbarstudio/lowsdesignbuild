@@ -52,22 +52,42 @@ export const services = [
   {
     title: "Loft Conversions",
     blurb:
-      "Dormers, hip-to-gable and Velux conversions that turn unused roof space into light-filled bedrooms, studies and bathrooms.",
+      "Extend up into your unused loft space to maximise the potential of your home.",
+    img: "/services/loft.jpg",
   },
   {
     title: "Extensions",
     blurb:
-      "Single and double-storey rear, side and wrap-around extensions that add space and light and are built to last.",
+      "Open up your home and create a new space that can be tailored to your wants and needs.",
+    img: "/services/extensions.jpg",
   },
   {
-    title: "Refurbishments",
+    title: "Renovations",
     blurb:
-      "Full and partial renovations: kitchens, bathrooms, and whole-home transformations finished to a very high standard.",
+      "Update your home with a fresh new design. We help our clients design and build their dream spaces, adapting their existing properties to create something entirely new.",
+    img: "/services/renovations.jpg",
   },
   {
-    title: "Architectural Works",
+    title: "Roofing",
     blurb:
-      "All the drawings a project needs, plus we handle communication with local authorities and building control.",
+      "Roofing services that ensure not only a water-tight building, but a design that works for our clients, using only the best quality materials.",
+    img: "/services/roofing.jpg",
+  },
+  {
+    title: "3D Visualisation",
+    blurb:
+      "A high-end 3D visualisation service to help clients understand their projects before they begin, so they can make the right design choices.",
+    img: "/services/threed.jpg",
+  },
+  {
+    title: "Architectural Services",
+    blurb: "High-detail planning drawings for your planning-permission needs.",
+    img: "/services/architectural.jpg",
+  },
+  {
+    title: "Landscaping",
+    blurb: "Landscaping services, creating patios and garden spaces.",
+    img: null,
   },
 ];
 
