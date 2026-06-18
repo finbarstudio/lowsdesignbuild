@@ -41,8 +41,11 @@ export default function WipeReveal({
     };
     const check = () => {
       const r = el.getBoundingClientRect();
-      const inView = r.top < window.innerHeight * 0.85 && r.bottom > 0;
-      if (!inView) return;
+      // True once the top has crossed the trigger line — and stays true if the
+      // element has already scrolled past (top negative). Without the second
+      // case, a fast scroll blows past the trigger zone and never reveals.
+      const reached = r.top < window.innerHeight * 0.9;
+      if (!reached) return;
       if (imagesReady()) {
         reveal();
       } else if (!fallback) {

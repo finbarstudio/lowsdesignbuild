@@ -154,6 +154,7 @@ export default async function HomePage() {
                     src={teamLead.img}
                     alt={teamLead.alt}
                     fill
+                    loading="eager"
                     sizes="(max-width: 1024px) 100vw, 66vw"
                     className="object-cover grayscale"
                   />
@@ -177,6 +178,7 @@ export default async function HomePage() {
                       src={m.img}
                       alt={m.name}
                       fill
+                      loading="eager"
                       sizes="(max-width: 1024px) 100vw, 33vw"
                       className="object-cover grayscale"
                     />
