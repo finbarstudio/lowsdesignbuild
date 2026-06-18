@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import HomeChrome from "@/app/components/HomeChrome";
 import Reveal from "@/app/components/Reveal";
+import WipeReveal from "@/app/components/WipeReveal";
 import { team, teamLead } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
@@ -135,7 +136,7 @@ export default async function HomePage() {
             it slides up over the pinned slogan as a continuous cover, so the
             slogan never re-emerges in the gap below the last project. */}
         <section
-          className={`${PAD} relative z-10 bg-background pb-24 pt-40 sm:pb-32 sm:pt-64`}
+          className={`${PAD} relative z-10 bg-background pb-24 pt-56 sm:pb-32 sm:pt-[28rem]`}
         >
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           {/* left third: sticky title that stays put as the cards scroll */}
@@ -146,16 +147,18 @@ export default async function HomePage() {
           {/* right two-thirds: people cards in rows of two */}
           <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:col-span-2">
             {/* the two directors, one wide headshot spanning both columns */}
-            <Reveal className="sm:col-span-2">
-              <div className="relative aspect-[16/9] overflow-hidden bg-line">
-                <Image
-                  src={teamLead.img}
-                  alt={teamLead.alt}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 66vw"
-                  className="object-cover grayscale"
-                />
-              </div>
+            <div className="sm:col-span-2">
+              <WipeReveal>
+                <div className="relative aspect-[16/9] overflow-hidden bg-line">
+                  <Image
+                    src={teamLead.img}
+                    alt={teamLead.alt}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 66vw"
+                    className="object-cover grayscale"
+                  />
+                </div>
+              </WipeReveal>
               <div className="mt-4 grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6">
                 {teamLead.people.map((pp) => (
                   <div key={pp.name}>
@@ -164,22 +167,24 @@ export default async function HomePage() {
                   </div>
                 ))}
               </div>
-            </Reveal>
+            </div>
 
-            {team.map((m, i) => (
-              <Reveal key={m.name} delay={i * 90}>
-                <div className="relative aspect-[4/5] overflow-hidden bg-line">
-                  <Image
-                    src={m.img}
-                    alt={m.name}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 33vw"
-                    className="object-cover grayscale"
-                  />
-                </div>
+            {team.map((m) => (
+              <div key={m.name}>
+                <WipeReveal>
+                  <div className="relative aspect-[4/5] overflow-hidden bg-line">
+                    <Image
+                      src={m.img}
+                      alt={m.name}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 33vw"
+                      className="object-cover grayscale"
+                    />
+                  </div>
+                </WipeReveal>
                 <p className="mt-4 text-base font-medium">{m.name}</p>
                 <p className="text-sm text-muted">{m.role}</p>
-              </Reveal>
+              </div>
             ))}
           </div>
         </div>

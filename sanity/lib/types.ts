@@ -17,3 +17,10 @@ export interface Project extends ProjectListItem {
   lqip: string | null;
   gallery: Array<SanityImageSource & { _key?: string }> | null;
 }
+
+export interface ServiceItem {
+  _id: string;
+  title: string | null;
+  blurb: string | null;
+  images: Array<SanityImageSource & { _key?: string }> | null;
+}

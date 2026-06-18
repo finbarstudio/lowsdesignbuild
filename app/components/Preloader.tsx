@@ -1,18 +1,28 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 /**
  * Path-trace preloader. The logo mark is a single <polyline>; we normalise its
  * length with pathLength={1} and animate stroke-dashoffset 1 → 0 to "draw" it,
- * then the overlay fades up to reveal the page. All timing lives in globals.css
- * (the .preloader* rules) so it's easy to tweak.
+ * then the overlay fades up to reveal the page.
  *
- * Only shown on the home page; it is the site's entrance, not every route.
+ * Shown once per session, on the home page — the site's entrance. A
+ * sessionStorage flag stops it replaying on every visit back to home.
  */
 export default function Preloader() {
   const pathname = usePathname();
-  if (pathname !== "/") return null;
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (pathname !== "/") return;
+    if (sessionStorage.getItem("lows-preloaded")) return;
+    sessionStorage.setItem("lows-preloaded", "1");
+    setShow(true);
+  }, []); // run once on mount
+
+  if (!show) return null;
 
   return (
     <div className="preloader" aria-hidden="true">

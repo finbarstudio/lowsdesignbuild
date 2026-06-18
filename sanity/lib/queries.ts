@@ -41,3 +41,14 @@ export const PROJECT_QUERY = defineQuery(`
     gallery
   }
 `);
+
+// The services shown in "What we do" on the About page — ordered manually.
+export const SERVICES_QUERY = defineQuery(`
+  *[_type == "service"]
+  | order(coalesce(order, 999) asc, _createdAt desc) {
+    _id,
+    title,
+    blurb,
+    images
+  }
+`);

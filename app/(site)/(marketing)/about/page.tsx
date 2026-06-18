@@ -7,6 +7,10 @@ import ProcessPath from "@/app/components/ProcessPath";
 import Reveal from "@/app/components/Reveal";
 import ServiceCard from "@/app/components/ServiceCard";
 import { areas, services, site } from "@/app/lib/site";
+import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
+import { SERVICES_QUERY } from "@/sanity/lib/queries";
+import type { ServiceItem } from "@/sanity/lib/types";
 
 
 export const metadata: Metadata = {
@@ -16,7 +20,23 @@ export const metadata: Metadata = {
   alternates: { canonical: "/about" },
 };
 
-export default function AboutPage() {
+export const revalidate = 60;
+
+export default async function AboutPage() {
+  // Services come from Sanity so the client can edit them. Until any are added
+  // there, fall back to the built-in copy so the section is never empty.
+  const cms = await client.fetch<ServiceItem[]>(SERVICES_QUERY);
+  const serviceCards =
+    cms.length > 0
+      ? cms.map((s) => ({
+          title: s.title ?? "",
+          blurb: s.blurb ?? "",
+          imgs: (s.images ?? []).map((img) =>
+            urlFor(img).width(800).height(1000).fit("crop").url(),
+          ),
+        }))
+      : services;
+
   return (
     <main>
       {/* Intro */}
@@ -77,7 +97,7 @@ export default function AboutPage() {
 
           {/* right: two columns of services */}
           <Reveal className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:col-span-2">
-            {services.map((s) => (
+            {serviceCards.map((s) => (
               <ServiceCard key={s.title} service={s} />
             ))}
           </Reveal>

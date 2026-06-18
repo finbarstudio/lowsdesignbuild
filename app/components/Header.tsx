@@ -105,9 +105,9 @@ export default function Header({ projectCount }: { projectCount?: number }) {
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="py-3"
+              className="w-fit py-3"
             >
-              {item.label}
+              <span className="link-underline">{item.label}</span>
               {item.href === "/projects" && projectCount ? (
                 <sup className="ml-0.5 text-[0.6em] font-medium">
                   {projectCount}

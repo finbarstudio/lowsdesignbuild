@@ -25,6 +25,8 @@ export default function ServiceCard({ service }: { service: Service }) {
     return () => clearInterval(id);
   }, [hover, imgs.length]);
 
+  if (imgs.length === 0) return null;
+
   const cur = step % imgs.length;
   const prev = (step - 1 + imgs.length) % imgs.length;
   const baseIdx = step > 0 ? prev : 0;
