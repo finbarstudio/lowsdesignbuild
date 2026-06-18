@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Space_Mono } from "next/font/google";
+import { Archivo, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { siteUrl } from "@/app/lib/site";
 
-// Primary sans, Bricolage Grotesque (body, nav, headings).
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
+// Primary sans, Archivo (body, headings, display).
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
@@ -61,7 +61,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${bricolage.variable} ${spaceMono.variable} antialiased`}
+      className={`${archivo.variable} ${spaceMono.variable} antialiased`}
     >
       <body>{children}</body>
     </html>

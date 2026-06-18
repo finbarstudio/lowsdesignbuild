@@ -65,7 +65,7 @@ export default function Header({ projectCount }: { projectCount?: number }) {
 
         {/* nav right */}
         <nav
-          className={`ml-auto hidden items-center gap-x-7 font-sans text-sm transition-colors duration-300 sm:flex sm:text-base ${
+          className={`ml-auto hidden items-center gap-x-7 font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-300 sm:flex sm:text-sm ${
             overHero ? "text-white" : "text-ink"
           }`}
         >
@@ -75,7 +75,9 @@ export default function Header({ projectCount }: { projectCount?: number }) {
               pathname?.startsWith(`${item.href}/`);
             return (
               <Link key={item.href} href={item.href}>
-                <span className={active ? "link-active" : "link-underline"}>
+                <span
+                  className={active ? "link-draw link-draw-active" : "link-draw"}
+                >
                   {item.label}
                 </span>
                 {item.href === "/projects" && projectCount ? (
@@ -106,7 +108,7 @@ export default function Header({ projectCount }: { projectCount?: number }) {
       </div>
 
       {open && (
-        <nav className="flex flex-col gap-1 border-t border-line bg-background px-4 py-4 font-sans text-base sm:hidden">
+        <nav className="flex flex-col gap-1 border-t border-line bg-background px-4 py-4 font-mono text-sm uppercase tracking-[0.12em] sm:hidden">
           {nav.map((item) => (
             <Link
               key={item.href}

@@ -113,13 +113,13 @@ export default function HomeChrome({
 
           {/* desktop nav, top right */}
           <nav
-            className={`ml-auto hidden items-center gap-x-7 font-sans text-sm transition-colors duration-300 sm:flex sm:text-base ${
+            className={`ml-auto hidden items-center gap-x-7 font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-300 sm:flex sm:text-sm ${
               overHero ? "text-white" : "text-ink"
             }`}
           >
             {nav.map((item) => (
               <Link key={item.href} href={item.href}>
-                <span className="link-underline">{item.label}</span>
+                <span className="link-draw">{item.label}</span>
                 {item.href === "/projects" && projectCount ? (
                   <sup className="ml-0.5 text-[0.6em] font-medium">
                     {projectCount}
@@ -176,7 +176,7 @@ export default function HomeChrome({
 
       {/* mobile menu panel */}
       {open && (
-        <nav className="fixed inset-x-0 top-16 z-40 flex flex-col gap-1 border-b border-line bg-background px-4 py-4 font-sans text-base text-ink sm:hidden">
+        <nav className="fixed inset-x-0 top-16 z-40 flex flex-col gap-1 border-b border-line bg-background px-4 py-4 font-mono text-sm uppercase tracking-[0.12em] text-ink sm:hidden">
           {nav.map((item) => (
             <Link
               key={item.href}
