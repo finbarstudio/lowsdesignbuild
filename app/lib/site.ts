@@ -12,7 +12,8 @@ export const site = {
   phone: "0208 176 2676",
   phoneHref: "tel:+442081762676",
   email: "info@lowsdesignandbuild.com",
-  instagram: "https://www.instagram.com/lowsdesignandbuild/",
+  instagram: "https://www.instagram.com/lowsdesignandbuild/?hl=en",
+  facebook: "https://m.facebook.com/lowsdesignandbuild",
   instagramHandle: "@lowsdesignandbuild",
 };
 

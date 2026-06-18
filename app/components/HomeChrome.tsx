@@ -88,11 +88,7 @@ export default function HomeChrome({
 
   return (
     <>
-      <header
-        className={`fixed inset-x-0 top-0 z-40 h-16 transition-colors duration-300 ${
-          scrolled ? "bg-background/85 backdrop-blur-sm" : ""
-        }`}
-      >
+      <header className="fixed inset-x-0 top-0 z-40 h-16">
         <div className="relative mx-auto flex h-full w-full max-w-[1900px] items-center px-4 sm:px-6">
           {/* mobile: static wordmark, docked top-left (hidden on desktop, where
               the sliding wordmark takes over) */}
