@@ -66,40 +66,18 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* Hover underline: tight to the text, same colour, with a gap around
-   descenders (skip-ink). Fades in on hover. */
+/* The single global underline: a 1px line that draws in left→right on hover.
+   .link-active keeps it permanently drawn (current nav page). */
 .link-underline {
-  text-decoration-line: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-  text-decoration-skip-ink: auto;
-  transition: text-decoration-color 0.3s ease;
-}
-.link-underline:hover {
-  text-decoration-color: currentColor;
-}
-/* Persistent variant for the current page — same tight, skip-ink underline. */
-.link-active {
-  text-decoration-line: underline;
-  text-decoration-color: currentColor;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-  text-decoration-skip-ink: auto;
-}
-
-/* Nav underline: a 1px line that draws in left→right on hover. Used on the
-   uppercase mono menu items (no descenders, so no skip-ink needed). */
-.link-draw {
   background-image: linear-gradient(currentColor, currentColor);
   background-position: 0 100%;
   background-repeat: no-repeat;
   background-size: 0% 1px;
-  padding-bottom: 3px;
+  padding-bottom: 2px;
   transition: background-size 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.link-draw:hover,
-.link-draw-active {
+.link-underline:hover,
+.link-active {
   background-size: 100% 1px;
 }
 

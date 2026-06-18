@@ -37,9 +37,13 @@ function FacebookIcon() {
 // the LOWS wordmark, which runs full-width flush along the bottom.
 export default function Footer() {
   return (
-    <footer className="flex h-[100svh] min-h-[560px] flex-col overflow-hidden font-mono text-tertiary">
-      {/* 1px red hairline across the top */}
-      <div className="px-4 pt-8 sm:px-6 sm:pt-10">
+    <footer
+      id="site-footer"
+      className="flex h-[100svh] min-h-[560px] flex-col overflow-hidden font-mono text-tertiary"
+    >
+      {/* 1px red hairline — sits at the nav-bar height (64px) so the nav items
+          above it read as properly padded once the footer is in view */}
+      <div className="px-4 pt-16 sm:px-6">
         <hr className="border-0 border-t border-tertiary" />
       </div>
 

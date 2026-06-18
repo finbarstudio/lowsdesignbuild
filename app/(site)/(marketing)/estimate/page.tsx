@@ -1,9 +1,9 @@
+import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 
 import EstimateCalculator from "@/app/components/EstimateCalculator";
 import Reveal from "@/app/components/Reveal";
 
-const PAD = "mx-auto w-full max-w-[1900px] px-4 sm:px-6";
 
 export const metadata: Metadata = {
   title: "Estimate Calculator",

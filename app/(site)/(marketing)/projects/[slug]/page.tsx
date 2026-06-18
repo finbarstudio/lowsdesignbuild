@@ -1,3 +1,4 @@
+import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,7 +12,6 @@ import type { Project } from "@/sanity/lib/types";
 
 export const revalidate = 60;
 
-const PAD = "mx-auto w-full max-w-[1900px] px-4 sm:px-6";
 
 export async function generateStaticParams() {
   const slugs = await client.fetch<Array<{ slug: string | null }>>(

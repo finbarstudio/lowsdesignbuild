@@ -1,3 +1,4 @@
+import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,24 +18,22 @@ export const metadata: Metadata = {
     "Family-run design & build across South London. Loft conversions, extensions and refurbishments, from the first drawing through to completion.",
 };
 
-// Tight padding, near full-width.
-const PAD = "mx-auto w-full max-w-[1900px] px-4 sm:px-6";
 
 function ProjectCard({ p }: { p: ProjectListItem }) {
   const tags = [p.category, p.location].filter(Boolean) as string[];
   return (
     <Link
       href={`/projects/${p.slug}`}
-      className="group relative block aspect-[16/9] w-full overflow-hidden bg-line"
+      className="group relative block aspect-[16/9] w-full overflow-hidden bg-line transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform hover:z-10 hover:scale-[1.03]"
     >
-      {/* the photo zooms within a fixed frame; nothing else moves */}
+      {/* the whole card scales up on hover (no in-frame zoom) */}
       {p.mainImage && (
         <Image
           src={urlFor(p.mainImage).width(1600).height(900).fit("crop").url()}
           alt={[p.title, p.category, p.location].filter(Boolean).join(", ")}
           fill
           sizes="80vw"
-          className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform group-hover:scale-[1.06]"
+          className="object-cover"
         />
       )}
       {/* simple gradient so the overlay text stays legible */}
@@ -120,15 +119,7 @@ export default async function HomePage() {
         {featured.length > 0 && (
           <section className="relative z-10 px-[10%] pt-24 sm:pt-32">
             <Reveal>
-              <div className="mb-12 flex items-end justify-between sm:mb-16">
-                <p className="label">Featured projects</p>
-                <Link href="/projects" className="text-sm text-muted">
-                  <span className="link-underline">All projects</span>
-                  <sup className="ml-0.5 text-[0.6em] font-medium">
-                    {projects.length}
-                  </sup>
-                </Link>
-              </div>
+              <p className="label mb-12 sm:mb-16">Featured projects</p>
             </Reveal>
 
             <div className="space-y-32 sm:space-y-56 lg:space-y-[22rem]">

@@ -1,10 +1,10 @@
+import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 
 import ContactForm from "@/app/components/ContactForm";
 import Reveal from "@/app/components/Reveal";
 import { areas, site } from "@/app/lib/site";
 
-const PAD = "mx-auto w-full max-w-[1900px] px-4 sm:px-6";
 
 export const metadata: Metadata = {
   title: "Contact",
