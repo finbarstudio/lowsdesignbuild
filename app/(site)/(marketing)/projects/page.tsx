@@ -42,7 +42,9 @@ export default async function ProjectsPage() {
       <section className={`${PAD} py-16 sm:py-24`}>
         {projects.length === 0 ? (
           <div className="border border-dashed border-line p-12 text-center">
-            <p className="serif text-2xl">New projects coming soon</p>
+            <p className="text-xl font-semibold tracking-tight">
+              New projects coming soon
+            </p>
             <p className="mt-3 text-sm text-muted">
               <Link href="/contact" className="link-underline">
                 Get in touch
@@ -76,7 +78,9 @@ export default async function ProjectsPage() {
                     <p className="label">
                       {[p.category, p.location].filter(Boolean).join(" · ")}
                     </p>
-                    <h2 className="serif mt-2 text-2xl">{p.title}</h2>
+                    <h2 className="mt-2 text-xl font-semibold tracking-tight">
+                      {p.title}
+                    </h2>
                   </div>
                 </Link>
               </Reveal>

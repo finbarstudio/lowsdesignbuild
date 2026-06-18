@@ -42,7 +42,7 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
 
       {/* overlay text stays fixed */}
       <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-6 sm:p-8">
-        <h3 className="serif text-3xl leading-none text-white sm:text-4xl">
+        <h3 className="text-3xl font-semibold leading-tight tracking-tight text-white sm:text-4xl">
           {p.title}
         </h3>
         {tags.length > 0 && (
@@ -70,8 +70,10 @@ export default async function HomePage() {
     <>
       <HomeChrome projectCount={projects.length} />
 
-      {/* ---------------- Hero (uncropped, scroll for more) ---------------- */}
-      <section id="home-hero" className="relative w-full">
+      {/* ---------------- Hero ---------------- */}
+      {/* Mobile: a tall 80svh crop so the image reads as a proper hero.
+          sm+: the uncropped photo at its natural height (scroll for more). */}
+      <section id="home-hero" className="relative h-[80svh] w-full sm:h-auto">
         <Image
           src="/hero-main.jpg"
           alt="A Lows Design & Build living room"
@@ -79,7 +81,7 @@ export default async function HomePage() {
           height={2133}
           priority
           sizes="100vw"
-          className="block h-auto w-full"
+          className="block h-full w-full object-cover sm:h-auto sm:object-contain"
         />
         {/* grey overlay, fades in subtly as scroll begins */}
         <div
@@ -87,6 +89,12 @@ export default async function HomePage() {
           style={{ opacity: 0 }}
           className="pointer-events-none absolute inset-0 bg-[#424952] transition-opacity duration-700 ease-out"
         />
+        {/* Standout serif tagline — the editorial voice over the hero, sits
+            top-left under the bar so it never clashes with the wordmark that
+            docks bottom-left. Shows on every breakpoint. */}
+        <p className="serif pointer-events-none absolute left-4 top-20 z-10 max-w-[15rem] text-2xl leading-[1.1] text-white sm:left-6 sm:top-28 sm:max-w-md sm:text-4xl lg:text-5xl">
+          Family-run design &amp; build across South London.
+        </p>
       </section>
 
       {/* Sticky statement + featured projects share a wrapper so the pinned
@@ -95,9 +103,11 @@ export default async function HomePage() {
       <div className="relative">
         {/* ---------------- Family-run statement (Futura) ---------------- */}
         <section className="sticky top-0 flex h-[100svh] flex-col items-center justify-center">
-          <div className={PAD}>
+          {/* On mobile the slogan is inset to the same 10% as the project
+              thumbnails below so the wide caps never spill past their edges. */}
+          <div className="mx-auto w-full max-w-[1900px] px-[10%] sm:px-6">
             <Reveal>
-              <h1 className="mx-auto max-w-6xl text-center font-sans text-4xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
+              <h1 className="mx-auto max-w-6xl text-center font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
                 Family Run Construction Services in London and Surrounding Areas
               </h1>
             </Reveal>
@@ -114,9 +124,6 @@ export default async function HomePage() {
               <div className="mb-12 flex items-end justify-between sm:mb-16">
                 <p className="label">Featured projects</p>
                 <Link href="/projects" className="text-sm text-muted">
-                  <span aria-hidden="true" className="mr-2 text-tertiary">
-                    ●
-                  </span>
                   <span className="link-underline">All projects</span>
                   <sup className="ml-0.5 text-[0.6em] font-medium">
                     {projects.length}
