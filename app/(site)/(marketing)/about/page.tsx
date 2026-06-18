@@ -3,8 +3,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import ProcessPath from "@/app/components/ProcessPath";
 import Reveal from "@/app/components/Reveal";
-import { areas, processSteps, services, site } from "@/app/lib/site";
+import { areas, services, site } from "@/app/lib/site";
 
 
 export const metadata: Metadata = {
@@ -117,27 +118,15 @@ export default function AboutPage() {
       </section>
 
       {/* Process */}
-      <section
-        className={`${PAD} flex min-h-0 flex-col justify-center py-20 sm:min-h-[90vh] sm:py-24`}
-      >
+      <section className={`${PAD} py-20 sm:py-32`}>
         <Reveal>
           <p className="label">Our process</p>
           <h2 className="serif mt-6 max-w-2xl text-3xl sm:text-5xl">
             The key stages of a successful project.
           </h2>
         </Reveal>
-        <div className="mt-16 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          {processSteps.map((step, i) => (
-            <Reveal key={step.n} delay={i * 80}>
-              <span className="text-2xl font-bold tracking-tight text-copper">
-                {step.n}
-              </span>
-              <h3 className="mt-3 text-base font-medium">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                {step.text}
-              </p>
-            </Reveal>
-          ))}
+        <div className="mt-16">
+          <ProcessPath />
         </div>
       </section>
 
