@@ -66,19 +66,27 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* The single global underline: a 1px line that draws in left→right on hover.
-   .link-active keeps it permanently drawn (current nav page). */
+/* The single global underline: a 1px line, tight under the text, that draws in
+   left→right on hover. Width tracks the element box (use inline / w-fit so it
+   only spans the text). .link-active keeps it permanently drawn. */
 .link-underline {
-  background-image: linear-gradient(currentColor, currentColor);
-  background-position: 0 100%;
-  background-repeat: no-repeat;
-  background-size: 0% 1px;
-  padding-bottom: 2px;
-  transition: background-size 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
 }
-.link-underline:hover,
-.link-active {
-  background-size: 100% 1px;
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 1px;
+  width: 100%;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover::after,
+.link-active::after {
+  transform: scaleX(1);
 }
 
 /* Sub-heading / label — Space Mono, tracked, all caps */

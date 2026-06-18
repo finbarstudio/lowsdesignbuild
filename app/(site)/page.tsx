@@ -135,7 +135,7 @@ export default async function HomePage() {
             it slides up over the pinned slogan as a continuous cover, so the
             slogan never re-emerges in the gap below the last project. */}
         <section
-          className={`${PAD} relative z-10 bg-background py-24 sm:py-32`}
+          className={`${PAD} relative z-10 bg-background pb-24 pt-40 sm:pb-32 sm:pt-64`}
         >
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           {/* left third: sticky title that stays put as the cards scroll */}

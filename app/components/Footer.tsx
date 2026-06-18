@@ -65,12 +65,12 @@ export default function Footer() {
           </div>
 
           {/* contact */}
-          <div className="sm:col-span-4 sm:col-start-5">
+          <div className="flex flex-col items-start sm:col-span-4 sm:col-start-5">
             <p>South London</p>
-            <a href={site.phoneHref} className="link-underline mt-2 block">
+            <a href={site.phoneHref} className="link-underline mt-2">
               {site.phone}
             </a>
-            <a href={`mailto:${site.email}`} className="link-underline block">
+            <a href={`mailto:${site.email}`} className="link-underline">
               {site.email}
             </a>
           </div>

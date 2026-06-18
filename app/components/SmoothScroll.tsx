@@ -12,6 +12,10 @@ export default function SmoothScroll() {
   const pathname = usePathname();
 
   useEffect(() => {
+    // Always start a new route at the very top — Lenis otherwise keeps its own
+    // virtual scroll position and "remembers" where the last page was.
+    window.scrollTo(0, 0);
+
     if (pathname?.startsWith("/studio")) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     // Touch devices already scroll with native inertia. Running Lenis on top of
@@ -28,6 +32,7 @@ export default function SmoothScroll() {
       wheelMultiplier: 0.9,
       touchMultiplier: 1.6,
     });
+    lenis.scrollTo(0, { immediate: true });
     let raf = 0;
     const loop = (time: number) => {
       lenis.raf(time);
