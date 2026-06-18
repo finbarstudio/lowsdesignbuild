@@ -149,7 +149,7 @@ export default async function HomePage() {
             {/* the two directors, one wide headshot spanning both columns */}
             <div className="sm:col-span-2">
               <WipeReveal>
-                <div className="relative aspect-[16/9] overflow-hidden bg-line">
+                <div className="relative aspect-[16/9] overflow-hidden bg-background">
                   <Image
                     src={teamLead.img}
                     alt={teamLead.alt}
@@ -172,7 +172,7 @@ export default async function HomePage() {
             {team.map((m) => (
               <div key={m.name}>
                 <WipeReveal>
-                  <div className="relative aspect-[4/5] overflow-hidden bg-line">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-background">
                     <Image
                       src={m.img}
                       alt={m.name}
