@@ -2,12 +2,18 @@ import { site } from "@/app/lib/site";
 
 const YEAR = 2026;
 
-// Full-height (100vh) footer: a sparse Swiss grid of essentials sitting just
-// above the LOWS wordmark, which runs full-width flush along the bottom.
+// Full-height (100vh) footer: a 2px red rule near the top, a tall stretch of
+// open space, then a sparse Swiss grid of essentials sitting just above the
+// LOWS wordmark, which runs full-width flush along the bottom.
 export default function Footer() {
   return (
-    <footer className="flex min-h-[60vh] flex-col justify-end overflow-hidden text-tertiary sm:h-[100svh]">
-      <div className="px-4 sm:px-6">
+    <footer className="flex h-[100svh] min-h-[560px] flex-col overflow-hidden text-tertiary">
+      {/* red hairline across the top, padded down a touch from the very edge */}
+      <div className="px-4 pt-8 sm:px-6 sm:pt-10">
+        <hr className="border-0 border-t-2 border-tertiary" />
+      </div>
+
+      <div className="mt-auto px-4 sm:px-6">
         {/* minimal info, swiss grid */}
         <div className="mb-8 grid grid-cols-2 gap-y-6 text-sm sm:mb-10 sm:grid-cols-12">
           <div className="sm:col-span-3">
