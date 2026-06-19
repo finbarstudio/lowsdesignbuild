@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import AreaPills from "@/app/components/AreaPills";
-import DesignBuildMark from "@/app/components/DesignBuildMark";
 import ProcessPath from "@/app/components/ProcessPath";
 import WordReveal from "@/app/components/WordReveal";
 import Reveal from "@/app/components/Reveal";
@@ -48,19 +47,7 @@ export default async function AboutPage() {
       >
         <h1 className="mx-auto max-w-6xl text-center font-sans text-3xl font-bold uppercase leading-[1.08] sm:text-5xl sm:tracking-tight lg:text-6xl">
           <WordReveal
-            label="A family-run design and build company in Greater London"
-            items={[
-              "A",
-              "family-run",
-              <DesignBuildMark
-                key="db"
-                className="inline-block h-[0.62em] w-auto translate-y-[-0.04em]"
-              />,
-              "company",
-              "in",
-              "Greater",
-              "London",
-            ]}
+            text="A family-run design & build company in Greater London"
           />
         </h1>
       </section>
