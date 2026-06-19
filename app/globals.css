@@ -66,6 +66,13 @@ body {
   letter-spacing: -0.01em;
 }
 
+/* Optical kerning for large display headings — fixes L/Y and P/A pair spacing */
+h1, h2, h3, .display {
+  font-kerning: normal;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+}
+
 /* The single global underline: a 1px line, tight under the text, that draws in
    left→right on hover. Width tracks the element box (use inline / w-fit so it
    only spans the text). .link-active keeps it permanently drawn. */

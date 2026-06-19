@@ -129,7 +129,7 @@ export default async function HomePage() {
               thumbnails below so the wide caps never spill past their edges. */}
           <div className="mx-auto w-full max-w-[1900px] px-[10%] sm:px-6">
             <h1 className="mx-auto max-w-6xl text-center font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
-              <WordReveal text="Family Run Construction Services in London and Surrounding Areas" />
+              <WordReveal text="Family run start to finish construction services" />
             </h1>
           </div>
         </section>
