@@ -6,30 +6,48 @@ import { processSteps } from "@/app/lib/site";
 
 type Pt = { x: number; y: number };
 
+// The LOWS logomark as a single polyline, in its own coordinate box. The path
+// runs into its first point and then traces these, so the mark is drawn as a
+// continuation of the same stroke.
+const LOGO_W = 121.43;
+const LOGO_H = 86.64;
+const LOGO_POINTS: [number, number][] = (() => {
+  const n =
+    "2 84.64 2 56.06 27.52 38.21 27.52 3.23 96.77 37.67 96.77 3.59 49.38 3.59 49.38 84.64 71.25 84.64 71.25 55.88 119.43 55.88 119.43 84.64"
+      .split(/\s+/)
+      .map(Number);
+  const a: [number, number][] = [];
+  for (let i = 0; i < n.length; i += 2) a.push([n[i], n[i + 1]]);
+  return a;
+})();
+
 /**
- * Our process as a scroll-linked pathway. The four stages sit in a responsive
- * grid (single column on mobile, 2×2 on desktop landscape) and a winding line
- * connects them. As you scroll, an active dot travels the line, draws a red
- * trail and lights up each stage as it arrives.
+ * Our process as a scroll-linked pathway. The four stages sit in a centred
+ * zigzag and a winding line connects them; as you scroll, a dot travels the
+ * line, draws the trail and lights up each stage. After the last stage the line
+ * runs on into the LOWS logomark and draws it to finish — one continuous stroke.
  */
 export default function ProcessPath() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const baseRef = useRef<SVGPathElement>(null);
   const trailRef = useRef<SVGPathElement>(null);
+  const logoBaseRef = useRef<SVGPathElement>(null);
+  const logoTrailRef = useRef<SVGPathElement>(null);
   const dotRef = useRef<SVGGElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
-  const logoPathRef = useRef<SVGPolylineElement>(null);
   const nodeLen = useRef<number[]>([]);
 
   const STEPS = processSteps.length;
 
   const [d, setD] = useState("");
+  const [dLogo, setDLogo] = useState("");
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [pts, setPts] = useState<Pt[]>([]);
   const [active, setActive] = useState(-1);
 
-  // Build the path through the measured centre of each stage's node.
+  // Build the connecting path (through the stage nodes, then down into the
+  // logomark's start point) plus the logomark path, all in wrap coordinates.
   useEffect(() => {
     const build = () => {
       const wrap = wrapRef.current;
@@ -37,20 +55,40 @@ export default function ProcessPath() {
       const wr = wrap.getBoundingClientRect();
       const p: Pt[] = nodeRefs.current.map((el) => {
         const r = el!.getBoundingClientRect();
-        return { x: r.left - wr.left + r.width / 2, y: r.top - wr.top + r.height / 2 };
+        return {
+          x: r.left - wr.left + r.width / 2,
+          y: r.top - wr.top + r.height / 2,
+        };
       });
-      // final point: the top-centre of the logomark, so the line runs into it
+
+      let logoPath = "";
       const lr = logoRef.current;
       if (lr) {
         const r = lr.getBoundingClientRect();
-        p.push({ x: r.left - wr.left + r.width / 2, y: r.top - wr.top + 4 });
+        const lx = r.left - wr.left;
+        const ly = r.top - wr.top;
+        const scale = r.width / LOGO_W;
+        // the path comes down to the logomark's start point (bottom-left)
+        p.push({
+          x: lx + LOGO_POINTS[0][0] * scale,
+          y: ly + LOGO_POINTS[0][1] * scale,
+        });
+        logoPath = LOGO_POINTS.map(
+          (pt, i) =>
+            `${i === 0 ? "M" : "L"} ${(lx + pt[0] * scale).toFixed(1)} ${(
+              ly +
+              pt[1] * scale
+            ).toFixed(1)}`,
+        ).join(" ");
       }
+
       let dd = `M ${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`;
       for (let i = 1; i < p.length; i++) {
         const my = (p[i - 1].y + p[i].y) / 2;
         dd += ` C ${p[i - 1].x.toFixed(1)} ${my.toFixed(1)}, ${p[i].x.toFixed(1)} ${my.toFixed(1)}, ${p[i].x.toFixed(1)} ${p[i].y.toFixed(1)}`;
       }
       setD(dd);
+      setDLogo(logoPath);
       setPts(p);
       setSize({ w: wr.width, h: wr.height });
     };
@@ -63,22 +101,28 @@ export default function ProcessPath() {
     };
   }, []);
 
-  // Measure each node's distance along the path, wire the trail + scroll.
+  // Measure lengths, wire the trail + dot to scroll. The dot travels the main
+  // path and then continues onto the logomark, drawing both.
   useEffect(() => {
     const base = baseRef.current;
     const trail = trailRef.current;
+    const logoBase = logoBaseRef.current;
+    const logoTrail = logoTrailRef.current;
     if (!base || !d || pts.length === 0) return;
 
-    const total = base.getTotalLength();
-    // sample the path to find where (along its length) each node sits
+    const mainTotal = base.getTotalLength();
+    const logoTotal = logoBase ? logoBase.getTotalLength() : 0;
+    const combined = mainTotal + logoTotal;
+
+    // sample the main path to find where each stage node sits along it
     const N = 260;
     const samples: { x: number; y: number; l: number }[] = [];
     for (let i = 0; i <= N; i++) {
-      const l = (i / N) * total;
+      const l = (i / N) * mainTotal;
       const pt = base.getPointAtLength(l);
       samples.push({ x: pt.x, y: pt.y, l });
     }
-    nodeLen.current = pts.map((p) => {
+    nodeLen.current = pts.slice(0, STEPS).map((p) => {
       let best = 0;
       let bd = Infinity;
       for (const s of samples) {
@@ -94,8 +138,12 @@ export default function ProcessPath() {
     });
 
     if (trail) {
-      trail.style.strokeDasharray = `${total}`;
-      trail.style.strokeDashoffset = `${total}`;
+      trail.style.strokeDasharray = `${mainTotal}`;
+      trail.style.strokeDashoffset = `${mainTotal}`;
+    }
+    if (logoTrail) {
+      logoTrail.style.strokeDasharray = `${logoTotal}`;
+      logoTrail.style.strokeDashoffset = `${logoTotal}`;
     }
 
     let raf = 0;
@@ -108,26 +156,28 @@ export default function ProcessPath() {
         1,
         Math.max(0, (vh * 0.5 - rect.top) / rect.height),
       );
-      const L = progress * total;
-      const pt = base.getPointAtLength(L);
+      const L = progress * combined;
+
+      let pt: DOMPoint;
+      if (L <= mainTotal) {
+        pt = base.getPointAtLength(L);
+        if (trail) trail.style.strokeDashoffset = `${mainTotal - L}`;
+        if (logoTrail) logoTrail.style.strokeDashoffset = `${logoTotal}`;
+      } else {
+        const ll = Math.min(logoTotal, L - mainTotal);
+        pt = logoBase!.getPointAtLength(ll);
+        if (trail) trail.style.strokeDashoffset = `0`;
+        if (logoTrail) logoTrail.style.strokeDashoffset = `${logoTotal - ll}`;
+      }
       if (dotRef.current) {
         dotRef.current.setAttribute("transform", `translate(${pt.x} ${pt.y})`);
       }
-      if (trail) trail.style.strokeDashoffset = `${total - L}`;
+
       let a = -1;
       for (let i = 0; i < STEPS; i++) {
         if (L >= nodeLen.current[i] - 2) a = i;
       }
       setActive((prev) => (prev === a ? prev : a));
-      // once the trail passes the last step, draw the logomark into completion
-      const logoStart = nodeLen.current[STEPS - 1] ?? total;
-      const logoP = Math.min(
-        1,
-        Math.max(0, (L - logoStart) / Math.max(1, total - logoStart)),
-      );
-      if (logoPathRef.current) {
-        logoPathRef.current.style.strokeDashoffset = `${1 - logoP}`;
-      }
     };
 
     const onScroll = () => {
@@ -142,7 +192,7 @@ export default function ProcessPath() {
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [d, pts]);
+  }, [d, dLogo, pts, STEPS]);
 
   return (
     <div ref={wrapRef} className="relative">
@@ -156,6 +206,26 @@ export default function ProcessPath() {
           <>
             <path ref={baseRef} d={d} stroke="var(--line)" strokeWidth="2" strokeLinecap="round" />
             <path ref={trailRef} d={d} stroke="var(--tertiary)" strokeWidth="2" strokeLinecap="round" />
+            {dLogo && (
+              <>
+                <path
+                  ref={logoBaseRef}
+                  d={dLogo}
+                  stroke="var(--line)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  ref={logoTrailRef}
+                  d={dLogo}
+                  stroke="var(--tertiary)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </>
+            )}
             {pts.slice(0, STEPS).map((p, i) => (
               <circle
                 key={i}
@@ -176,10 +246,7 @@ export default function ProcessPath() {
         )}
       </svg>
 
-      {/* The connecting line zigzags within a narrow central band (nodes sit at
-          38% / 62% of the width). The text is pushed to the outer edge on the
-          matching side, so the line lives in the middle and never runs through
-          the copy. On mobile it collapses to a left rail with the text beside it. */}
+      {/* stages — centred zigzag, copy pushed to the outer edge (see below) */}
       <div className="flex flex-col">
         {processSteps.map((step, i) => {
           const right = i % 2 === 1;
@@ -188,7 +255,6 @@ export default function ProcessPath() {
               key={step.n}
               className="relative flex min-h-[24vh] items-center sm:min-h-[34vh]"
             >
-              {/* node — on the left rail (mobile) or the central band (sm+) */}
               <span
                 ref={(el) => {
                   nodeRefs.current[i] = el;
@@ -197,7 +263,6 @@ export default function ProcessPath() {
                   right ? "sm:left-[62%]" : "sm:left-[38%]"
                 }`}
               />
-              {/* copy — beside the rail on mobile, outboard of the band on sm+ */}
               <div
                 className={`ml-[18%] w-[74%] text-left sm:ml-0 sm:w-[34%] ${
                   right
@@ -232,27 +297,10 @@ export default function ProcessPath() {
         })}
       </div>
 
-      {/* the line runs on past the last stage and draws the logomark to finish */}
+      {/* logomark — an invisible spacer that reserves the mark's footprint and
+          is measured in build(); the mark itself is drawn in the SVG above. */}
       <div className="mt-12 flex justify-center sm:mt-16">
-        <div ref={logoRef} className="w-20 sm:w-24">
-          <svg
-            viewBox="0 0 121.43 86.64"
-            fill="none"
-            className="w-full"
-            aria-hidden="true"
-          >
-            <polyline
-              ref={logoPathRef}
-              points="2 84.64 2 56.06 27.52 38.21 27.52 3.23 96.77 37.67 96.77 3.59 49.38 3.59 49.38 84.64 71.25 84.64 71.25 55.88 119.43 55.88 119.43 84.64"
-              stroke="var(--tertiary)"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              pathLength={1}
-              style={{ strokeDasharray: 1, strokeDashoffset: 1 }}
-            />
-          </svg>
-        </div>
+        <div ref={logoRef} className="aspect-[121.43/86.64] w-20 sm:w-24" />
       </div>
     </div>
   );

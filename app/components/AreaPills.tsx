@@ -48,7 +48,7 @@ export default function AreaPills({ areas }: { areas: string[] }) {
       {areas.map((area, i) => (
         <span
           key={area}
-          className="inline-flex items-center rounded-full border border-ink/30 px-5 py-2 text-lg font-medium uppercase tracking-[0.04em] sm:px-7 sm:py-3 sm:text-2xl"
+          className="inline-flex items-center rounded-full border border-ink/45 px-5 py-2 text-lg font-medium uppercase leading-none tracking-[0.04em] sm:px-7 sm:py-2.5 sm:text-2xl"
           style={{
             transform: shown ? "translateY(0)" : "translateY(10px)",
             opacity: shown ? 1 : 0,
