@@ -18,14 +18,15 @@ export interface Project extends ProjectListItem {
   gallery: Array<SanityImageSource & { _key?: string }> | null;
 }
 
-export interface SiteSettings {
+export interface HomePage {
   heroImage: SanityImageSource | null;
   heroLqip: string | null;
   heroDim: { width: number; height: number } | null;
   heroTrailImages: Array<SanityImageSource & { _key?: string }> | null;
-  contactEmail: string | null;
-  areas: string[] | null;
   homeHeroText: string | null;
+}
+
+export interface AboutPage {
   aboutHeroText: string | null;
   familyBio: string | null;
   processSteps: Array<{
@@ -33,6 +34,9 @@ export interface SiteSettings {
     title: string | null;
     text: string | null;
   }> | null;
+}
+
+export interface Family {
   teamLead: {
     image: SanityImageSource | null;
     alt: string | null;
@@ -44,6 +48,11 @@ export interface SiteSettings {
     role: string | null;
     image: SanityImageSource | null;
   }> | null;
+}
+
+export interface Contact {
+  contactEmail: string | null;
+  areas: string[] | null;
 }
 
 export interface ServiceItem {

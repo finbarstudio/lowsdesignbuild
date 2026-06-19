@@ -11,8 +11,8 @@ import WordReveal from "@/app/components/WordReveal";
 import { team as fallbackTeam, teamLead as fallbackTeamLead } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
-import { PROJECTS_QUERY, SITE_SETTINGS_QUERY } from "@/sanity/lib/queries";
-import type { ProjectListItem, SiteSettings } from "@/sanity/lib/types";
+import { FAMILY_QUERY, HOME_PAGE_QUERY, PROJECTS_QUERY } from "@/sanity/lib/queries";
+import type { Family, HomePage, ProjectListItem } from "@/sanity/lib/types";
 
 export const revalidate = 60;
 
@@ -71,49 +71,49 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
 }
 
 export default async function HomePage() {
-  const [projects, settings] = await Promise.all([
+  const [projects, home, family] = await Promise.all([
     client.fetch<ProjectListItem[]>(PROJECTS_QUERY),
-    client.fetch<SiteSettings | null>(SITE_SETTINGS_QUERY),
+    client.fetch<HomePage | null>(HOME_PAGE_QUERY),
+    client.fetch<Family | null>(FAMILY_QUERY),
   ]);
   const featured = projects.slice(0, 3);
 
   // Hero comes from the CMS when set; Sanity supplies a tiny lqip blur as the
   // instant placeholder. Otherwise fall back to the bundled image + its blur.
-  const hero = settings?.heroImage
+  const hero = home?.heroImage
     ? {
-        src: urlFor(settings.heroImage).width(3200).quality(80).url(),
-        blur: settings.heroLqip ?? FALLBACK_HERO_BLUR,
-        w: settings.heroDim?.width ?? 3200,
-        h: settings.heroDim?.height ?? 2133,
+        src: urlFor(home.heroImage).width(3200).quality(80).url(),
+        blur: home.heroLqip ?? FALLBACK_HERO_BLUR,
+        w: home.heroDim?.width ?? 3200,
+        h: home.heroDim?.height ?? 2133,
       }
     : { src: "/hero-main.jpg", blur: FALLBACK_HERO_BLUR, w: 3200, h: 2133 };
 
   // Images that trail the cursor across the big slogan (native aspect, no crop).
   // auto("format") so the preloaded <img> and the trail <img> hit the same URL.
-  const trailImgs = (settings?.heroTrailImages ?? []).map((img) =>
-    urlFor(img).width(600).quality(80).auto("format").url(),
-  );
+  const trailImgs = (home?.heroTrailImages ?? [])
+    .filter((img) => (img as { asset?: unknown })?.asset)
+    .map((img) => urlFor(img).width(600).quality(80).auto("format").url());
 
   // Editable copy + people, with the built-in content as a graceful fallback.
   const heroText =
-    settings?.homeHeroText ||
-    "Family run start to finish construction services";
+    home?.homeHeroText || "Family run start to finish construction services";
 
-  const teamLead = settings?.teamLead?.image
+  const teamLead = family?.teamLead?.image
     ? {
-        img: urlFor(settings.teamLead.image)
+        img: urlFor(family.teamLead.image)
           .width(1600)
           .height(900)
           .fit("crop")
           .url(),
-        alt: settings.teamLead.alt ?? "",
-        people: settings.teamLead.people ?? [],
+        alt: family.teamLead.alt ?? "",
+        people: family.teamLead.people ?? [],
       }
     : fallbackTeamLead;
 
   const team =
-    settings?.team && settings.team.length > 0
-      ? settings.team.map((m) => ({
+    family?.team && family.team.length > 0
+      ? family.team.map((m) => ({
           name: m.name ?? "",
           role: m.role ?? "",
           img: m.image

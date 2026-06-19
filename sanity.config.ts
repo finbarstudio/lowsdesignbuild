@@ -7,6 +7,7 @@ import { visionTool } from "@sanity/vision";
 
 import { apiVersion, dataset, projectId } from "./sanity/env";
 import { schema } from "./sanity/schemaTypes";
+import { structure } from "./sanity/structure";
 
 export default defineConfig({
   name: "default",
@@ -16,7 +17,7 @@ export default defineConfig({
   dataset,
   schema,
   plugins: [
-    structureTool(), // the document editing UI
+    structureTool({ structure }), // the document editing UI (custom sidebar)
     visionTool({ defaultApiVersion: apiVersion }), // a GROQ playground for learning
   ],
 });

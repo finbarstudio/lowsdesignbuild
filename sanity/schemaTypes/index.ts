@@ -1,11 +1,21 @@
 import { type SchemaTypeDefinition } from "sanity";
 
+import { aboutPageType } from "./aboutPage";
+import { contactType } from "./contact";
+import { familyType } from "./family";
+import { homePageType } from "./homePage";
 import { projectType } from "./project";
 import { serviceType } from "./service";
-import { siteSettingsType } from "./siteSettings";
 
-// Every document/object type the Studio knows about. Add new content types
-// (blog posts, areas…) to this array as the site grows.
+// Every document/object type the Studio knows about. Organised by page/section
+// (Home, About, Family, Contact) plus the repeatable lists (What we do, Projects).
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [projectType, serviceType, siteSettingsType],
+  types: [
+    homePageType,
+    aboutPageType,
+    serviceType,
+    familyType,
+    projectType,
+    contactType,
+  ],
 };

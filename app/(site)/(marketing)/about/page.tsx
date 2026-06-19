@@ -11,8 +11,12 @@ import ServiceSlideshow from "@/app/components/ServiceSlideshow";
 import { areas, processSteps, services, site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
-import { SERVICES_QUERY, SITE_SETTINGS_QUERY } from "@/sanity/lib/queries";
-import type { ServiceItem, SiteSettings } from "@/sanity/lib/types";
+import {
+  ABOUT_PAGE_QUERY,
+  CONTACT_QUERY,
+  SERVICES_QUERY,
+} from "@/sanity/lib/queries";
+import type { AboutPage, Contact, ServiceItem } from "@/sanity/lib/types";
 
 const FALLBACK_ABOUT_HERO =
   "A family-run design & build company in Greater London";
@@ -35,21 +39,22 @@ export const revalidate = 60;
 export default async function AboutPage() {
   // Services come from Sanity so the client can edit them. Until any are added
   // there, fall back to the built-in copy so the section is never empty.
-  const [cms, settings] = await Promise.all([
+  const [cms, about, contact] = await Promise.all([
     client.fetch<ServiceItem[]>(SERVICES_QUERY),
-    client.fetch<SiteSettings | null>(SITE_SETTINGS_QUERY),
+    client.fetch<AboutPage | null>(ABOUT_PAGE_QUERY),
+    client.fetch<Contact | null>(CONTACT_QUERY),
   ]);
 
   const areaList =
-    settings?.areas && settings.areas.length > 0 ? settings.areas : areas;
-  const aboutHero = settings?.aboutHeroText || FALLBACK_ABOUT_HERO;
-  const bioParas = (settings?.familyBio || FALLBACK_BIO)
+    contact?.areas && contact.areas.length > 0 ? contact.areas : areas;
+  const aboutHero = about?.aboutHeroText || FALLBACK_ABOUT_HERO;
+  const bioParas = (about?.familyBio || FALLBACK_BIO)
     .split(/\n\s*\n/)
     .map((p) => p.trim())
     .filter(Boolean);
   const steps =
-    settings?.processSteps && settings.processSteps.length > 0
-      ? settings.processSteps.map((s, i) => ({
+    about?.processSteps && about.processSteps.length > 0
+      ? about.processSteps.map((s, i) => ({
           n: String(i + 1).padStart(2, "0"),
           title: s.title ?? "",
           text: s.text ?? "",
@@ -63,10 +68,12 @@ export default async function AboutPage() {
       ? cms.map((s) => ({
           title: s.title ?? "",
           blurb: s.blurb ?? "",
-          imgs: (s.images ?? []).map((img) => ({
-            hi: urlFor(img).width(640).quality(80).auto("format").url(),
-            lo: urlFor(img).width(280).quality(45).auto("format").url(),
-          })),
+          imgs: (s.images ?? [])
+            .filter((img) => (img as { asset?: unknown })?.asset)
+            .map((img) => ({
+              hi: urlFor(img).width(640).quality(80).auto("format").url(),
+              lo: urlFor(img).width(280).quality(45).auto("format").url(),
+            })),
         }))
       : services.map((s) => ({
           ...s,

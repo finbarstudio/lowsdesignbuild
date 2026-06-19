@@ -7,8 +7,8 @@ import ScrollNudge from "@/app/components/ScrollNudge";
 import WordReveal from "@/app/components/WordReveal";
 import { areas as fallbackAreas, site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
-import { SITE_SETTINGS_QUERY } from "@/sanity/lib/queries";
-import type { SiteSettings } from "@/sanity/lib/types";
+import { CONTACT_QUERY } from "@/sanity/lib/queries";
+import type { Contact } from "@/sanity/lib/types";
 
 
 export const metadata: Metadata = {
@@ -21,11 +21,9 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function ContactPage() {
-  const settings = await client.fetch<SiteSettings | null>(SITE_SETTINGS_QUERY);
+  const contact = await client.fetch<Contact | null>(CONTACT_QUERY);
   const areas =
-    settings?.areas && settings.areas.length > 0
-      ? settings.areas
-      : fallbackAreas;
+    contact?.areas && contact.areas.length > 0 ? contact.areas : fallbackAreas;
   return (
     <main>
       <ScrollNudge />
@@ -61,7 +59,7 @@ export default async function ContactPage() {
           </div>
           <div className="lg:col-span-2">
             <p className="label mb-8 !text-ink">Tell us about your project</p>
-            <ContactForm email={settings?.contactEmail || site.email} />
+            <ContactForm email={contact?.contactEmail || site.email} />
           </div>
         </div>
       </section>

@@ -6,7 +6,7 @@ import { defineField, defineType } from "sanity";
 // the rest cycle through on hover.
 export const serviceType = defineType({
   name: "service",
-  title: "Service",
+  title: "What we do",
   type: "document",
   fields: [
     defineField({
