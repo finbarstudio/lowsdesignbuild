@@ -61,6 +61,30 @@ export default function WordReveal({
 
   const tokens: React.ReactNode[] = items ?? (text ?? "").split(" ");
 
+  // Manual kern offsets for problem pairs (applied after CSS uppercase transform,
+  // so we match against the uppercased form). Values in em — negative = tighter.
+  const KERN: Record<string, number> = {
+    FA: -0.06,
+    LY: -0.07,
+    TA: -0.05,
+  };
+
+  function kernedWord(word: string) {
+    const chars = word.toUpperCase().split("");
+    return word.split("").map((ch, i) => {
+      const pair = chars[i] + (chars[i + 1] ?? "");
+      const offset = KERN[pair];
+      return (
+        <span
+          key={i}
+          style={offset !== undefined ? { marginRight: `${offset}em` } : undefined}
+        >
+          {ch}
+        </span>
+      );
+    });
+  }
+
   return (
     <span ref={ref} className={className} aria-label={label ?? text}>
       {tokens.map((tok, i) => (
@@ -77,7 +101,7 @@ export default function WordReveal({
               transitionDelay: `${i * stagger}ms`,
             }}
           >
-            {tok}
+            {typeof tok === "string" ? kernedWord(tok) : tok}
           </span>
         </span>
       ))}
