@@ -40,13 +40,14 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
       {/* simple gradient so the overlay text stays legible */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
 
-      {/* overlay text stays fixed */}
+      {/* overlay text: title and tags scale a touch more than the card and
+          with a stagger, so they lift off the image on hover (parallax feel) */}
       <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-6 sm:p-8">
-        <h3 className="text-3xl font-semibold leading-tight tracking-tight text-white sm:text-4xl">
+        <h3 className="origin-bottom-left text-3xl font-semibold leading-tight tracking-tight text-white transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] [transition-delay:120ms] group-hover:scale-[1.05] sm:text-4xl">
           {p.title}
         </h3>
         {tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex origin-bottom-left flex-wrap gap-2 transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] [transition-delay:220ms] group-hover:scale-[1.1]">
             {tags.map((t) => (
               <span
                 key={t}
@@ -117,12 +118,10 @@ export default async function HomePage() {
         {/* Transparent: each opaque card wipes over the sticky slogan behind,
             and the slogan shows in the gaps between them. No bottom padding so
             the slogan stays hidden behind the last card at the very end. */}
+        {/* z-20 (above the People block) so the last card's hover-scale isn't
+            clipped at the bottom by the opaque paper background that follows */}
         {featured.length > 0 && (
-          <section className="relative z-10 px-[10%] pt-24 sm:pt-32">
-            <Reveal>
-              <p className="label mb-12 sm:mb-16">Featured projects</p>
-            </Reveal>
-
+          <section className="relative z-20 px-[10%] pt-24 sm:pt-32">
             <div className="space-y-32 sm:space-y-56 lg:space-y-[22rem]">
               {featured.map((p) => (
                 <ProjectCard key={p._id} p={p} />
