@@ -9,10 +9,15 @@ import WipeReveal from "@/app/components/WipeReveal";
 import { team, teamLead } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
-import { PROJECTS_QUERY } from "@/sanity/lib/queries";
-import type { ProjectListItem } from "@/sanity/lib/types";
+import { PROJECTS_QUERY, SITE_SETTINGS_QUERY } from "@/sanity/lib/queries";
+import type { ProjectListItem, SiteSettings } from "@/sanity/lib/types";
 
 export const revalidate = 60;
+
+// Tiny base64 blur of the bundled hero, used as an instant placeholder when no
+// CMS hero is set (so there is always something on screen immediately).
+const FALLBACK_HERO_BLUR =
+  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAGKADAAQAAAABAAAAEAAAAAD/7QA4UGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAAAA4QklNBCUAAAAAABDUHYzZjwCyBOmACZjs+EJ+/8AAEQgAEAAYAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/bAEMACQkJCQkJEAkJEBYQEBAWHhYWFhYeJh4eHh4eJi4mJiYmJiYuLi4uLi4uLjc3Nzc3N0BAQEBASEhISEhISEhISP/bAEMBCwwMEhESHxERH0szKjNLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS//dAAQAAv/aAAwDAQACEQMRAD8Ap2V7cRRCRSu3oeeh/wD1Vrpq1wFLyAbVzkjvgZ45rEtoZpYm6jf06e3t/StSS1lKhgORn5exyMc8VxyZvFF7U5Slr5x5BGcd+lcr/aC/88z+f/1q6a/lgltfJnUqMfr+Fc59l07+8fzqLy6Cle+h/9k=";
 
 export const metadata: Metadata = {
   description:
@@ -64,8 +69,22 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
 }
 
 export default async function HomePage() {
-  const projects = await client.fetch<ProjectListItem[]>(PROJECTS_QUERY);
+  const [projects, settings] = await Promise.all([
+    client.fetch<ProjectListItem[]>(PROJECTS_QUERY),
+    client.fetch<SiteSettings | null>(SITE_SETTINGS_QUERY),
+  ]);
   const featured = projects.slice(0, 3);
+
+  // Hero comes from the CMS when set; Sanity supplies a tiny lqip blur as the
+  // instant placeholder. Otherwise fall back to the bundled image + its blur.
+  const hero = settings?.heroImage
+    ? {
+        src: urlFor(settings.heroImage).width(3200).quality(80).url(),
+        blur: settings.heroLqip ?? FALLBACK_HERO_BLUR,
+        w: settings.heroDim?.width ?? 3200,
+        h: settings.heroDim?.height ?? 2133,
+      }
+    : { src: "/hero-main.jpg", blur: FALLBACK_HERO_BLUR, w: 3200, h: 2133 };
 
   return (
     <>
@@ -76,11 +95,13 @@ export default async function HomePage() {
           sm+: the uncropped photo at its natural height (scroll for more). */}
       <section id="home-hero" className="relative h-[80svh] w-full sm:h-auto">
         <Image
-          src="/hero-main.jpg"
+          src={hero.src}
           alt="A Lows Design & Build living room"
-          width={3200}
-          height={2133}
+          width={hero.w}
+          height={hero.h}
           priority
+          placeholder="blur"
+          blurDataURL={hero.blur}
           sizes="100vw"
           className="block h-full w-full object-cover sm:h-auto sm:object-contain"
         />

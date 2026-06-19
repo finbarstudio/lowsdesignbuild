@@ -34,8 +34,8 @@ export default function WipeReveal({
       // tall, centred in the middle of the screen. This makes the wipe line
       // sweep down across the image (visible) rather than sitting still while
       // the image slides up behind it (which happens at a 1:1 span≈height).
-      const start = vh * 0.72;
-      const end = vh * 0.42;
+      const start = vh * 0.6;
+      const end = vh * 0.32;
       const raw = Math.min(1, Math.max(0, (start - r.top) / (start - end)));
       // smoothstep so the sweep eases in/out instead of tracking scroll linearly
       const p = raw * raw * (3 - 2 * raw);

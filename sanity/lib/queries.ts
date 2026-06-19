@@ -42,6 +42,16 @@ export const PROJECT_QUERY = defineQuery(`
   }
 `);
 
+// Site-wide settings. heroLqip is the tiny base64 blur Sanity generates for the
+// hero image — used as an instant placeholder while the full image loads.
+export const SITE_SETTINGS_QUERY = defineQuery(`
+  *[_type == "siteSettings"][0]{
+    heroImage,
+    "heroLqip": heroImage.asset->metadata.lqip,
+    "heroDim": heroImage.asset->metadata.dimensions
+  }
+`);
+
 // The services shown in "What we do" on the About page — ordered manually.
 export const SERVICES_QUERY = defineQuery(`
   *[_type == "service"]

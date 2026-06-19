@@ -18,6 +18,12 @@ export interface Project extends ProjectListItem {
   gallery: Array<SanityImageSource & { _key?: string }> | null;
 }
 
+export interface SiteSettings {
+  heroImage: SanityImageSource | null;
+  heroLqip: string | null;
+  heroDim: { width: number; height: number } | null;
+}
+
 export interface ServiceItem {
   _id: string;
   title: string | null;
