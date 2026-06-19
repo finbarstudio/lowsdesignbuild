@@ -67,7 +67,7 @@ export default function ServiceCard({ service }: { service: Service }) {
             className="block h-auto w-full"
           />
           {hover && step > 0 && (
-            <div key={step} className="wipe-in absolute inset-0">
+            <div key={step} className="wipe-in absolute left-0 top-0 w-full">
               <Image
                 src={imgs[cur]}
                 alt=""
