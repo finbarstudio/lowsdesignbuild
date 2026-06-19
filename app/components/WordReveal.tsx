@@ -9,11 +9,17 @@ import { useEffect, useRef, useState } from "react";
  */
 export default function WordReveal({
   text,
+  items,
+  label,
   className = "",
   stagger = 160,
   duration = 0.7,
 }: {
-  text: string;
+  text?: string;
+  /** mixed tokens (words and/or elements) to reveal one by one; overrides text */
+  items?: React.ReactNode[];
+  /** aria-label when using items */
+  label?: string;
   className?: string;
   /** per-word delay step in ms */
   stagger?: number;
@@ -53,11 +59,11 @@ export default function WordReveal({
     };
   }, []);
 
-  const words = text.split(" ");
+  const tokens: React.ReactNode[] = items ?? (text ?? "").split(" ");
 
   return (
-    <span ref={ref} className={className} aria-label={text}>
-      {words.map((word, i) => (
+    <span ref={ref} className={className} aria-label={label ?? text}>
+      {tokens.map((tok, i) => (
         <span
           key={i}
           aria-hidden="true"
@@ -71,7 +77,7 @@ export default function WordReveal({
               transitionDelay: `${i * stagger}ms`,
             }}
           >
-            {word}
+            {tok}
           </span>
         </span>
       ))}

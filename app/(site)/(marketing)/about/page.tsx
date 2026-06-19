@@ -3,7 +3,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import AreaPills from "@/app/components/AreaPills";
+import DesignBuildMark from "@/app/components/DesignBuildMark";
 import ProcessPath from "@/app/components/ProcessPath";
+import WordReveal from "@/app/components/WordReveal";
 import Reveal from "@/app/components/Reveal";
 import ServiceCard from "@/app/components/ServiceCard";
 import { areas, services, site } from "@/app/lib/site";
@@ -39,16 +41,28 @@ export default async function AboutPage() {
 
   return (
     <main>
-      {/* Intro */}
+      {/* Intro — a hero like the home slogan: word-by-word reveal, with the
+          "design + build" lockup inlined from the logotype */}
       <section
-        className={`${PAD} flex min-h-[55vh] flex-col justify-end pb-16 pt-28 sm:min-h-[70vh] sm:pt-36`}
+        className={`${PAD} flex min-h-[88svh] items-center justify-center pt-16`}
       >
-        <Reveal>
-          <p className="label">About us</p>
-          <h1 className="serif mt-5 max-w-4xl text-4xl sm:text-6xl">
-            A family-run design &amp; build company in Greater London.
-          </h1>
-        </Reveal>
+        <h1 className="mx-auto max-w-6xl text-center font-sans text-3xl font-bold uppercase leading-[1.08] sm:text-5xl sm:tracking-tight lg:text-6xl">
+          <WordReveal
+            label="A family-run design and build company in Greater London"
+            items={[
+              "A",
+              "family-run",
+              <DesignBuildMark
+                key="db"
+                className="inline-block h-[0.62em] w-auto translate-y-[-0.04em]"
+              />,
+              "company",
+              "in",
+              "Greater",
+              "London",
+            ]}
+          />
+        </h1>
       </section>
 
       {/* Story — sticky title (1/3) + feature bio (2/3), like "What we do" */}
