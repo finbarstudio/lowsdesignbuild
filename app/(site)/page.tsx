@@ -5,8 +5,8 @@ import Link from "next/link";
 
 import DropReveal from "@/app/components/DropReveal";
 import HomeChrome from "@/app/components/HomeChrome";
-import Reveal from "@/app/components/Reveal";
 import WipeReveal from "@/app/components/WipeReveal";
+import WordReveal from "@/app/components/WordReveal";
 import { team, teamLead } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
@@ -128,11 +128,9 @@ export default async function HomePage() {
           {/* On mobile the slogan is inset to the same 10% as the project
               thumbnails below so the wide caps never spill past their edges. */}
           <div className="mx-auto w-full max-w-[1900px] px-[10%] sm:px-6">
-            <Reveal>
-              <h1 className="mx-auto max-w-6xl text-center font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
-                Family Run Construction Services in London and Surrounding Areas
-              </h1>
-            </Reveal>
+            <h1 className="mx-auto max-w-6xl text-center font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
+              <WordReveal text="Family Run Construction Services in London and Surrounding Areas" />
+            </h1>
           </div>
         </section>
 
