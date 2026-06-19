@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import DropReveal from "@/app/components/DropReveal";
 import HomeChrome from "@/app/components/HomeChrome";
 import Reveal from "@/app/components/Reveal";
 import WipeReveal from "@/app/components/WipeReveal";
@@ -180,34 +181,42 @@ export default async function HomePage() {
                   />
                 </div>
               </WipeReveal>
-              <div className="mt-4 grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6">
+              <DropReveal delay={250} className="mt-4 grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6">
                 {teamLead.people.map((pp) => (
                   <div key={pp.name}>
                     <p className="text-base font-medium">{pp.name}</p>
                     <p className="text-sm text-muted">{pp.role}</p>
                   </div>
                 ))}
-              </div>
+              </DropReveal>
             </div>
 
-            {team.map((m) => (
-              <div key={m.name}>
-                <WipeReveal>
-                  <div className="relative aspect-[4/5] overflow-hidden bg-background">
-                    <Image
-                      src={m.img}
-                      alt={m.name}
-                      fill
-                      loading="eager"
-                      sizes="(max-width: 1024px) 100vw, 33vw"
-                      className="object-cover grayscale"
-                    />
-                  </div>
-                </WipeReveal>
-                <p className="mt-4 text-base font-medium">{m.name}</p>
-                <p className="text-sm text-muted">{m.role}</p>
-              </div>
-            ))}
+            {team.map((m, i) => {
+              // a lone last item (odd count) sits in the RIGHT column, left empty
+              const lastAlone = i === team.length - 1 && team.length % 2 === 1;
+              const isRight = lastAlone || i % 2 === 1;
+              return (
+                <div key={m.name} className={lastAlone ? "sm:col-start-2" : ""}>
+                  {/* right column reveals first; left a beat later */}
+                  <WipeReveal delay={isRight ? 0 : 0.08}>
+                    <div className="relative aspect-[4/5] overflow-hidden bg-background">
+                      <Image
+                        src={m.img}
+                        alt={m.name}
+                        fill
+                        loading="eager"
+                        sizes="(max-width: 1024px) 100vw, 33vw"
+                        className="object-cover grayscale"
+                      />
+                    </div>
+                  </WipeReveal>
+                  <DropReveal delay={isRight ? 300 : 450} className="mt-4">
+                    <p className="text-base font-medium">{m.name}</p>
+                    <p className="text-sm text-muted">{m.role}</p>
+                  </DropReveal>
+                </div>
+              );
+            })}
           </div>
         </div>
         </section>

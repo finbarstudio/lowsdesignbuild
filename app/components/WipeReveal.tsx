@@ -12,9 +12,13 @@ import { useEffect, useRef } from "react";
 export default function WipeReveal({
   children,
   className = "",
+  delay = 0,
 }: {
   children: React.ReactNode;
   className?: string;
+  /** Shifts the trigger later (in fractions of the viewport height) so items in
+   *  the same row can stagger — e.g. the left column reveals after the right. */
+  delay?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -31,15 +35,16 @@ export default function WipeReveal({
       const r = el.getBoundingClientRect();
       const vh = window.innerHeight;
       // Reveal over a scroll span that's deliberately SHORTER than the image is
-      // tall, centred in the middle of the screen. This makes the wipe line
-      // sweep down across the image (visible) rather than sitting still while
-      // the image slides up behind it (which happens at a 1:1 span≈height).
-      const start = vh * 0.6;
-      const end = vh * 0.32;
+      // wide, centred in the middle of the screen, so the wipe edge visibly
+      // sweeps across the image. `delay` lowers the thresholds so the element
+      // reveals a little later in the scroll (used to stagger a row).
+      const start = vh * (0.6 - delay);
+      const end = vh * (0.32 - delay);
       const raw = Math.min(1, Math.max(0, (start - r.top) / (start - end)));
       // smoothstep so the sweep eases in/out instead of tracking scroll linearly
       const p = raw * raw * (3 - 2 * raw);
-      el.style.clipPath = `inset(0 0 ${((1 - p) * 100).toFixed(2)}% 0)`;
+      // right→left: uncover from the right edge inward
+      el.style.clipPath = `inset(0 0 0 ${((1 - p) * 100).toFixed(2)}%)`;
     };
     const onScroll = () => {
       cancelAnimationFrame(raf);
@@ -59,7 +64,7 @@ export default function WipeReveal({
     <div
       ref={ref}
       className={className}
-      style={{ clipPath: "inset(0 0 100% 0)" }}
+      style={{ clipPath: "inset(0 0 0 100%)" }}
     >
       {children}
     </div>
