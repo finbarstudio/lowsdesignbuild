@@ -6,7 +6,7 @@ import AreaPills from "@/app/components/AreaPills";
 import ProcessPath from "@/app/components/ProcessPath";
 import WordReveal from "@/app/components/WordReveal";
 import Reveal from "@/app/components/Reveal";
-import ServiceHoverList from "@/app/components/ServiceHoverList";
+import ServiceTrail from "@/app/components/ServiceTrail";
 import { areas, services, site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
@@ -87,7 +87,7 @@ export default async function AboutPage() {
 
           {/* right: hover-list of services — name reveals a cursor-following image */}
           <Reveal className="lg:col-span-2">
-            <ServiceHoverList services={serviceCards} />
+            <ServiceTrail services={serviceCards} />
           </Reveal>
         </div>
       </section>
