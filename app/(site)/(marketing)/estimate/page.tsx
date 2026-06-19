@@ -1,8 +1,10 @@
 import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 
+import ContactForm from "@/app/components/ContactForm";
 import EstimateCalculator from "@/app/components/EstimateCalculator";
 import Reveal from "@/app/components/Reveal";
+import ScrollNudge from "@/app/components/ScrollNudge";
 import WordReveal from "@/app/components/WordReveal";
 
 
@@ -16,28 +18,40 @@ export const metadata: Metadata = {
 export default function EstimatePage() {
   return (
     <main>
-      {/* Hero — big word-by-word heading with the intro alongside */}
-      <section className={`${PAD} pb-12 pt-32 sm:pb-16`}>
-        <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-12 lg:items-end lg:gap-x-6">
-          <h1 className="font-sans text-4xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:col-span-8 lg:text-7xl">
-            <WordReveal text="Estimate your project" />
-          </h1>
-          <p className="max-w-md text-sm leading-relaxed text-muted lg:col-span-4 lg:self-end">
-            Get a rough cost for your project in a few seconds. Pick the options
-            that match your plans and we&apos;ll do the maths, then get in touch
-            for an accurate quote.
-          </p>
-        </div>
+      <ScrollNudge />
+
+      {/* Hero — full screen: big slogan with the intro beneath, like contact */}
+      <section
+        className={`${PAD} flex min-h-[100svh] flex-col items-center justify-center text-center`}
+      >
+        <h1 className="mx-auto max-w-6xl font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
+          <WordReveal text="Estimate your project" />
+        </h1>
+        <p className="mt-10 max-w-xl text-base leading-relaxed text-muted sm:mt-14 sm:text-lg">
+          Get a rough cost for your project in a few seconds. Pick the options
+          that match your plans and we&apos;ll do the maths, then get in touch
+          for an accurate quote.
+        </p>
       </section>
 
-      {/* Calculator — full width so its own columns have room to breathe */}
+      {/* Calculator — full width */}
       <section className={`${PAD} pb-24 sm:pb-32`}>
         <Reveal>
           <p className="label mb-10 !text-ink">Estimate calculator</p>
-          <div className="max-w-5xl">
-            <EstimateCalculator />
-          </div>
+          <EstimateCalculator />
         </Reveal>
+      </section>
+
+      {/* Enquiry form — no areas, just the form in the sticky-label pattern */}
+      <section className={`${PAD} pb-24 sm:pb-32`}>
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+          <div className="lg:col-span-1">
+            <p className="label sticky top-24 !text-ink">Get in touch</p>
+          </div>
+          <Reveal className="lg:col-span-2">
+            <ContactForm />
+          </Reveal>
+        </div>
       </section>
     </main>
   );

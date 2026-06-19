@@ -116,8 +116,31 @@ function Field({
   );
 }
 
-const selectClass =
-  "w-full border border-line bg-white px-4 py-3 text-base outline-none transition-colors focus:border-copper";
+const inputClass =
+  "w-full appearance-none border-0 border-b border-line bg-transparent py-3 text-lg outline-none transition-colors focus:border-tertiary";
+
+// native <select> with the default arrow removed and our own chevron added, so
+// it matches the editorial underline inputs
+function Select({
+  value,
+  onChange,
+  children,
+}: {
+  value: number;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative">
+      <select value={value} onChange={onChange} className={`${inputClass} pr-8`}>
+        {children}
+      </select>
+      <span className="pointer-events-none absolute bottom-3 right-1 text-muted">
+        ▾
+      </span>
+    </div>
+  );
+}
 
 function Calculator({ config }: { config: Config }) {
   const [rate, setRate] = useState(config.rate.options[0].value);
@@ -131,19 +154,15 @@ function Calculator({ config }: { config: Config }) {
 
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_340px] lg:gap-16">
-      <div className="space-y-7">
+      <div className="space-y-9">
         <Field label={config.rate.label} hint={config.rate.hint}>
-          <select
-            className={selectClass}
-            value={rate}
-            onChange={(e) => setRate(Number(e.target.value))}
-          >
+          <Select value={rate} onChange={(e) => setRate(Number(e.target.value))}>
             {config.rate.options.map((o) => (
               <option key={o.label} value={o.value}>
                 {o.label}
               </option>
             ))}
-          </select>
+          </Select>
         </Field>
 
         <Field label={config.sqmLabel}>
@@ -155,14 +174,13 @@ function Calculator({ config }: { config: Config }) {
             onChange={(e) =>
               setSqm(Math.min(200, Math.max(0, Number(e.target.value))))
             }
-            className={selectClass}
+            className={inputClass}
           />
         </Field>
 
         {config.adders.map((adder, i) => (
           <Field key={adder.label} label={adder.label}>
-            <select
-              className={selectClass}
+            <Select
               value={adders[i]}
               onChange={(e) => {
                 const next = [...adders];
@@ -175,26 +193,28 @@ function Calculator({ config }: { config: Config }) {
                   {o.label}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
         ))}
       </div>
 
-      <div className="self-start pt-8 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-1">
-        <p className="label">Estimated cost</p>
-        <p className="mt-3 text-5xl font-bold tracking-tight sm:text-6xl">
-          {gbp(total)}
-        </p>
-        <p className="mt-5 max-w-xs text-xs leading-relaxed text-muted">
-          This is a guide based on typical rates, not a quote. For an accurate
-          price we&apos;ll visit and assess your project.
-        </p>
-        <Link
-          href="/contact"
-          className="mt-7 inline-block text-sm link-underline"
-        >
-          Get an accurate quote
-        </Link>
+      <div className="self-start lg:sticky lg:top-24">
+        <div className="border-t-2 border-tertiary pt-6">
+          <p className="label">Estimated cost</p>
+          <p className="mt-3 text-5xl font-bold tracking-tight tabular-nums sm:text-6xl">
+            {gbp(total)}
+          </p>
+          <p className="mt-5 max-w-xs text-xs leading-relaxed text-muted">
+            This is a guide based on typical rates, not a quote. For an accurate
+            price we&apos;ll visit and assess your project.
+          </p>
+          <Link
+            href="/contact"
+            className="mt-7 inline-block text-sm link-underline"
+          >
+            Get an accurate quote
+          </Link>
+        </div>
       </div>
     </div>
   );

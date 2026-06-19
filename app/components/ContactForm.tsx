@@ -106,11 +106,13 @@ export default function ContactForm() {
 
       <button
         type="submit"
-        className="group/btn relative inline-flex items-center gap-3 overflow-hidden rounded-full border-2 border-ink px-8 py-4 text-sm font-bold uppercase tracking-[0.08em] transition-colors duration-300 hover:text-white"
+        className="group/btn inline-flex items-center gap-3 text-base font-bold uppercase tracking-[0.08em]"
       >
-        <span className="absolute inset-0 origin-left scale-x-0 bg-tertiary transition-transform duration-500 ease-out group-hover/btn:scale-x-100" />
-        <span className="relative">Send enquiry</span>
-        <span className="relative transition-transform duration-300 group-hover/btn:translate-x-1">
+        <span className="relative pb-1">
+          Send enquiry
+          <span className="absolute bottom-0 left-0 h-[2px] w-full bg-ink transition-colors duration-300 group-hover/btn:bg-tertiary" />
+        </span>
+        <span className="transition-transform duration-300 group-hover/btn:translate-x-1.5">
           →
         </span>
       </button>
