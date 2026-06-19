@@ -157,52 +157,56 @@ export default function ProcessPath() {
         )}
       </svg>
 
-      {/* stages alternate left/right (a zigzag) so the connecting line is always
-          diagonal and never runs through the text */}
+      {/* The connecting line zigzags within a narrow central band (nodes sit at
+          38% / 62% of the width). The text is pushed to the outer edge on the
+          matching side, so the line lives in the middle and never runs through
+          the copy. On mobile it collapses to a left rail with the text beside it. */}
       <div className="flex flex-col">
         {processSteps.map((step, i) => {
           const right = i % 2 === 1;
           return (
             <div
               key={step.n}
-              className={`flex min-h-[26vh] items-center sm:min-h-[36vh] ${
-                right ? "sm:justify-end" : "sm:justify-start"
-              }`}
+              className="relative flex min-h-[24vh] items-center sm:min-h-[34vh]"
             >
+              {/* node — on the left rail (mobile) or the central band (sm+) */}
+              <span
+                ref={(el) => {
+                  nodeRefs.current[i] = el;
+                }}
+                className={`absolute top-1/2 z-10 block h-3 w-3 -translate-x-1/2 -translate-y-1/2 left-[8%] ${
+                  right ? "sm:left-[62%]" : "sm:left-[38%]"
+                }`}
+              />
+              {/* copy — beside the rail on mobile, outboard of the band on sm+ */}
               <div
-                className={`flex max-w-xs items-start gap-4 ${
-                  right ? "sm:flex-row-reverse sm:text-right" : ""
+                className={`ml-[18%] w-[74%] text-left sm:ml-0 sm:w-[34%] ${
+                  right
+                    ? "sm:ml-auto sm:pl-8 sm:text-left"
+                    : "sm:pr-8 sm:text-right"
                 }`}
               >
                 <span
-                  ref={(el) => {
-                    nodeRefs.current[i] = el;
-                  }}
-                  className="mt-1.5 block h-3 w-3 shrink-0"
-                />
-                <div>
-                  <span
-                    className={`font-mono text-sm font-medium tracking-[0.1em] transition-colors duration-500 ${
-                      active >= i ? "text-tertiary" : "text-muted"
-                    }`}
-                  >
-                    {step.n}
-                  </span>
-                  <h3
-                    className={`mt-2 text-xl font-semibold tracking-tight transition-opacity duration-500 sm:text-2xl ${
-                      active >= i ? "opacity-100" : "opacity-40"
-                    }`}
-                  >
-                    {step.title}
-                  </h3>
-                  <p
-                    className={`mt-2 text-sm leading-relaxed text-muted transition-opacity duration-500 ${
-                      active >= i ? "opacity-100" : "opacity-40"
-                    }`}
-                  >
-                    {step.text}
-                  </p>
-                </div>
+                  className={`font-mono text-sm font-medium tracking-[0.1em] transition-colors duration-500 ${
+                    active >= i ? "text-tertiary" : "text-muted"
+                  }`}
+                >
+                  {step.n}
+                </span>
+                <h3
+                  className={`mt-2 text-xl font-semibold tracking-tight transition-opacity duration-500 sm:text-2xl ${
+                    active >= i ? "opacity-100" : "opacity-40"
+                  }`}
+                >
+                  {step.title}
+                </h3>
+                <p
+                  className={`mt-2 text-sm leading-relaxed text-muted transition-opacity duration-500 ${
+                    active >= i ? "opacity-100" : "opacity-40"
+                  }`}
+                >
+                  {step.text}
+                </p>
               </div>
             </div>
           );
