@@ -86,15 +86,17 @@ export default function ContactForm() {
         <Field n="01" label="First name" name="firstName" required placeholder="Jane" />
         <Field n="02" label="Last name" name="lastName" required placeholder="Low" />
       </div>
-      <Field
-        n="03"
-        label="Email"
-        name="email"
-        type="email"
-        required
-        placeholder="jane@email.com"
-      />
-      <Field n="04" label="Phone" name="phone" placeholder="Optional" />
+      <div className="grid grid-cols-1 gap-11 sm:grid-cols-2">
+        <Field
+          n="03"
+          label="Email"
+          name="email"
+          type="email"
+          required
+          placeholder="jane@email.com"
+        />
+        <Field n="04" label="Phone" name="phone" placeholder="Optional" />
+      </div>
       <Field
         n="05"
         label="Your project"

@@ -33,6 +33,9 @@ export default function SmoothScroll() {
       touchMultiplier: 1.6,
     });
     lenis.scrollTo(0, { immediate: true });
+    // expose the instance so other components (e.g. ScrollNudge) can drive a
+    // programmatic scroll through Lenis itself, matching the site's glide
+    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
     let raf = 0;
     const loop = (time: number) => {
       lenis.raf(time);
@@ -43,6 +46,7 @@ export default function SmoothScroll() {
     return () => {
       cancelAnimationFrame(raf);
       lenis.destroy();
+      delete (window as unknown as { __lenis?: Lenis }).__lenis;
     };
   }, [pathname]);
 

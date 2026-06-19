@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 
 import AreaPills from "@/app/components/AreaPills";
 import ContactForm from "@/app/components/ContactForm";
-import Reveal from "@/app/components/Reveal";
 import ScrollNudge from "@/app/components/ScrollNudge";
 import WordReveal from "@/app/components/WordReveal";
 import { areas as fallbackAreas, site } from "@/app/lib/site";
@@ -53,16 +52,17 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      {/* Areas (left) + form (right) */}
+      {/* Areas (1/3) + form (2/3) — static, no scroll-reveal */}
       <section className={`${PAD} pb-24 sm:pb-32`}>
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
-          <div>
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-16">
+          <div className="lg:col-span-1">
             <p className="label mb-8 !text-ink">Areas we cover</p>
-            <AreaPills areas={areas} align="left" />
+            <AreaPills areas={areas} align="left" animate={false} />
           </div>
-          <Reveal>
+          <div className="lg:col-span-2">
+            <p className="label mb-8 !text-ink">Tell us about your project</p>
             <ContactForm />
-          </Reveal>
+          </div>
         </div>
       </section>
     </main>

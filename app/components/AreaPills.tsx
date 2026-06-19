@@ -10,15 +10,18 @@ export default function AreaPills({
   areas,
   align = "center",
   widthClass = "max-w-5xl",
+  animate = true,
 }: {
   areas: string[];
   align?: "center" | "left";
   widthClass?: string;
+  animate?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(false);
+  const [shown, setShown] = useState(!animate);
 
   useEffect(() => {
+    if (!animate) return;
     const el = ref.current;
     if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
