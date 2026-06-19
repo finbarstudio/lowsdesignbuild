@@ -105,11 +105,11 @@ export default async function HomePage() {
           sizes="100vw"
           className="block h-full w-full object-cover sm:h-auto sm:object-contain"
         />
-        {/* grey overlay, fades in subtly as scroll begins */}
+        {/* the hero blurs progressively as you scroll (driven in HomeChrome) */}
         <div
           id="hero-overlay"
-          style={{ opacity: 0 }}
-          className="pointer-events-none absolute inset-0 bg-[#424952] transition-opacity duration-700 ease-out"
+          style={{ backdropFilter: "blur(0px)", WebkitBackdropFilter: "blur(0px)" }}
+          className="pointer-events-none absolute inset-0"
         />
         {/* Serif tagline carries the hero on mobile; on desktop the sliding
             wordmark takes over, so the tagline is hidden there. */}

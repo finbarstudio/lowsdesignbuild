@@ -45,11 +45,16 @@ export default function HomeChrome({
       const dark = window.scrollY >= heroH - BAR;
       setMode(atFooter ? "footer" : dark ? "ink" : "hero");
 
-      // grey overlay over the hero, comes softly but fully in past 5% scroll.
+      // hero blurs progressively as you scroll into the page
       const overlay = document.getElementById("hero-overlay");
       if (overlay) {
-        overlay.style.opacity =
-          window.scrollY > window.innerHeight * 0.05 ? "0.5" : "0";
+        const bp = Math.min(
+          1,
+          Math.max(0, window.scrollY / (window.innerHeight * 0.45)),
+        );
+        const px = (bp * 16).toFixed(1);
+        overlay.style.setProperty("backdrop-filter", `blur(${px}px)`);
+        overlay.style.setProperty("-webkit-backdrop-filter", `blur(${px}px)`);
       }
 
       // desktop sliding wordmark — position only; colour comes from `mode`.
