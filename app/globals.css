@@ -118,6 +118,23 @@ body {
   transition: clip-path 0.65s cubic-bezier(0.76, 0, 0.24, 1);
 }
 
+/* ---- Mask reveal (token) ----
+   A "masked line reveal": the wrapper clips (overflow:hidden) while the inner
+   element slides up from behind its own top edge (translateY -110% → 0). The
+   text is cropped by the frame until it rises fully into place. Put .mask-reveal
+   on the clip wrapper and add .is-revealed to play it; the moving element is the
+   wrapper's direct child (set its transition-delay to stagger). */
+.mask-reveal {
+  overflow: hidden;
+}
+.mask-reveal > * {
+  transform: translateY(-110%);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mask-reveal.is-revealed > * {
+  transform: translateY(0);
+}
+
 /* Sub-heading / label — Space Mono, tracked, all caps */
 .label,
 .eyebrow {

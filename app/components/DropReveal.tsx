@@ -3,17 +3,22 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Reveals its children by dropping them into place from above (translateY from
- * -14px → 0, with a fade) the first time they scroll into view. `delay` staggers
- * it after a sibling — e.g. the names drop in after their photo has wiped in.
+ * Masked line reveal: the children slide up into place from behind their own
+ * top edge — the wrapper clips them so they're cropped until fully risen (the
+ * .mask-reveal token). `delay` staggers it after a sibling, e.g. the names rise
+ * in just after their photo has wiped in.
  */
 export default function DropReveal({
   children,
   className = "",
+  wrapClassName = "",
   delay = 0,
 }: {
   children: React.ReactNode;
+  /** classes for the moving element (layout, e.g. the names grid) */
   className?: string;
+  /** classes for the clip wrapper (spacing, e.g. mt-4) */
+  wrapClassName?: string;
   /** transition-delay in milliseconds */
   delay?: number;
 }) {
@@ -55,16 +60,11 @@ export default function DropReveal({
   return (
     <div
       ref={ref}
-      className={className}
-      style={{
-        transform: shown ? "translateY(0)" : "translateY(-14px)",
-        opacity: shown ? 1 : 0,
-        transition:
-          "transform 0.7s cubic-bezier(0.22,1,0.36,1), opacity 0.7s ease",
-        transitionDelay: `${delay}ms`,
-      }}
+      className={`mask-reveal ${wrapClassName} ${shown ? "is-revealed" : ""}`}
     >
-      {children}
+      <div className={className} style={{ transitionDelay: `${delay}ms` }}>
+        {children}
+      </div>
     </div>
   );
 }
