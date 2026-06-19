@@ -64,6 +64,12 @@ export default function ServiceSlideshow({
     my.set(e.clientY - b.top);
   }
 
+  // every source across all services, preloaded on mount so a photo is ready
+  // before it's needed — otherwise the stack can blur with nothing sharp in front
+  const preload = Array.from(
+    new Set(services.flatMap((s) => s.imgs.flatMap((shot) => [shot.hi, shot.lo]))),
+  );
+
   return (
     <div
       ref={wrapRef}
@@ -71,6 +77,16 @@ export default function ServiceSlideshow({
       onMouseMove={handleMove}
       onMouseLeave={() => setActive(null)}
     >
+      {/* preload every photo (rendered, clipped + invisible) so the stack never
+          blurs before its replacement has loaded */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-0 top-0 h-px w-px overflow-hidden opacity-0"
+      >
+        {preload.map((src) => (
+          <img key={src} src={src} alt="" decoding="async" />
+        ))}
+      </div>
       {/* cursor-following stack — desktop only (no cursor on touch) */}
       <motion.div
         className="pointer-events-none absolute left-0 top-0 z-20 hidden lg:block"
