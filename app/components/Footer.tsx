@@ -1,3 +1,4 @@
+import FooterRule from "@/app/components/FooterRule";
 import { site } from "@/app/lib/site";
 
 const YEAR = 2026;
@@ -41,33 +42,18 @@ export default function Footer() {
       id="site-footer"
       className="flex h-[100svh] min-h-[560px] flex-col overflow-hidden font-mono text-tertiary"
     >
-      {/* 1px red hairline — sits at the nav-bar height (64px) so the nav items
-          above it read as properly padded once the footer is in view */}
+      {/* 1px hairline — sits at the nav-bar height (64px) so the nav items above
+          it read as properly padded; draws left→right once the footer appears */}
       <div className="px-4 pt-16 sm:px-6">
-        <hr className="border-0 border-t border-tertiary" />
+        <FooterRule />
       </div>
 
       <div className="mt-auto px-4 sm:px-6">
-        <div className="mb-8 grid grid-cols-2 gap-x-6 gap-y-8 text-xs sm:mb-10 sm:grid-cols-12">
-          {/* credit */}
-          <div className="sm:col-span-3">
-            <p>
-              ©{YEAR} {site.name}
-            </p>
-            <a
-              href="https://www.finbar.studio"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 inline-block"
-            >
-              Site by <span className="link-underline">finbar.studio</span>
-            </a>
-          </div>
-
-          {/* contact */}
-          <div className="flex flex-col items-start sm:col-span-4 sm:col-start-5">
+        <div className="mb-8 grid grid-cols-2 gap-x-6 gap-y-8 text-xs leading-relaxed sm:mb-10 sm:grid-cols-12">
+          {/* left: location + contact */}
+          <div className="flex flex-col items-start sm:col-span-4">
             <p>South London</p>
-            <a href={site.phoneHref} className="link-underline mt-2">
+            <a href={site.phoneHref} className="link-underline">
               {site.phone}
             </a>
             <a href={`mailto:${site.email}`} className="link-underline">
@@ -75,8 +61,8 @@ export default function Footer() {
             </a>
           </div>
 
-          {/* socials — icon inline with its label */}
-          <div className="flex flex-col items-start gap-2 sm:col-span-3 sm:col-start-10 sm:items-end">
+          {/* middle: socials — icon inline with its label */}
+          <div className="flex flex-col items-start sm:col-span-4 sm:col-start-5">
             <a
               href={site.instagram}
               target="_blank"
@@ -94,6 +80,20 @@ export default function Footer() {
             >
               <FacebookIcon />
               <span className="link-underline">Facebook</span>
+            </a>
+          </div>
+
+          {/* right: credit */}
+          <div className="flex flex-col items-start sm:col-span-3 sm:col-start-10 sm:items-end sm:text-right">
+            <p>
+              ©{YEAR} {site.name}
+            </p>
+            <a
+              href="https://www.finbar.studio"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Site by <span className="link-underline">finbar.studio</span>
             </a>
           </div>
         </div>
