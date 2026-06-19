@@ -2,16 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { processSteps } from "@/app/lib/site";
+import { processSteps as fallbackSteps } from "@/app/lib/site";
 
 type Pt = { x: number; y: number };
+type Step = { n: string; title: string; text: string };
 
 /**
  * Our process as a scroll-linked pathway. The stages sit in a centred zigzag
  * with the copy pushed to the outer edge; a winding line connects them and, as
  * you scroll, a dot travels the line, draws the trail and lights up each stage.
  */
-export default function ProcessPath() {
+export default function ProcessPath({
+  steps = fallbackSteps,
+}: {
+  steps?: Step[];
+}) {
+  const processSteps = steps;
   const wrapRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const baseRef = useRef<SVGPathElement>(null);

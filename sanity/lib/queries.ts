@@ -49,7 +49,13 @@ export const SITE_SETTINGS_QUERY = defineQuery(`
     heroImage,
     "heroLqip": heroImage.asset->metadata.lqip,
     "heroDim": heroImage.asset->metadata.dimensions,
-    heroTrailImages
+    heroTrailImages,
+    homeHeroText,
+    aboutHeroText,
+    familyBio,
+    processSteps,
+    teamLead,
+    team
   }
 `);
 

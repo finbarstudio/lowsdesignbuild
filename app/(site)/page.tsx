@@ -8,7 +8,7 @@ import DropReveal from "@/app/components/DropReveal";
 import HomeChrome from "@/app/components/HomeChrome";
 import WipeReveal from "@/app/components/WipeReveal";
 import WordReveal from "@/app/components/WordReveal";
-import { team, teamLead } from "@/app/lib/site";
+import { team as fallbackTeam, teamLead as fallbackTeamLead } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import { PROJECTS_QUERY, SITE_SETTINGS_QUERY } from "@/sanity/lib/queries";
@@ -94,6 +94,34 @@ export default async function HomePage() {
     urlFor(img).width(600).quality(80).auto("format").url(),
   );
 
+  // Editable copy + people, with the built-in content as a graceful fallback.
+  const heroText =
+    settings?.homeHeroText ||
+    "Family run start to finish construction services";
+
+  const teamLead = settings?.teamLead?.image
+    ? {
+        img: urlFor(settings.teamLead.image)
+          .width(1600)
+          .height(900)
+          .fit("crop")
+          .url(),
+        alt: settings.teamLead.alt ?? "",
+        people: settings.teamLead.people ?? [],
+      }
+    : fallbackTeamLead;
+
+  const team =
+    settings?.team && settings.team.length > 0
+      ? settings.team.map((m) => ({
+          name: m.name ?? "",
+          role: m.role ?? "",
+          img: m.image
+            ? urlFor(m.image).width(800).height(1000).fit("crop").url()
+            : "",
+        }))
+      : fallbackTeam;
+
   return (
     <>
       <HomeChrome projectCount={projects.length} />
@@ -140,7 +168,7 @@ export default async function HomePage() {
             className="mx-auto w-full max-w-[1900px] px-[10%] sm:px-6"
           >
             <h1 className="mx-auto max-w-6xl text-center font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
-              <WordReveal text="Family run start to finish construction services" />
+              <WordReveal text={heroText} />
             </h1>
           </CursorTrail>
         </section>

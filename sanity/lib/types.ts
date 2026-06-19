@@ -23,6 +23,25 @@ export interface SiteSettings {
   heroLqip: string | null;
   heroDim: { width: number; height: number } | null;
   heroTrailImages: Array<SanityImageSource & { _key?: string }> | null;
+  homeHeroText: string | null;
+  aboutHeroText: string | null;
+  familyBio: string | null;
+  processSteps: Array<{
+    _key?: string;
+    title: string | null;
+    text: string | null;
+  }> | null;
+  teamLead: {
+    image: SanityImageSource | null;
+    alt: string | null;
+    people: Array<{ _key?: string; name: string | null; role: string | null }> | null;
+  } | null;
+  team: Array<{
+    _key?: string;
+    name: string | null;
+    role: string | null;
+    image: SanityImageSource | null;
+  }> | null;
 }
 
 export interface ServiceItem {
