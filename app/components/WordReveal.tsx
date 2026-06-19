@@ -3,22 +3,21 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Mask-reveals a line one character at a time — each letter rises up from behind
- * its own baseline (clip + translateY 110% → 0), heavily staggered so the whole
- * line takes a few seconds to come in. Words stay intact for wrapping. Fires
- * once the text scrolls into view.
+ * Mask-reveals a line one word at a time — each word rises up from behind its
+ * own baseline (clip + translateY 110% → 0), heavily staggered so the whole
+ * line takes a few seconds to come in. Fires once the text scrolls into view.
  */
 export default function WordReveal({
   text,
   className = "",
-  stagger = 58,
+  stagger = 380,
   duration = 0.9,
 }: {
   text: string;
   className?: string;
-  /** per-character delay step in ms */
+  /** per-word delay step in ms */
   stagger?: number;
-  /** each character's transition duration in seconds */
+  /** each word's transition duration in seconds */
   duration?: number;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -55,36 +54,25 @@ export default function WordReveal({
   }, []);
 
   const words = text.split(" ");
-  let charIndex = 0;
 
   return (
     <span ref={ref} className={className} aria-label={text}>
-      {words.map((word, wi) => (
+      {words.map((word, i) => (
         <span
-          key={wi}
+          key={i}
           aria-hidden="true"
-          className="mr-[0.28em] inline-block whitespace-nowrap"
+          className="mr-[0.28em] inline-block overflow-hidden align-bottom"
         >
-          {Array.from(word).map((ch, ci) => {
-            const i = charIndex++;
-            return (
-              <span
-                key={ci}
-                className="inline-block overflow-hidden align-bottom"
-              >
-                <span
-                  className="inline-block"
-                  style={{
-                    transform: shown ? "translateY(0)" : "translateY(110%)",
-                    transition: `transform ${duration}s cubic-bezier(0.22,1,0.36,1)`,
-                    transitionDelay: `${i * stagger}ms`,
-                  }}
-                >
-                  {ch}
-                </span>
-              </span>
-            );
-          })}
+          <span
+            className="inline-block"
+            style={{
+              transform: shown ? "translateY(0)" : "translateY(110%)",
+              transition: `transform ${duration}s cubic-bezier(0.22,1,0.36,1)`,
+              transitionDelay: `${i * stagger}ms`,
+            }}
+          >
+            {word}
+          </span>
         </span>
       ))}
     </span>
