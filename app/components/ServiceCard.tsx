@@ -51,23 +51,32 @@ export default function ServiceCard({ service }: { service: Service }) {
           />
         </div>
 
-        {/* larger preview: wipes in at native aspect, scrolls with page */}
-        <div
-          className={`pointer-events-none absolute left-1/2 top-0 z-30 w-64 -translate-x-1/2 overflow-hidden bg-line shadow-2xl ring-1 ring-black/5 ${
-            hover ? "wipe-shown" : "wipe-hidden"
-          }`}
-        >
-          <Image
-            key={`base-${baseIdx}`}
-            src={imgs[baseIdx]}
-            alt=""
-            width={800}
-            height={1000}
-            sizes="256px"
-            className="block h-auto w-full"
-          />
+        {/* larger preview: each photo keeps its native aspect; cycling photos
+            are centred on the settled photo underneath and never cropped. */}
+        <div className="pointer-events-none absolute left-1/2 top-0 z-30 w-64 -translate-x-1/2">
+          {/* settled photo — defines the anchor box; wipes in/out on hover */}
+          <div
+            className={`bg-line shadow-2xl ring-1 ring-black/5 ${
+              hover ? "wipe-shown" : "wipe-hidden"
+            }`}
+          >
+            <Image
+              key={`base-${baseIdx}`}
+              src={imgs[baseIdx]}
+              alt=""
+              width={800}
+              height={1000}
+              sizes="256px"
+              className="block h-auto w-full"
+            />
+          </div>
+          {/* cycling photo — sibling, centred on the box centre, native ratio,
+              free to overflow (no crop). wipe-in reveals it top→bottom. */}
           {hover && step > 0 && (
-            <div key={step} className="wipe-in absolute left-0 top-0 w-full">
+            <div
+              key={step}
+              className="wipe-in absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2 shadow-2xl ring-1 ring-black/5"
+            >
               <Image
                 src={imgs[cur]}
                 alt=""
