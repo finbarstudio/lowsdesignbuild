@@ -38,13 +38,13 @@ export default async function ContactPage() {
           <WordReveal text="Let's discuss your next project" />
         </h1>
 
-        <div className="mt-12 flex flex-col items-center gap-3 sm:mt-16 sm:gap-4">
-          <h2 className="text-2xl font-medium tracking-tight sm:text-4xl">
+        <div className="mt-12 flex w-full max-w-full flex-col items-center gap-3 sm:mt-16 sm:gap-4">
+          <h2 className="text-[clamp(1.25rem,6vw,2.25rem)] font-medium tracking-tight">
             <a href={site.phoneHref} className="link-underline">
               {site.phone}
             </a>
           </h2>
-          <h2 className="text-2xl font-medium tracking-tight sm:text-4xl">
+          <h2 className="max-w-full break-words text-[clamp(1rem,5vw,2.25rem)] font-medium tracking-tight">
             <a href={`mailto:${site.email}`} className="link-underline">
               {site.email}
             </a>

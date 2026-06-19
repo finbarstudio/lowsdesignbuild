@@ -139,14 +139,16 @@ export default function ServiceSlideshow({
             onMouseEnter={() => setActive(i)}
             className="border-t border-line last:border-b"
           >
-            <div className="flex items-baseline justify-between gap-6 py-6 sm:py-8">
+            {/* stacks on mobile (title + blurb) so phones still get the copy;
+                row layout from sm+ where the cursor preview takes over */}
+            <div className="flex flex-col gap-2 py-6 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 sm:py-8">
               <h3
                 className="text-2xl font-semibold tracking-tight transition-opacity duration-300 sm:text-4xl"
                 style={{ opacity: active === null || active === i ? 1 : 0.35 }}
               >
                 {s.title}
               </h3>
-              <p className="hidden max-w-xs text-sm leading-relaxed text-muted sm:block">
+              <p className="max-w-md text-sm leading-relaxed text-muted sm:max-w-xs">
                 {s.blurb}
               </p>
             </div>
