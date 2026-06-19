@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-import Reveal from "@/app/components/Reveal";
 import ScrollNudge from "@/app/components/ScrollNudge";
 import WordReveal from "@/app/components/WordReveal";
 import { client } from "@/sanity/lib/client";
@@ -58,35 +57,37 @@ export default async function ProjectsPage() {
         ) : (
           <div className="grid grid-cols-1 gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((p) => (
-              <Reveal key={p._id}>
-                <Link href={`/projects/${p.slug}`} className="group block">
-                  <div className="relative aspect-[4/5] overflow-hidden bg-line sm:aspect-auto sm:h-[34vw] lg:h-[26rem]">
-                    {p.mainImage && (
-                      <Image
-                        src={urlFor(p.mainImage)
-                          .width(1000)
-                          .height(1100)
-                          .fit("crop")
-                          .url()}
-                        alt={[p.title, p.category, p.location]
-                          .filter(Boolean)
-                          .join(", ")}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
-                      />
-                    )}
-                  </div>
-                  <div className="mt-4">
-                    <p className="label">
-                      {[p.category, p.location].filter(Boolean).join(" · ")}
-                    </p>
-                    <h2 className="mt-2 text-xl font-semibold tracking-tight">
-                      {p.title}
-                    </h2>
-                  </div>
-                </Link>
-              </Reveal>
+              <Link
+                key={p._id}
+                href={`/projects/${p.slug}`}
+                className="group block"
+              >
+                <div className="relative aspect-[4/5] overflow-hidden bg-line sm:aspect-auto sm:h-[34vw] lg:h-[26rem]">
+                  {p.mainImage && (
+                    <Image
+                      src={urlFor(p.mainImage)
+                        .width(1000)
+                        .height(1100)
+                        .fit("crop")
+                        .url()}
+                      alt={[p.title, p.category, p.location]
+                        .filter(Boolean)
+                        .join(", ")}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
+                    />
+                  )}
+                </div>
+                <div className="mt-4">
+                  <p className="label">
+                    {[p.category, p.location].filter(Boolean).join(" · ")}
+                  </p>
+                  <h2 className="mt-2 text-xl font-semibold tracking-tight">
+                    {p.title}
+                  </h2>
+                </div>
+              </Link>
             ))}
           </div>
         )}
