@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 /**
- * Reveals its children with the wipe token (clip-path top→bottom) when it
- * scrolls into view — no opacity or scale, just the reveal.
+ * Scroll-linked wipe reveal. The clip-path (top→bottom) is driven directly by
+ * the element's position in the viewport, so the image uncovers in lock-step
+ * with the scroll — no opacity, no scale. As the element travels up from the
+ * bottom of the viewport it reveals proportionally, fully open by the time it
+ * reaches the upper-middle of the screen.
  */
 export default function WipeReveal({
   children,
@@ -14,70 +17,45 @@ export default function WipeReveal({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setShown(true);
+      el.style.clipPath = "inset(0 0 0 0)";
       return;
     }
-    // Reveal only once the element is in view AND its images have decoded, so
-    // the wipe always uncovers the actual photo — never an empty placeholder
-    // box that then flashes when the image pops in.
-    const imagesReady = () => {
-      const imgs = Array.from(el.querySelectorAll("img"));
-      return imgs.every((img) => img.complete && img.naturalWidth > 0);
-    };
 
     let raf = 0;
-    let fallback = 0;
-    const reveal = () => {
-      setShown(true);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      clearTimeout(fallback);
-    };
-    const check = () => {
+    const update = () => {
       const r = el.getBoundingClientRect();
-      // True once the top has crossed the trigger line — and stays true if the
-      // element has already scrolled past (top negative). Without the second
-      // case, a fast scroll blows past the trigger zone and never reveals.
-      const reached = r.top < window.innerHeight * 0.9;
-      if (!reached) return;
-      if (imagesReady()) {
-        reveal();
-      } else if (!fallback) {
-        // Safety net: if the image is slow or fails to load, reveal anyway
-        // after a short grace period so content is never stuck hidden.
-        fallback = window.setTimeout(reveal, 1200);
-      }
+      const vh = window.innerHeight;
+      // begin revealing as the top enters near the bottom of the viewport,
+      // finish once it has risen to the upper-middle of the screen
+      const start = vh * 0.95;
+      const end = vh * 0.4;
+      const p = Math.min(1, Math.max(0, (start - r.top) / (start - end)));
+      el.style.clipPath = `inset(0 0 ${((1 - p) * 100).toFixed(2)}% 0)`;
     };
     const onScroll = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(check);
+      raf = requestAnimationFrame(update);
     };
-    check();
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
-    // re-check when each image finishes decoding (load may land after the
-    // scroll settles, so a scroll event alone wouldn't re-fire the check)
-    const imgs = Array.from(el.querySelectorAll("img"));
-    imgs.forEach((img) => img.addEventListener("load", onScroll));
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
-      imgs.forEach((img) => img.removeEventListener("load", onScroll));
       cancelAnimationFrame(raf);
-      clearTimeout(fallback);
     };
   }, []);
 
   return (
     <div
       ref={ref}
-      className={`${shown ? "wipe-shown" : "wipe-hidden"} ${className}`}
+      className={className}
+      style={{ clipPath: "inset(0 0 100% 0)" }}
     >
       {children}
     </div>
