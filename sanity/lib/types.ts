@@ -22,6 +22,7 @@ export interface SiteSettings {
   heroImage: SanityImageSource | null;
   heroLqip: string | null;
   heroDim: { width: number; height: number } | null;
+  heroTrailImages: Array<SanityImageSource & { _key?: string }> | null;
 }
 
 export interface ServiceItem {

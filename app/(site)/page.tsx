@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import CursorTrail from "@/app/components/CursorTrail";
 import DropReveal from "@/app/components/DropReveal";
 import HomeChrome from "@/app/components/HomeChrome";
 import WipeReveal from "@/app/components/WipeReveal";
@@ -87,6 +88,11 @@ export default async function HomePage() {
       }
     : { src: "/hero-main.jpg", blur: FALLBACK_HERO_BLUR, w: 3200, h: 2133 };
 
+  // Images that trail the cursor across the big slogan (native aspect, no crop).
+  const trailImgs = (settings?.heroTrailImages ?? []).map((img) =>
+    urlFor(img).width(700).url(),
+  );
+
   return (
     <>
       <HomeChrome projectCount={projects.length} />
@@ -127,11 +133,15 @@ export default async function HomePage() {
         <section className="sticky top-0 flex h-[100svh] flex-col items-center justify-center">
           {/* On mobile the slogan is inset to the same 10% as the project
               thumbnails below so the wide caps never spill past their edges. */}
-          <div className="mx-auto w-full max-w-[1900px] px-[10%] sm:px-6">
+          <CursorTrail
+            images={trailImgs}
+            width={220}
+            className="mx-auto w-full max-w-[1900px] px-[10%] sm:px-6"
+          >
             <h1 className="mx-auto max-w-6xl text-center font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
               <WordReveal text="Family run start to finish construction services" />
             </h1>
-          </div>
+          </CursorTrail>
         </section>
 
         {/* ---------------- Featured projects (image cards) ------------- */}

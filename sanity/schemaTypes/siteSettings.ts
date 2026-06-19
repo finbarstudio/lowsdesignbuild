@@ -16,6 +16,14 @@ export const siteSettingsType = defineType({
       description: "The large image at the top of the home page.",
       options: { hotspot: true },
     }),
+    defineField({
+      name: "heroTrailImages",
+      title: "Hero text trail images",
+      type: "array",
+      of: [{ type: "image", options: { hotspot: true } }],
+      description:
+        "Images that trail the cursor when hovering the big slogan on the home page. Add a handful of project photos.",
+    }),
   ],
   preview: {
     select: { media: "heroImage" },
