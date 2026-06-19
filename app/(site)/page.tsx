@@ -213,10 +213,10 @@ export default async function HomePage() {
                       />
                     </div>
                   </WipeReveal>
-                  <DropReveal delay={isRight ? 200 : 850} wrapClassName="mt-4">
+                  <DropReveal delay={isRight ? 120 : 520} wrapClassName="mt-4">
                     <p className="text-base font-medium">{m.name}</p>
                   </DropReveal>
-                  <DropReveal delay={(isRight ? 200 : 850) + 130}>
+                  <DropReveal delay={(isRight ? 120 : 520) + 130}>
                     <p className="text-sm text-muted">{m.role}</p>
                   </DropReveal>
                 </div>

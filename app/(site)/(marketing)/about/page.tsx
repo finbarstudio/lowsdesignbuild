@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import AreaPills from "@/app/components/AreaPills";
 import ProcessPath from "@/app/components/ProcessPath";
 import Reveal from "@/app/components/Reveal";
 import ServiceCard from "@/app/components/ServiceCard";
@@ -122,11 +123,9 @@ export default async function AboutPage() {
         className={`${PAD} flex min-h-0 flex-col justify-center py-20 text-center sm:min-h-[70vh] sm:py-24`}
       >
         <Reveal>
-          <p className="label">Where we work</p>
-          <p className="serif mx-auto mt-6 max-w-5xl text-2xl leading-relaxed sm:text-3xl">
-            {areas.join(" · ")}
-          </p>
+          <p className="label mb-10 sm:mb-14">Where we work</p>
         </Reveal>
+        <AreaPills areas={areas} />
       </section>
 
       {/* Quality guarantee CTA */}

@@ -18,7 +18,11 @@ export default function ProcessPath() {
   const baseRef = useRef<SVGPathElement>(null);
   const trailRef = useRef<SVGPathElement>(null);
   const dotRef = useRef<SVGGElement>(null);
+  const logoRef = useRef<HTMLDivElement>(null);
+  const logoPathRef = useRef<SVGPolylineElement>(null);
   const nodeLen = useRef<number[]>([]);
+
+  const STEPS = processSteps.length;
 
   const [d, setD] = useState("");
   const [size, setSize] = useState({ w: 0, h: 0 });
@@ -35,6 +39,12 @@ export default function ProcessPath() {
         const r = el!.getBoundingClientRect();
         return { x: r.left - wr.left + r.width / 2, y: r.top - wr.top + r.height / 2 };
       });
+      // final point: the top-centre of the logomark, so the line runs into it
+      const lr = logoRef.current;
+      if (lr) {
+        const r = lr.getBoundingClientRect();
+        p.push({ x: r.left - wr.left + r.width / 2, y: r.top - wr.top + 4 });
+      }
       let dd = `M ${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`;
       for (let i = 1; i < p.length; i++) {
         const my = (p[i - 1].y + p[i].y) / 2;
@@ -105,10 +115,19 @@ export default function ProcessPath() {
       }
       if (trail) trail.style.strokeDashoffset = `${total - L}`;
       let a = -1;
-      for (let i = 0; i < nodeLen.current.length; i++) {
+      for (let i = 0; i < STEPS; i++) {
         if (L >= nodeLen.current[i] - 2) a = i;
       }
       setActive((prev) => (prev === a ? prev : a));
+      // once the trail passes the last step, draw the logomark into completion
+      const logoStart = nodeLen.current[STEPS - 1] ?? total;
+      const logoP = Math.min(
+        1,
+        Math.max(0, (L - logoStart) / Math.max(1, total - logoStart)),
+      );
+      if (logoPathRef.current) {
+        logoPathRef.current.style.strokeDashoffset = `${1 - logoP}`;
+      }
     };
 
     const onScroll = () => {
@@ -137,7 +156,7 @@ export default function ProcessPath() {
           <>
             <path ref={baseRef} d={d} stroke="var(--line)" strokeWidth="2" strokeLinecap="round" />
             <path ref={trailRef} d={d} stroke="var(--tertiary)" strokeWidth="2" strokeLinecap="round" />
-            {pts.map((p, i) => (
+            {pts.slice(0, STEPS).map((p, i) => (
               <circle
                 key={i}
                 cx={p.x}
@@ -211,6 +230,29 @@ export default function ProcessPath() {
             </div>
           );
         })}
+      </div>
+
+      {/* the line runs on past the last stage and draws the logomark to finish */}
+      <div className="mt-12 flex justify-center sm:mt-16">
+        <div ref={logoRef} className="w-20 sm:w-24">
+          <svg
+            viewBox="0 0 121.43 86.64"
+            fill="none"
+            className="w-full"
+            aria-hidden="true"
+          >
+            <polyline
+              ref={logoPathRef}
+              points="2 84.64 2 56.06 27.52 38.21 27.52 3.23 96.77 37.67 96.77 3.59 49.38 3.59 49.38 84.64 71.25 84.64 71.25 55.88 119.43 55.88 119.43 84.64"
+              stroke="var(--tertiary)"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              pathLength={1}
+              style={{ strokeDasharray: 1, strokeDashoffset: 1 }}
+            />
+          </svg>
+        </div>
       </div>
     </div>
   );
