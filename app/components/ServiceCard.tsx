@@ -7,8 +7,8 @@ type Service = { title: string; blurb: string; imgs: string[] };
 
 /**
  * A service: a small thumbnail next to its copy. On hover a larger preview
- * draws in top→bottom (the .wipe token — no opacity/scale); if the service has
- * several example photos it then cycles through them with the same wipe.
+ * draws in top→bottom at the image's native aspect ratio and scrolls with the
+ * page; if the service has several photos it cycles through them.
  */
 export default function ServiceCard({ service }: { service: Service }) {
   const { title, blurb, imgs } = service;
@@ -51,35 +51,33 @@ export default function ServiceCard({ service }: { service: Service }) {
           />
         </div>
 
-        {/* larger preview: wipes in on hover, cycles photos while hovered */}
+        {/* larger preview: wipes in at native aspect, scrolls with page */}
         <div
-          className={`pointer-events-none absolute left-1/2 top-1/2 z-30 w-56 -translate-x-1/2 -translate-y-1/2 ${
+          className={`pointer-events-none absolute left-1/2 top-0 z-30 w-64 -translate-x-1/2 overflow-hidden bg-line shadow-2xl ring-1 ring-black/5 ${
             hover ? "wipe-shown" : "wipe-hidden"
           }`}
         >
-          <div className="relative aspect-[4/5] overflow-hidden bg-line shadow-2xl ring-1 ring-black/5">
-            {/* settled photo underneath */}
-            <Image
-              key={`base-${baseIdx}`}
-              src={imgs[baseIdx]}
-              alt=""
-              fill
-              sizes="224px"
-              className="object-cover"
-            />
-            {/* next photo wiping in over it (only while cycling) */}
-            {hover && step > 0 && (
-              <div key={step} className="wipe-in absolute inset-0">
-                <Image
-                  src={imgs[cur]}
-                  alt=""
-                  fill
-                  sizes="224px"
-                  className="object-cover"
-                />
-              </div>
-            )}
-          </div>
+          <Image
+            key={`base-${baseIdx}`}
+            src={imgs[baseIdx]}
+            alt=""
+            width={800}
+            height={1000}
+            sizes="256px"
+            className="block h-auto w-full"
+          />
+          {hover && step > 0 && (
+            <div key={step} className="wipe-in absolute inset-0">
+              <Image
+                src={imgs[cur]}
+                alt=""
+                width={800}
+                height={1000}
+                sizes="256px"
+                className="block h-auto w-full"
+              />
+            </div>
+          )}
         </div>
       </div>
 
