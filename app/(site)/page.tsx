@@ -181,14 +181,18 @@ export default async function HomePage() {
                   />
                 </div>
               </WipeReveal>
-              <DropReveal delay={250} wrapClassName="mt-4" className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6">
-                {teamLead.people.map((pp) => (
+              <div className="mt-4 grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6">
+                {teamLead.people.map((pp, idx) => (
                   <div key={pp.name}>
-                    <p className="text-base font-medium">{pp.name}</p>
-                    <p className="text-sm text-muted">{pp.role}</p>
+                    <DropReveal delay={250 + idx * 120}>
+                      <p className="text-base font-medium">{pp.name}</p>
+                    </DropReveal>
+                    <DropReveal delay={250 + idx * 120 + 130}>
+                      <p className="text-sm text-muted">{pp.role}</p>
+                    </DropReveal>
                   </div>
                 ))}
-              </DropReveal>
+              </div>
             </div>
 
             {team.map((m, i) => {
@@ -211,8 +215,10 @@ export default async function HomePage() {
                       />
                     </div>
                   </WipeReveal>
-                  <DropReveal delay={isRight ? 250 : 1050} wrapClassName="mt-4">
+                  <DropReveal delay={isRight ? 200 : 850} wrapClassName="mt-4">
                     <p className="text-base font-medium">{m.name}</p>
+                  </DropReveal>
+                  <DropReveal delay={(isRight ? 200 : 850) + 130}>
                     <p className="text-sm text-muted">{m.role}</p>
                   </DropReveal>
                 </div>
