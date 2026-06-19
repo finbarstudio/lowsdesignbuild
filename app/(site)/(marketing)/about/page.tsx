@@ -113,37 +113,33 @@ export default async function AboutPage() {
       </section>
 
       {/* Areas we cover */}
-      <section className={`${PAD} py-24 sm:py-32`}>
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-          <div className="lg:col-span-1">
-            <h2 className="label sticky top-24 !text-ink">Where we work</h2>
-          </div>
-          <div className="lg:col-span-2">
-            <AreaPills areas={areas} />
-          </div>
-        </div>
+      <section
+        className={`${PAD} flex min-h-0 flex-col justify-center py-20 text-center sm:min-h-[70vh] sm:py-24`}
+      >
+        <Reveal>
+          <p className="label mb-10 sm:mb-14">Where we work</p>
+        </Reveal>
+        <AreaPills areas={areas} />
       </section>
 
       {/* Quality guarantee CTA */}
-      <section className={`${PAD} py-24 sm:py-32`}>
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-          <div className="lg:col-span-1">
-            <h2 className="label sticky top-24 !text-ink">Our quality guarantee</h2>
+      <section
+        className={`${PAD} flex min-h-0 flex-col justify-center py-20 text-center sm:min-h-[90vh] sm:py-24`}
+      >
+        <Reveal>
+          <p className="label">Our quality guarantee</p>
+          <h2 className="serif mx-auto mt-6 max-w-3xl text-4xl sm:text-6xl">
+            Built to a standard we&apos;re proud to put our name to.
+          </h2>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm">
+            <Link href="/contact" className="link-underline">
+              Get in touch
+            </Link>
+            <a href={site.phoneHref} className="link-underline">
+              {site.phone}
+            </a>
           </div>
-          <Reveal className="lg:col-span-2">
-            <p className="text-2xl leading-snug sm:text-3xl">
-              Built to a standard we&apos;re proud to put our name to.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-4 text-sm">
-              <Link href="/contact" className="link-underline">
-                Get in touch
-              </Link>
-              <a href={site.phoneHref} className="link-underline">
-                {site.phone}
-              </a>
-            </div>
-          </Reveal>
-        </div>
+        </Reveal>
       </section>
     </main>
   );
