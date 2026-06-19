@@ -197,8 +197,9 @@ export default async function HomePage() {
               const isRight = lastAlone || i % 2 === 1;
               return (
                 <div key={m.name} className={lastAlone ? "sm:col-start-2" : ""}>
-                  {/* right column reveals first; left a beat later */}
-                  <WipeReveal delay={isRight ? 0 : 0.08}>
+                  {/* right column reveals first; the left only begins once the
+                      right has finished its sweep */}
+                  <WipeReveal delay={isRight ? 0 : 0.3}>
                     <div className="relative aspect-[4/5] overflow-hidden bg-background">
                       <Image
                         src={m.img}
@@ -210,7 +211,7 @@ export default async function HomePage() {
                       />
                     </div>
                   </WipeReveal>
-                  <DropReveal delay={isRight ? 300 : 450} wrapClassName="mt-4">
+                  <DropReveal delay={isRight ? 250 : 1050} wrapClassName="mt-4">
                     <p className="text-base font-medium">{m.name}</p>
                     <p className="text-sm text-muted">{m.role}</p>
                   </DropReveal>

@@ -31,20 +31,28 @@ export default function WipeReveal({
     }
 
     let raf = 0;
+    let maxP = 0; // ratchet: progress only ever increases, so it never reverses
     const update = () => {
       const r = el.getBoundingClientRect();
       const vh = window.innerHeight;
       // Reveal over a scroll span that's deliberately SHORTER than the image is
       // wide, centred in the middle of the screen, so the wipe edge visibly
       // sweeps across the image. `delay` lowers the thresholds so the element
-      // reveals a little later in the scroll (used to stagger a row).
+      // reveals later in the scroll (used to stagger a row — the left item only
+      // begins once the right has finished).
       const start = vh * (0.6 - delay);
       const end = vh * (0.32 - delay);
       const raw = Math.min(1, Math.max(0, (start - r.top) / (start - end)));
       // smoothstep so the sweep eases in/out instead of tracking scroll linearly
       const p = raw * raw * (3 - 2 * raw);
+      if (p <= maxP) return; // don't let scrolling back up un-reveal it
+      maxP = p;
       // right→left: uncover from the right edge inward
       el.style.clipPath = `inset(0 0 0 ${((1 - p) * 100).toFixed(2)}%)`;
+      if (maxP >= 1) {
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onScroll);
+      }
     };
     const onScroll = () => {
       cancelAnimationFrame(raf);

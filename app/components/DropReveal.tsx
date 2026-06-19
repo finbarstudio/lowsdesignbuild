@@ -37,7 +37,7 @@ export default function DropReveal({
       const r = el.getBoundingClientRect();
       // fire once the block has risen past the middle of the screen, i.e. after
       // its photo (which finishes a little higher) has revealed
-      if (r.top < window.innerHeight * 0.55) {
+      if (r.top < window.innerHeight * 0.45) {
         setShown(true);
         window.removeEventListener("scroll", onScroll);
         window.removeEventListener("resize", onScroll);
