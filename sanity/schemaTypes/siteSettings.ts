@@ -25,6 +25,15 @@ export const siteSettingsType = defineType({
         "Images that trail the cursor when hovering the big slogan on the home page. Add a handful of project photos.",
     }),
     defineField({
+      name: "areas",
+      title: "Areas we cover",
+      type: "array",
+      of: [{ type: "string" }],
+      description:
+        "The locations shown as pills on the Contact and About pages. Used everywhere areas appear.",
+      options: { layout: "tags" },
+    }),
+    defineField({
       name: "homeHeroText",
       title: "Home — big slogan",
       type: "string",

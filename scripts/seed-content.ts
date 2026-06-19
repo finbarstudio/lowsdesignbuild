@@ -62,6 +62,19 @@ async function run() {
     },
   ];
 
+  const areas = [
+    "Beckenham",
+    "Bromley",
+    "Chislehurst",
+    "Dulwich",
+    "West Wickham",
+    "Orpington",
+    "Streatham",
+    "Sidcup",
+    "Lewisham",
+    "Sevenoaks",
+  ];
+
   // Text + process always (re)set. People only seeded once, so we don't clobber
   // any photos the client has already swapped in.
   const patch: Record<string, unknown> = {
@@ -69,6 +82,7 @@ async function run() {
     aboutHeroText,
     familyBio,
     processSteps,
+    areas,
   };
 
   const hasPeople =

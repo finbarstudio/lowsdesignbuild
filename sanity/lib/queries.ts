@@ -50,6 +50,7 @@ export const SITE_SETTINGS_QUERY = defineQuery(`
     "heroLqip": heroImage.asset->metadata.lqip,
     "heroDim": heroImage.asset->metadata.dimensions,
     heroTrailImages,
+    areas,
     homeHeroText,
     aboutHeroText,
     familyBio,

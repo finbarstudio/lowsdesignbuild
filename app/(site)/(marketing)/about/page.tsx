@@ -39,6 +39,8 @@ export default async function AboutPage() {
     client.fetch<SiteSettings | null>(SITE_SETTINGS_QUERY),
   ]);
 
+  const areaList =
+    settings?.areas && settings.areas.length > 0 ? settings.areas : areas;
   const aboutHero = settings?.aboutHeroText || FALLBACK_ABOUT_HERO;
   const bioParas = (settings?.familyBio || FALLBACK_BIO)
     .split(/\n\s*\n/)
@@ -135,7 +137,7 @@ export default async function AboutPage() {
         <Reveal>
           <p className="label mb-10 sm:mb-14">Where we work</p>
         </Reveal>
-        <AreaPills areas={areas} />
+        <AreaPills areas={areaList} />
       </section>
 
       {/* Quality guarantee CTA */}

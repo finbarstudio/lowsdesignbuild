@@ -5,7 +5,10 @@ import AreaPills from "@/app/components/AreaPills";
 import ContactForm from "@/app/components/ContactForm";
 import Reveal from "@/app/components/Reveal";
 import WordReveal from "@/app/components/WordReveal";
-import { areas, site } from "@/app/lib/site";
+import { areas as fallbackAreas, site } from "@/app/lib/site";
+import { client } from "@/sanity/lib/client";
+import { SITE_SETTINGS_QUERY } from "@/sanity/lib/queries";
+import type { SiteSettings } from "@/sanity/lib/types";
 
 
 export const metadata: Metadata = {
@@ -15,7 +18,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
-export default function ContactPage() {
+export const revalidate = 60;
+
+export default async function ContactPage() {
+  const settings = await client.fetch<SiteSettings | null>(SITE_SETTINGS_QUERY);
+  const areas =
+    settings?.areas && settings.areas.length > 0
+      ? settings.areas
+      : fallbackAreas;
   return (
     <main>
       {/* Hero — full screen: big centred slogan like the home page, with the

@@ -4,8 +4,60 @@ import { useState } from "react";
 
 import { site } from "@/app/lib/site";
 
-const field =
-  "w-full border border-line bg-white px-4 py-3 text-base outline-none transition-colors focus:border-tertiary sm:text-sm";
+/**
+ * An editorial, less-traditional contact form: no boxes — each field is an
+ * oversized line of type over a hairline that a gold underline draws across on
+ * focus, prefixed with a monospace index. The submit fills gold on hover.
+ */
+function Field({
+  n,
+  label,
+  name,
+  type = "text",
+  required = false,
+  placeholder,
+  textarea = false,
+}: {
+  n: string;
+  label: string;
+  name: string;
+  type?: string;
+  required?: boolean;
+  placeholder?: string;
+  textarea?: boolean;
+}) {
+  const base =
+    "w-full border-0 border-b border-line bg-transparent pb-2 text-xl outline-none transition-colors placeholder:text-muted/40 sm:text-2xl";
+  return (
+    <label className="group block">
+      <span className="mb-3 flex items-center gap-3">
+        <span className="font-mono text-xs text-tertiary">{n}</span>
+        <span className="label">{label}</span>
+      </span>
+      <div className="relative">
+        {textarea ? (
+          <textarea
+            name={name}
+            required={required}
+            placeholder={placeholder}
+            rows={3}
+            className={`${base} resize-none`}
+          />
+        ) : (
+          <input
+            name={name}
+            type={type}
+            required={required}
+            placeholder={placeholder}
+            className={base}
+          />
+        )}
+        {/* gold underline draws left→right while the field is focused */}
+        <span className="pointer-events-none absolute -bottom-px left-0 h-[2px] w-full origin-left scale-x-0 bg-tertiary transition-transform duration-500 ease-out group-focus-within:scale-x-100" />
+      </div>
+    </label>
+  );
+}
 
 export default function ContactForm() {
   const [sent, setSent] = useState(false);
@@ -29,26 +81,40 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <input name="firstName" required placeholder="First name" className={field} />
-        <input name="lastName" required placeholder="Last name" className={field} />
+    <form onSubmit={handleSubmit} className="space-y-11">
+      <div className="grid grid-cols-1 gap-11 sm:grid-cols-2">
+        <Field n="01" label="First name" name="firstName" required placeholder="Jane" />
+        <Field n="02" label="Last name" name="lastName" required placeholder="Low" />
       </div>
-      <input name="email" type="email" required placeholder="Email" className={field} />
-      <input name="phone" placeholder="Phone (optional)" className={field} />
-      <textarea
+      <Field
+        n="03"
+        label="Email"
+        name="email"
+        type="email"
+        required
+        placeholder="jane@email.com"
+      />
+      <Field n="04" label="Phone" name="phone" placeholder="Optional" />
+      <Field
+        n="05"
+        label="Your project"
         name="message"
         required
-        rows={5}
-        placeholder="Tell us about your project…"
-        className={field}
+        textarea
+        placeholder="Tell us what you're dreaming up…"
       />
+
       <button
         type="submit"
-        className="bg-tertiary px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-copper-deep"
+        className="group/btn relative inline-flex items-center gap-3 overflow-hidden rounded-full border-2 border-ink px-8 py-4 text-sm font-bold uppercase tracking-[0.08em] transition-colors duration-300 hover:text-white"
       >
-        Send enquiry
+        <span className="absolute inset-0 origin-left scale-x-0 bg-tertiary transition-transform duration-500 ease-out group-hover/btn:scale-x-100" />
+        <span className="relative">Send enquiry</span>
+        <span className="relative transition-transform duration-300 group-hover/btn:translate-x-1">
+          →
+        </span>
       </button>
+
       {sent && (
         <p className="text-sm text-muted">
           Thanks. Your email app should have opened with your message ready to
