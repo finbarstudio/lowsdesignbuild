@@ -32,9 +32,8 @@ export default async function AboutPage() {
       ? cms.map((s) => ({
           title: s.title ?? "",
           blurb: s.blurb ?? "",
-          imgs: (s.images ?? []).map((img) =>
-            urlFor(img).width(800).height(1000).fit("crop").url(),
-          ),
+          // width only — no height/crop, so each image keeps its native aspect
+          imgs: (s.images ?? []).map((img) => urlFor(img).width(800).url()),
         }))
       : services;
 
