@@ -198,7 +198,7 @@ function Calculator({ config }: { config: Config }) {
         ))}
       </div>
 
-      <div className="self-start lg:sticky lg:top-24">
+      <div className="self-start lg:-mt-16 lg:sticky lg:top-24">
         <div className="border-t border-tertiary pt-6">
           <p className="label">Estimated cost</p>
           <p className="mt-3 text-5xl font-bold tracking-tight tabular-nums sm:text-6xl">
@@ -225,7 +225,7 @@ export default function EstimateCalculator() {
 
   return (
     <div>
-      <div className="flex gap-6 border-b border-tertiary sm:gap-10">
+      <div className="flex w-fit gap-6 border-b border-tertiary sm:gap-10">
         {(["loft", "extension"] as const).map((m) => (
           <button
             key={m}
