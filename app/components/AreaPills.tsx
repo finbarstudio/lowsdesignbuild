@@ -6,7 +6,13 @@ import { useEffect, useRef, useState } from "react";
  * The areas we cover, as big outlined pills that reveal one by one (staggered
  * fade + rise) the first time the section scrolls into view.
  */
-export default function AreaPills({ areas }: { areas: string[] }) {
+export default function AreaPills({
+  areas,
+  align = "center",
+}: {
+  areas: string[];
+  align?: "center" | "left";
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
 
@@ -43,7 +49,9 @@ export default function AreaPills({ areas }: { areas: string[] }) {
   return (
     <div
       ref={ref}
-      className="mx-auto flex max-w-5xl flex-wrap justify-center gap-3 sm:gap-4"
+      className={`flex max-w-5xl flex-wrap gap-3 sm:gap-4 ${
+        align === "left" ? "justify-start" : "mx-auto justify-center"
+      }`}
     >
       {areas.map((area, i) => (
         // each pill rises up out of its own clip mask, one after another
