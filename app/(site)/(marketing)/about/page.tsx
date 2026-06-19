@@ -27,15 +27,23 @@ export default async function AboutPage() {
   // Services come from Sanity so the client can edit them. Until any are added
   // there, fall back to the built-in copy so the section is never empty.
   const cms = await client.fetch<ServiceItem[]>(SERVICES_QUERY);
+  // Each shot carries a sharp (hi) and a low-res (lo) source — width only, no
+  // crop, so native aspect is kept. The slideshow swaps to `lo` once a photo is
+  // behind the stack, to save memory.
   const serviceCards =
     cms.length > 0
       ? cms.map((s) => ({
           title: s.title ?? "",
           blurb: s.blurb ?? "",
-          // width only — no height/crop, so each image keeps its native aspect
-          imgs: (s.images ?? []).map((img) => urlFor(img).width(800).url()),
+          imgs: (s.images ?? []).map((img) => ({
+            hi: urlFor(img).width(640).quality(80).auto("format").url(),
+            lo: urlFor(img).width(280).quality(45).auto("format").url(),
+          })),
         }))
-      : services;
+      : services.map((s) => ({
+          ...s,
+          imgs: s.imgs.map((src) => ({ hi: src, lo: src })),
+        }));
 
   return (
     <main>

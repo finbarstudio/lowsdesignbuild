@@ -89,8 +89,9 @@ export default async function HomePage() {
     : { src: "/hero-main.jpg", blur: FALLBACK_HERO_BLUR, w: 3200, h: 2133 };
 
   // Images that trail the cursor across the big slogan (native aspect, no crop).
+  // auto("format") so the preloaded <img> and the trail <img> hit the same URL.
   const trailImgs = (settings?.heroTrailImages ?? []).map((img) =>
-    urlFor(img).width(700).url(),
+    urlFor(img).width(600).quality(80).auto("format").url(),
   );
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 
@@ -10,7 +10,8 @@ type Trail = { id: number; x: number; y: number; src: string; rot: number };
  * Wraps any content and, as the cursor moves across it, spawns a trail of the
  * given images along the cursor's path — each pops in, then fades and scales
  * away. (After motion.dev's "cursor trail" example.) Desktop only — there's no
- * cursor to trail on touch.
+ * cursor to trail on touch. Images are preloaded on mount so the first hover
+ * never flashes blank.
  */
 export default function CursorTrail({
   images,
@@ -76,6 +77,17 @@ export default function CursorTrail({
         last.current.set = false;
       }}
     >
+      {/* preload every trail image on mount (rendered, but clipped + invisible)
+          so the cursor never picks one that hasn't loaded yet */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-0 top-0 h-px w-px overflow-hidden opacity-0"
+      >
+        {images.map((src) => (
+          <img key={src} src={src} alt="" decoding="async" />
+        ))}
+      </div>
+
       {/* trail layer — sits above the content; desktop only */}
       <div className="pointer-events-none absolute inset-0 z-20 hidden lg:block">
         <AnimatePresence>
@@ -89,14 +101,7 @@ export default function CursorTrail({
               className="absolute overflow-hidden bg-line shadow-2xl ring-1 ring-black/5"
               style={{ left: t.x, top: t.y, width, x: "-50%", y: "-50%" }}
             >
-              <Image
-                src={t.src}
-                alt=""
-                width={800}
-                height={1000}
-                sizes={`${width}px`}
-                className="block h-auto w-full"
-              />
+              <img src={t.src} alt="" className="block h-auto w-full" />
             </motion.div>
           ))}
         </AnimatePresence>

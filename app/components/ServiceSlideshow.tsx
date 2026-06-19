@@ -1,16 +1,25 @@
 "use client";
 
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 import { motion, useMotionValue, useSpring } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
-type Service = { title: string; blurb: string; imgs: string[] };
+type Shot = { hi: string; lo: string };
+type Service = { title: string; blurb: string; imgs: Shot[] };
+type Card = { id: number; shot: Shot };
+
+// longest edge cap (px): a portrait's height == a landscape's width, so every
+// photo fits inside the same square/circle regardless of orientation
+const SIZE = 264;
+const TICK = 1100; // ms between each new stacked photo
+const DEPTH = 6; // how many photos are kept in the stack (older ones drop off)
 
 /**
  * Services as a vertical list of names. Hovering a name reveals a preview that
- * follows the cursor and runs a slideshow of that service's photos — each new
- * photo wipes in over the last (the .wipe-in token). Photos keep their native
- * aspect ratio (no crop); cycling photos are centred on the settled one.
+ * follows the cursor and *stacks* that service's photos — each new photo lands
+ * sharp on top, and the ones behind it transition to blur (and drop to a low-res
+ * source to save memory) before fading out. Photos are normalised so the longest
+ * edge is equal, keeping wide and tall shots visually the same size.
  */
 export default function ServiceSlideshow({
   services,
@@ -19,7 +28,9 @@ export default function ServiceSlideshow({
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<number | null>(null);
-  const [step, setStep] = useState(0);
+  const [stack, setStack] = useState<Card[]>([]);
+  const idRef = useRef(0);
+  const iRef = useRef(0);
 
   // cursor position → spring-smoothed follow
   const mx = useMotionValue(0);
@@ -27,14 +38,23 @@ export default function ServiceSlideshow({
   const x = useSpring(mx, { damping: 30, stiffness: 250, mass: 0.5 });
   const y = useSpring(my, { damping: 30, stiffness: 250, mass: 0.5 });
 
-  // cycle the active service's photos
+  // build / refresh the stack for the active service
   useEffect(() => {
-    setStep(0);
+    setStack([]);
+    iRef.current = 0;
     if (active === null) return;
     const imgs = services[active]?.imgs ?? [];
-    if (imgs.length < 2) return;
-    const id = setInterval(() => setStep((s) => s + 1), 1400);
-    return () => clearInterval(id);
+    if (imgs.length === 0) return;
+    const push = () => {
+      const shot = imgs[iRef.current % imgs.length];
+      iRef.current += 1;
+      const id = idRef.current++;
+      setStack((s) => [...s.slice(-(DEPTH - 1)), { id, shot }]);
+    };
+    push();
+    if (imgs.length === 1) return; // single photo: show it once, nothing to stack
+    const t = setInterval(push, TICK);
+    return () => clearInterval(t);
   }, [active, services]);
 
   function handleMove(e: React.MouseEvent) {
@@ -44,12 +64,6 @@ export default function ServiceSlideshow({
     my.set(e.clientY - b.top);
   }
 
-  const svc = active !== null ? services[active] : null;
-  const imgs = svc?.imgs ?? [];
-  const cur = imgs.length ? step % imgs.length : 0;
-  const prev = imgs.length ? (step - 1 + imgs.length) % imgs.length : 0;
-  const baseIdx = step > 0 ? prev : 0;
-
   return (
     <div
       ref={wrapRef}
@@ -57,43 +71,33 @@ export default function ServiceSlideshow({
       onMouseMove={handleMove}
       onMouseLeave={() => setActive(null)}
     >
-      {/* cursor-following preview — desktop only (no cursor on touch) */}
+      {/* cursor-following stack — desktop only (no cursor on touch) */}
       <motion.div
-        className="pointer-events-none absolute left-0 top-0 z-20 hidden w-72 lg:block"
+        className="pointer-events-none absolute left-0 top-0 z-20 hidden lg:block"
         style={{ x, y, translateX: "-50%", translateY: "-50%" }}
       >
-        {svc && imgs.length > 0 && (
-          <div className="relative">
-            {/* settled photo — defines the box, keeps native aspect */}
-            <div className="bg-line shadow-2xl ring-1 ring-black/5">
-              <Image
-                key={`base-${baseIdx}`}
-                src={imgs[baseIdx]}
-                alt=""
-                width={800}
-                height={1000}
-                sizes="288px"
-                className="block h-auto w-full"
-              />
-            </div>
-            {/* next photo wiping in, centred on the box centre, native aspect */}
-            {step > 0 && (
-              <div
-                key={step}
-                className="wipe-in absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2 shadow-2xl ring-1 ring-black/5"
-              >
-                <Image
-                  src={imgs[cur]}
-                  alt=""
-                  width={800}
-                  height={1000}
-                  sizes="288px"
-                  className="block h-auto w-full"
-                />
-              </div>
-            )}
-          </div>
-        )}
+        {stack.map((card, i) => {
+          const depth = stack.length - 1 - i; // 0 = newest, on top and sharp
+          const top = depth === 0;
+          return (
+            <img
+              key={card.id}
+              src={top ? card.shot.hi : card.shot.lo}
+              alt=""
+              className="absolute left-1/2 top-1/2 bg-line shadow-2xl ring-1 ring-black/5 transition-all duration-700 ease-out"
+              style={{
+                maxWidth: SIZE,
+                maxHeight: SIZE,
+                width: "auto",
+                height: "auto",
+                transform: `translate(-50%, -50%) scale(${1 - depth * 0.03})`,
+                filter: `blur(${depth * 2.5}px)`,
+                opacity: Math.max(0, 1 - depth * 0.2),
+                zIndex: 100 - depth,
+              }}
+            />
+          );
+        })}
       </motion.div>
 
       {/* the list of names */}
