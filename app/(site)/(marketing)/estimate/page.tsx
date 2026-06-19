@@ -4,6 +4,10 @@ import type { Metadata } from "next";
 import EstimateCalculator from "@/app/components/EstimateCalculator";
 import ScrollNudge from "@/app/components/ScrollNudge";
 import WordReveal from "@/app/components/WordReveal";
+import { site } from "@/app/lib/site";
+import { client } from "@/sanity/lib/client";
+import { CONTACT_QUERY } from "@/sanity/lib/queries";
+import type { Contact } from "@/sanity/lib/types";
 
 
 export const metadata: Metadata = {
@@ -13,7 +17,12 @@ export const metadata: Metadata = {
   alternates: { canonical: "/estimate" },
 };
 
-export default function EstimatePage() {
+export const revalidate = 60;
+
+export default async function EstimatePage() {
+  const contact = await client.fetch<Contact | null>(CONTACT_QUERY);
+  const email = contact?.contactEmail || site.email;
+
   return (
     <main>
       <ScrollNudge />
@@ -35,7 +44,7 @@ export default function EstimatePage() {
       {/* Calculator — full width, with a little extra breathing room L/R */}
       <section className={`${PAD} pb-24 sm:pb-32`}>
         <div className="sm:px-4 lg:px-10">
-          <EstimateCalculator />
+          <EstimateCalculator email={email} />
         </div>
       </section>
     </main>
