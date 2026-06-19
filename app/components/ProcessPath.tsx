@@ -62,6 +62,7 @@ export default function ProcessPath() {
       });
 
       let logoPath = "";
+      let divert = "";
       const lr = logoRef.current;
       if (lr) {
         const r = lr.getBoundingClientRect();
@@ -70,11 +71,16 @@ export default function ProcessPath() {
         const scale = r.width / LOGO_W;
         const startX = lx + LOGO_POINTS[0][0] * scale;
         const startY = ly + LOGO_POINTS[0][1] * scale;
-        // divert out past the RIGHT edge and below the mark, then sweep left
-        // under it and curve up into the bottom-left start point — so the line
-        // never crosses the logo or its left edge
-        p.push({ x: lx + LOGO_W * scale + 26, y: ly + LOGO_H * scale + 52 });
-        p.push({ x: startX, y: startY });
+        const rightEdge = lx + LOGO_W * scale;
+        const lastN = p[p.length - 1];
+        // one smooth cubic that bows out past the right edge and below the mark,
+        // then curves up into the bottom-left start point — a continuous loop,
+        // never crossing the logo or its left edge (no kink/sharp corner).
+        const c1x = rightEdge + 60;
+        const c1y = lastN.y + (startY - lastN.y) * 0.5;
+        const c2x = startX + 50;
+        const c2y = startY + 110;
+        divert = ` C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${startX.toFixed(1)} ${startY.toFixed(1)}`;
         logoPath = LOGO_POINTS.map(
           (pt, i) =>
             `${i === 0 ? "M" : "L"} ${(lx + pt[0] * scale).toFixed(1)} ${(
@@ -89,6 +95,7 @@ export default function ProcessPath() {
         const my = (p[i - 1].y + p[i].y) / 2;
         dd += ` C ${p[i - 1].x.toFixed(1)} ${my.toFixed(1)}, ${p[i].x.toFixed(1)} ${my.toFixed(1)}, ${p[i].x.toFixed(1)} ${p[i].y.toFixed(1)}`;
       }
+      dd += divert;
       setD(dd);
       setDLogo(logoPath);
       setPts(p);

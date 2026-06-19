@@ -20,7 +20,7 @@ export default function AreaPills({ areas }: { areas: string[] }) {
     let raf = 0;
     const check = () => {
       const r = el.getBoundingClientRect();
-      if (r.top < window.innerHeight * 0.9 && r.bottom > 0) {
+      if (r.top < window.innerHeight * 0.7 && r.bottom > 0) {
         setShown(true);
         window.removeEventListener("scroll", onScroll);
         window.removeEventListener("resize", onScroll);
@@ -49,7 +49,7 @@ export default function AreaPills({ areas }: { areas: string[] }) {
         // each pill rises up out of its own clip mask, one after another
         <span key={area} className="inline-block overflow-hidden align-bottom">
           <span
-            className="inline-flex items-center rounded-full border-4 border-ink/40 px-5 py-2.5 text-lg font-medium uppercase leading-none tracking-[0.04em] sm:px-7 sm:py-3.5 sm:text-2xl"
+            className="inline-flex items-center rounded-full border-[3px] border-current px-5 py-2.5 text-lg font-medium uppercase leading-none tracking-[0.04em] sm:px-7 sm:py-3.5 sm:text-2xl"
             style={{
               transform: shown ? "translateY(0)" : "translateY(110%)",
               transition: "transform 0.6s cubic-bezier(0.22,1,0.36,1)",

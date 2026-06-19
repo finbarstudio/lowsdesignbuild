@@ -1,6 +1,5 @@
 import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 
 import AreaPills from "@/app/components/AreaPills";
@@ -52,34 +51,24 @@ export default async function AboutPage() {
         </Reveal>
       </section>
 
-      {/* Story */}
-      <section
-        className={`${PAD} flex min-h-0 flex-col justify-center py-20 sm:min-h-[90vh] sm:py-24`}
-      >
-        <div className="grid grid-cols-1 items-start gap-4 sm:gap-6 lg:grid-cols-12">
-          <Reveal className="lg:col-span-7 lg:col-start-1">
-            <div className="relative aspect-[4/5] overflow-hidden lg:aspect-[4/3]">
-              <Image
-                src="/img/about.jpg"
-                alt="Open-plan kitchen extension with Crittall doors"
-                fill
-                sizes="(max-width: 1024px) 100vw, 60vw"
-                className="object-cover"
-              />
-            </div>
-          </Reveal>
-          <Reveal className="lg:col-span-4 lg:col-start-9">
-            <p className="text-sm leading-relaxed text-muted">
+      {/* Story — sticky title (1/3) + feature bio (2/3), like "What we do" */}
+      <section className={`${PAD} py-24 sm:py-32`}>
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+          <div className="lg:col-span-1">
+            <h2 className="label sticky top-24 !text-ink">A family company</h2>
+          </div>
+          <Reveal className="lg:col-span-2">
+            <p className="text-2xl leading-snug sm:text-3xl">
               We handle the whole job, from the first drawings to completion, so
               there&apos;s only one team to deal with and the process stays
               simple for you.
             </p>
-            <p className="mt-4 text-sm leading-relaxed text-muted">
+            <p className="mt-8 text-2xl leading-snug sm:text-3xl">
               From the first conversation to the final finish, that same team
               takes responsibility for everything: the drawings, the approvals,
               the construction and the finish.
             </p>
-            <p className="mt-4 text-sm leading-relaxed text-muted">
+            <p className="mt-8 text-2xl leading-snug sm:text-3xl">
               We care about the quality of our work and always aim for a high
               standard. Everything comes with guarantees, so you know it meets
               the required specification.
@@ -105,16 +94,15 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* Process */}
-      <section className={`${PAD} py-20 sm:py-32`}>
-        <Reveal>
-          <p className="label">Our process</p>
-          <h2 className="serif mt-6 max-w-2xl text-3xl sm:text-5xl">
-            The key stages of a successful project.
-          </h2>
-        </Reveal>
-        <div className="mt-16">
-          <ProcessPath />
+      {/* Process — sticky title (1/3) + pathway (2/3), like "What we do" */}
+      <section className={`${PAD} py-24 sm:py-32`}>
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+          <div className="lg:col-span-1">
+            <h2 className="label sticky top-24 !text-ink">Our process</h2>
+          </div>
+          <div className="lg:col-span-2">
+            <ProcessPath />
+          </div>
         </div>
       </section>
 

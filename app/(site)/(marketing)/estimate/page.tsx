@@ -17,7 +17,6 @@ export default function EstimatePage() {
     <main className={`${PAD} py-20 pt-28 sm:py-24 sm:pt-36`}>
       <Reveal>
         <div className="grid grid-cols-1 gap-y-6 lg:grid-cols-12 lg:gap-x-6">
-          <p className="label lg:col-span-12">Free tool</p>
           <h1 className="serif text-4xl sm:text-6xl lg:col-span-7">
             Estimate calculator
           </h1>
