@@ -10,16 +10,59 @@ type Card = { id: number; shot: Shot };
 
 // longest edge cap (px): a portrait's height == a landscape's width, so every
 // photo fits inside the same square/circle regardless of orientation
-const SIZE = 448;
+const SIZE = 448; // desktop cursor preview
+const MOBILE_SIZE = 200; // inline preview when a service is tapped on mobile
 const TICK = 1100; // ms between each new stacked photo
 const DEPTH = 6; // how many photos are kept in the stack (older ones drop off)
 
+// The stacked photos: newest sharp on top, older ones recede into blur (and a
+// low-res source) before dropping off. Shared by the desktop cursor preview and
+// the mobile inline preview.
+function StackImages({
+  stack,
+  portrait,
+  size,
+}: {
+  stack: Card[];
+  portrait: Record<string, boolean>;
+  size: number;
+}) {
+  return (
+    <>
+      {stack.map((card, i) => {
+        const depth = stack.length - 1 - i; // 0 = newest, on top and sharp
+        const top = depth === 0;
+        // portraits read 30% smaller, landscapes 10% smaller, so heights even out
+        const cap = size * (portrait[card.shot.hi] ? 0.7 : 0.9);
+        return (
+          <img
+            key={card.id}
+            src={top ? card.shot.hi : card.shot.lo}
+            alt=""
+            className="absolute left-1/2 top-1/2 bg-line shadow-2xl ring-1 ring-black/5 transition-all duration-700 ease-out"
+            style={{
+              maxWidth: cap,
+              maxHeight: cap,
+              width: "auto",
+              height: "auto",
+              transform: `translate(-50%, -50%) scale(${1 - depth * 0.03})`,
+              filter: `blur(${depth * 2.5}px)`,
+              opacity: Math.max(0, 1 - depth * 0.2),
+              zIndex: 100 - depth,
+            }}
+          />
+        );
+      })}
+    </>
+  );
+}
+
 /**
- * Services as a vertical list of names. Hovering a name reveals a preview that
- * follows the cursor and *stacks* that service's photos — each new photo lands
- * sharp on top, and the ones behind it transition to blur (and drop to a low-res
- * source to save memory) before fading out. Photos are normalised so the longest
- * edge is equal, keeping wide and tall shots visually the same size.
+ * Services as a vertical list of names.
+ * - Desktop: hovering a name reveals a preview that follows the cursor and
+ *   *stacks* that service's photos.
+ * - Mobile: tapping a name shifts that row to [photo stack | title] and runs
+ *   the same scroll-through stack inline. Tap again to close.
  */
 export default function ServiceSlideshow({
   services,
@@ -34,7 +77,7 @@ export default function ServiceSlideshow({
   const idRef = useRef(0);
   const iRef = useRef(0);
 
-  // cursor position → spring-smoothed follow
+  // cursor position → spring-smoothed follow (desktop)
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const x = useSpring(mx, { damping: 30, stiffness: 250, mass: 0.5 });
@@ -79,8 +122,8 @@ export default function ServiceSlideshow({
       onMouseMove={handleMove}
       onMouseLeave={() => setActive(null)}
     >
-      {/* preload every photo (rendered, clipped + invisible) so the stack never
-          blurs before its replacement has loaded */}
+      {/* preload every photo (clipped + invisible) so the stack never blurs
+          before its replacement has loaded; also learns orientation */}
       <div
         aria-hidden
         className="pointer-events-none absolute left-0 top-0 h-px w-px overflow-hidden opacity-0"
@@ -93,67 +136,71 @@ export default function ServiceSlideshow({
             decoding="async"
             onLoad={(e) => {
               const { naturalWidth: w, naturalHeight: h } = e.currentTarget;
-              setPortrait((p) =>
-                src in p ? p : { ...p, [src]: h > w },
-              );
+              setPortrait((p) => (src in p ? p : { ...p, [src]: h > w }));
             }}
           />
         ))}
       </div>
-      {/* cursor-following stack — desktop only (no cursor on touch) */}
+
+      {/* desktop: cursor-following stack (no cursor on touch) */}
       <motion.div
         className="pointer-events-none absolute left-0 top-0 z-20 hidden lg:block"
         style={{ x, y, translateX: "-50%", translateY: "-50%" }}
       >
-        {stack.map((card, i) => {
-          const depth = stack.length - 1 - i; // 0 = newest, on top and sharp
-          const top = depth === 0;
-          // portraits read 30% smaller, landscapes 10% smaller, so heights even out
-          const cap = SIZE * (portrait[card.shot.hi] ? 0.7 : 0.9);
-          return (
-            <img
-              key={card.id}
-              src={top ? card.shot.hi : card.shot.lo}
-              alt=""
-              className="absolute left-1/2 top-1/2 bg-line shadow-2xl ring-1 ring-black/5 transition-all duration-700 ease-out"
-              style={{
-                maxWidth: cap,
-                maxHeight: cap,
-                width: "auto",
-                height: "auto",
-                transform: `translate(-50%, -50%) scale(${1 - depth * 0.03})`,
-                filter: `blur(${depth * 2.5}px)`,
-                opacity: Math.max(0, 1 - depth * 0.2),
-                zIndex: 100 - depth,
-              }}
-            />
-          );
-        })}
+        <StackImages stack={stack} portrait={portrait} size={SIZE} />
       </motion.div>
 
       {/* the list of names */}
       <ul className="relative z-10">
-        {services.map((s, i) => (
-          <li
-            key={s.title}
-            onMouseEnter={() => setActive(i)}
-            className="border-t border-line last:border-b"
-          >
-            {/* stacks on mobile (title + blurb) so phones still get the copy;
-                row layout from sm+ where the cursor preview takes over */}
-            <div className="flex flex-col gap-2 py-6 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 sm:py-8">
-              <h3
-                className="text-2xl font-semibold tracking-tight transition-opacity duration-300 sm:text-4xl"
-                style={{ opacity: active === null || active === i ? 1 : 0.35 }}
+        {services.map((s, i) => {
+          const isActive = active === i;
+          return (
+            <li key={s.title} className="border-t border-line last:border-b">
+              {/* ---- mobile (tap to reveal photos; tap again to close) ---- */}
+              <button
+                type="button"
+                onClick={() => setActive(isActive ? null : i)}
+                className="block w-full text-left lg:hidden"
               >
-                {s.title}
-              </h3>
-              <p className="max-w-md text-sm leading-relaxed text-muted sm:max-w-xs">
-                {s.blurb}
-              </p>
-            </div>
-          </li>
-        ))}
+                {isActive ? (
+                  <div className="flex items-center gap-5 py-6">
+                    <div className="relative h-56 w-48 shrink-0">
+                      <StackImages stack={stack} portrait={portrait} size={MOBILE_SIZE} />
+                    </div>
+                    <h3 className="text-2xl font-semibold tracking-tight">
+                      {s.title}
+                    </h3>
+                  </div>
+                ) : (
+                  <div className="py-6">
+                    <h3 className="text-2xl font-semibold tracking-tight">
+                      {s.title}
+                    </h3>
+                    <p className="mt-2 max-w-md text-sm leading-relaxed text-muted">
+                      {s.blurb}
+                    </p>
+                  </div>
+                )}
+              </button>
+
+              {/* ---- desktop (hover) ---- */}
+              <div
+                onMouseEnter={() => setActive(i)}
+                className="hidden items-baseline justify-between gap-6 py-8 lg:flex"
+              >
+                <h3
+                  className="text-4xl font-semibold tracking-tight transition-opacity duration-300"
+                  style={{ opacity: active === null || isActive ? 1 : 0.35 }}
+                >
+                  {s.title}
+                </h3>
+                <p className="max-w-xs text-sm leading-relaxed text-muted">
+                  {s.blurb}
+                </p>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

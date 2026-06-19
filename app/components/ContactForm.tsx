@@ -106,18 +106,9 @@ export default function ContactForm({ email = site.email }: { email?: string }) 
         placeholder="Tell us what you're dreaming up…"
       />
 
-      <button
-        type="submit"
-        className="group/btn inline-flex items-center gap-3 text-base font-bold uppercase tracking-[0.08em]"
-      >
-        <span className="relative">
-          Send enquiry
-          {/* 1px line that draws left→right on hover, like the site's links */}
-          <span className="absolute -bottom-px left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/btn:scale-x-100" />
-        </span>
-        <span className="transition-transform duration-300 group-hover/btn:translate-x-1.5">
-          →
-        </span>
+      {/* same link-underline token as every other link on the site */}
+      <button type="submit" className="link-underline w-fit text-base">
+        Send enquiry →
       </button>
 
       {sent && (

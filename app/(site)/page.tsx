@@ -129,8 +129,14 @@ export default async function HomePage() {
       {/* ---------------- Hero ---------------- */}
       {/* Mobile: a tall 80svh crop so the image reads as a proper hero.
           sm+: the uncropped photo at its natural height (scroll for more). */}
-      <section id="home-hero" className="relative h-[80svh] w-full sm:h-auto">
+      <section
+        id="home-hero"
+        className="relative h-[80svh] w-full overflow-hidden sm:h-auto"
+      >
+        {/* scrolls slightly slower than the page (parallax, driven in HomeChrome)
+            — a touch of scale gives headroom so the lag never reveals an edge */}
         <Image
+          id="home-hero-img"
           src={hero.src}
           alt="A Lows Design & Build living room"
           width={hero.w}
@@ -139,8 +145,11 @@ export default async function HomePage() {
           placeholder="blur"
           blurDataURL={hero.blur}
           sizes="100vw"
+          style={{ transform: "scale(1.08)", willChange: "transform" }}
           className="block h-full w-full object-cover sm:h-auto sm:object-contain"
         />
+        {/* subtle bottom gradient so the wordmark + tagline stay legible */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/35 to-transparent" />
         {/* the hero blurs progressively as you scroll (driven in HomeChrome) */}
         <div
           id="hero-overlay"

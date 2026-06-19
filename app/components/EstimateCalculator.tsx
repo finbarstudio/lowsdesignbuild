@@ -577,15 +577,9 @@ export default function EstimateCalculator({
             </div>
           </Field>
 
-          <button
-            type="submit"
-            className="group/btn inline-flex items-center gap-3 text-base font-bold uppercase tracking-[0.08em]"
-          >
-            <span className="relative">
-              Send my details
-              <span className="absolute -bottom-px left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/btn:scale-x-100" />
-            </span>
-            <span className="transition-transform duration-300 group-hover/btn:translate-x-1.5">→</span>
+          {/* same link-underline token as every other link on the site */}
+          <button type="submit" className="link-underline w-fit text-base">
+            Send my details →
           </button>
 
           {sent && (
