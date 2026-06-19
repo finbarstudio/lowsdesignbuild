@@ -10,7 +10,7 @@ type Card = { id: number; shot: Shot };
 
 // longest edge cap (px): a portrait's height == a landscape's width, so every
 // photo fits inside the same square/circle regardless of orientation
-const SIZE = 264;
+const SIZE = 448;
 const TICK = 1100; // ms between each new stacked photo
 const DEPTH = 6; // how many photos are kept in the stack (older ones drop off)
 
