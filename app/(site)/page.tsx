@@ -49,8 +49,8 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
 
       {/* overlay text: title and tags scale a touch more than the card and
           with a stagger, so they lift off the image on hover (parallax feel) */}
-      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-6 sm:p-8">
-        <h3 className="origin-bottom-left text-3xl font-semibold leading-tight tracking-tight text-white transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] [transition-delay:120ms] group-hover:scale-[1.05] sm:text-4xl">
+      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-5 sm:gap-3 sm:p-8">
+        <h3 className="origin-bottom-left text-xl font-semibold leading-tight tracking-tight text-white transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] [transition-delay:120ms] group-hover:scale-[1.05] sm:text-3xl lg:text-4xl">
           {p.title}
         </h3>
         {tags.length > 0 && (
@@ -181,7 +181,7 @@ export default async function HomePage() {
             clipped at the bottom by the opaque paper background that follows */}
         {featured.length > 0 && (
           <section className="relative z-20 px-[10%] pt-24 sm:pt-32">
-            <div className="space-y-32 sm:space-y-56 lg:space-y-[22rem]">
+            <div className="space-y-16 sm:space-y-56 lg:space-y-[22rem]">
               {featured.map((p) => (
                 <ProjectCard key={p._id} p={p} />
               ))}

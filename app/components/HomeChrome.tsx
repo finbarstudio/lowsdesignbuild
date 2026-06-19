@@ -97,15 +97,23 @@ export default function HomeChrome({
         ? "text-white"
         : "text-ink";
 
+  // when the mobile menu is open the bar gets a solid background, so the
+  // logo + button must read ink rather than white-over-hero
+  const barColor = open ? "text-ink" : textColor;
+
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-40 h-16">
+      <header
+        className={`fixed inset-x-0 top-0 z-40 h-16 transition-colors duration-300 ${
+          open ? "bg-background" : ""
+        }`}
+      >
         <div className="relative mx-auto flex h-full w-full max-w-[1900px] items-center px-4 sm:px-6">
           {/* mobile: static wordmark, docked top-left */}
           <Link
             href="/"
             aria-label={`${site.name}, home`}
-            className={`flex items-center transition-colors duration-300 sm:hidden ${textColor}`}
+            className={`flex items-center transition-colors duration-300 sm:hidden ${barColor}`}
           >
             <Wordmark className="h-[26px] w-[57px]" />
           </Link>
@@ -129,7 +137,7 @@ export default function HomeChrome({
           {/* mobile menu button */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className={`-mr-2 ml-auto flex h-11 w-11 flex-col items-end justify-center transition-colors duration-300 sm:hidden ${textColor}`}
+            className={`-mr-2 ml-auto flex h-11 w-11 flex-col items-end justify-center transition-colors duration-300 sm:hidden ${barColor}`}
             aria-label="Toggle menu"
           >
             {[0, 1, 2].map((i) => (
