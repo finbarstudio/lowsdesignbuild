@@ -6,7 +6,7 @@ import AreaPills from "@/app/components/AreaPills";
 import ProcessPath from "@/app/components/ProcessPath";
 import WordReveal from "@/app/components/WordReveal";
 import Reveal from "@/app/components/Reveal";
-import ServiceCard from "@/app/components/ServiceCard";
+import ServiceHoverList from "@/app/components/ServiceHoverList";
 import { areas, services, site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
@@ -85,11 +85,9 @@ export default async function AboutPage() {
             <h2 className="label sticky top-24 !text-ink">What we do</h2>
           </div>
 
-          {/* right: two columns of services */}
-          <Reveal className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:col-span-2">
-            {serviceCards.map((s) => (
-              <ServiceCard key={s.title} service={s} />
-            ))}
+          {/* right: hover-list of services — name reveals a cursor-following image */}
+          <Reveal className="lg:col-span-2">
+            <ServiceHoverList services={serviceCards} />
           </Reveal>
         </div>
       </section>
