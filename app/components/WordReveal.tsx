@@ -10,8 +10,8 @@ import { useEffect, useRef, useState } from "react";
 export default function WordReveal({
   text,
   className = "",
-  stagger = 380,
-  duration = 0.9,
+  stagger = 160,
+  duration = 0.7,
 }: {
   text: string;
   className?: string;

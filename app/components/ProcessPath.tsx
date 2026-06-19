@@ -68,11 +68,13 @@ export default function ProcessPath() {
         const lx = r.left - wr.left;
         const ly = r.top - wr.top;
         const scale = r.width / LOGO_W;
-        // the path comes down to the logomark's start point (bottom-left)
-        p.push({
-          x: lx + LOGO_POINTS[0][0] * scale,
-          y: ly + LOGO_POINTS[0][1] * scale,
-        });
+        const startX = lx + LOGO_POINTS[0][0] * scale;
+        const startY = ly + LOGO_POINTS[0][1] * scale;
+        // divert out past the RIGHT edge and below the mark, then sweep left
+        // under it and curve up into the bottom-left start point — so the line
+        // never crosses the logo or its left edge
+        p.push({ x: lx + LOGO_W * scale + 26, y: ly + LOGO_H * scale + 52 });
+        p.push({ x: startX, y: startY });
         logoPath = LOGO_POINTS.map(
           (pt, i) =>
             `${i === 0 ? "M" : "L"} ${(lx + pt[0] * scale).toFixed(1)} ${(
@@ -197,7 +199,7 @@ export default function ProcessPath() {
   return (
     <div ref={wrapRef} className="relative">
       <svg
-        className="pointer-events-none absolute inset-0 h-full w-full"
+        className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
         viewBox={`0 0 ${size.w || 1} ${size.h || 1}`}
         fill="none"
         aria-hidden="true"
@@ -298,8 +300,10 @@ export default function ProcessPath() {
       </div>
 
       {/* logomark — an invisible spacer that reserves the mark's footprint and
-          is measured in build(); the mark itself is drawn in the SVG above. */}
-      <div className="mt-12 flex justify-center sm:mt-16">
+          is measured in build(); the mark itself is drawn in the SVG above. The
+          pb leaves room for the line to divert below before curving up into it,
+          and adds breathing space before the next section. */}
+      <div className="mt-20 flex justify-center pb-28 sm:mt-28 sm:pb-40">
         <div ref={logoRef} className="aspect-[121.43/86.64] w-20 sm:w-24" />
       </div>
     </div>

@@ -46,18 +46,18 @@ export default function AreaPills({ areas }: { areas: string[] }) {
       className="mx-auto flex max-w-5xl flex-wrap justify-center gap-3 sm:gap-4"
     >
       {areas.map((area, i) => (
-        <span
-          key={area}
-          className="inline-flex items-center rounded-full border border-ink/45 px-5 py-2 text-lg font-medium uppercase leading-none tracking-[0.04em] sm:px-7 sm:py-2.5 sm:text-2xl"
-          style={{
-            transform: shown ? "translateY(0)" : "translateY(10px)",
-            opacity: shown ? 1 : 0,
-            transition:
-              "transform 0.6s cubic-bezier(0.22,1,0.36,1), opacity 0.6s ease",
-            transitionDelay: `${i * 70}ms`,
-          }}
-        >
-          {area}
+        // each pill rises up out of its own clip mask, one after another
+        <span key={area} className="inline-block overflow-hidden align-bottom">
+          <span
+            className="inline-flex items-center rounded-full border-4 border-ink/40 px-5 py-2.5 text-lg font-medium uppercase leading-none tracking-[0.04em] sm:px-7 sm:py-3.5 sm:text-2xl"
+            style={{
+              transform: shown ? "translateY(0)" : "translateY(110%)",
+              transition: "transform 0.6s cubic-bezier(0.22,1,0.36,1)",
+              transitionDelay: `${i * 150}ms`,
+            }}
+          >
+            <span className="block translate-y-[0.06em]">{area}</span>
+          </span>
         </span>
       ))}
     </div>
