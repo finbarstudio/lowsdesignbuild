@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import AreaPills from "@/app/components/AreaPills";
 import ProcessPath from "@/app/components/ProcessPath";
+import ScrollNudge from "@/app/components/ScrollNudge";
 import WordReveal from "@/app/components/WordReveal";
 import Reveal from "@/app/components/Reveal";
 import ServiceSlideshow from "@/app/components/ServiceSlideshow";
@@ -74,6 +75,7 @@ export default async function AboutPage() {
 
   return (
     <main>
+      <ScrollNudge />
       {/* Intro — a hero like the home slogan: word-by-word reveal, with the
           "design + build" lockup inlined from the logotype */}
       <section
