@@ -59,7 +59,7 @@ function Field({
   );
 }
 
-export default function ContactForm() {
+export default function ContactForm({ email = site.email }: { email?: string }) {
   const [sent, setSent] = useState(false);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -74,7 +74,7 @@ export default function ContactForm() {
       `${data.get("message")}`,
     ].join("\n");
     const subject = encodeURIComponent(`Project enquiry from ${name}`);
-    window.location.href = `mailto:${site.email}?subject=${subject}&body=${encodeURIComponent(
+    window.location.href = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(
       body,
     )}`;
     setSent(true);
@@ -110,9 +110,10 @@ export default function ContactForm() {
         type="submit"
         className="group/btn inline-flex items-center gap-3 text-base font-bold uppercase tracking-[0.08em]"
       >
-        <span className="relative pb-1">
+        <span className="relative">
           Send enquiry
-          <span className="absolute bottom-0 left-0 h-[2px] w-full bg-ink transition-colors duration-300 group-hover/btn:bg-tertiary" />
+          {/* 1px line that draws left→right on hover, like the site's links */}
+          <span className="absolute -bottom-px left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/btn:scale-x-100" />
         </span>
         <span className="transition-transform duration-300 group-hover/btn:translate-x-1.5">
           →
@@ -122,7 +123,7 @@ export default function ContactForm() {
       {sent && (
         <p className="text-sm text-muted">
           Thanks. Your email app should have opened with your message ready to
-          send. If not, email us directly at {site.email}.
+          send. If not, email us directly at {email}.
         </p>
       )}
     </form>

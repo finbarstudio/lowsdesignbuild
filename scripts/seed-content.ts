@@ -83,6 +83,7 @@ async function run() {
     familyBio,
     processSteps,
     areas,
+    contactEmail: "info@lowsdesignandbuild.com",
   };
 
   const hasPeople =

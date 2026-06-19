@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 import Reveal from "@/app/components/Reveal";
+import ScrollNudge from "@/app/components/ScrollNudge";
+import WordReveal from "@/app/components/WordReveal";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import { PROJECTS_QUERY } from "@/sanity/lib/queries";
@@ -24,18 +26,19 @@ export default async function ProjectsPage() {
 
   return (
     <main>
-      {/* Intro */}
+      <ScrollNudge />
+
+      {/* Hero — full screen, big word-by-word reveal like the other pages */}
       <section
-        className={`${PAD} flex min-h-[50vh] flex-col justify-end pb-16 pt-28 sm:min-h-[60vh] sm:pt-36`}
+        className={`${PAD} flex min-h-[100svh] flex-col items-center justify-center text-center`}
       >
-        <Reveal>
-          <p className="label">Our work</p>
-          <h1 className="serif mt-5 text-4xl sm:text-6xl">Projects</h1>
-          <p className="mt-6 max-w-md text-sm leading-relaxed text-muted">
-            A selection of recent loft conversions, extensions and full
-            refurbishments across South London and Kent.
-          </p>
-        </Reveal>
+        <h1 className="mx-auto max-w-6xl font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
+          <WordReveal text="Our pride is in our projects" />
+        </h1>
+        <p className="mt-10 max-w-xl text-base leading-relaxed text-muted sm:mt-14 sm:text-lg">
+          A selection of recent loft conversions, extensions and full
+          refurbishments across South London and Kent.
+        </p>
       </section>
 
       {/* Grid */}

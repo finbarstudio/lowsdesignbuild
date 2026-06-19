@@ -23,6 +23,7 @@ export interface SiteSettings {
   heroLqip: string | null;
   heroDim: { width: number; height: number } | null;
   heroTrailImages: Array<SanityImageSource & { _key?: string }> | null;
+  contactEmail: string | null;
   areas: string[] | null;
   homeHeroText: string | null;
   aboutHeroText: string | null;

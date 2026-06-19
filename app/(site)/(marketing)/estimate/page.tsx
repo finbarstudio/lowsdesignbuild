@@ -1,9 +1,7 @@
 import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 
-import ContactForm from "@/app/components/ContactForm";
 import EstimateCalculator from "@/app/components/EstimateCalculator";
-import Reveal from "@/app/components/Reveal";
 import ScrollNudge from "@/app/components/ScrollNudge";
 import WordReveal from "@/app/components/WordReveal";
 
@@ -34,23 +32,11 @@ export default function EstimatePage() {
         </p>
       </section>
 
-      {/* Calculator — full width */}
+      {/* Calculator — full width, with a little extra breathing room L/R */}
       <section className={`${PAD} pb-24 sm:pb-32`}>
-        <Reveal>
-          <p className="label mb-10 !text-ink">Estimate calculator</p>
+        <p className="label mb-10 !text-ink">Estimate calculator</p>
+        <div className="sm:px-4 lg:px-10">
           <EstimateCalculator />
-        </Reveal>
-      </section>
-
-      {/* Enquiry form — no areas, just the form in the sticky-label pattern */}
-      <section className={`${PAD} pb-24 sm:pb-32`}>
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-          <div className="lg:col-span-1">
-            <p className="label sticky top-24 !text-ink">Get in touch</p>
-          </div>
-          <Reveal className="lg:col-span-2">
-            <ContactForm />
-          </Reveal>
         </div>
       </section>
     </main>

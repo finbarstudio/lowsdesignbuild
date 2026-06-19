@@ -61,7 +61,7 @@ export default async function ContactPage() {
           </div>
           <div className="lg:col-span-2">
             <p className="label mb-8 !text-ink">Tell us about your project</p>
-            <ContactForm />
+            <ContactForm email={settings?.contactEmail || site.email} />
           </div>
         </div>
       </section>

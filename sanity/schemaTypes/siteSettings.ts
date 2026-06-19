@@ -25,6 +25,13 @@ export const siteSettingsType = defineType({
         "Images that trail the cursor when hovering the big slogan on the home page. Add a handful of project photos.",
     }),
     defineField({
+      name: "contactEmail",
+      title: "Contact form recipient email",
+      type: "string",
+      description:
+        "Where the contact / enquiry form sends to. Leave blank to use the default.",
+    }),
+    defineField({
       name: "areas",
       title: "Areas we cover",
       type: "array",
