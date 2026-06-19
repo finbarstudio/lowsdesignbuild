@@ -49,7 +49,7 @@ export default function Footer() {
       </div>
 
       <div className="mt-auto px-4 sm:px-6">
-        <div className="mb-8 grid grid-cols-2 gap-x-6 gap-y-8 text-xs leading-relaxed sm:mb-10 sm:grid-cols-12">
+        <div className="mb-3 grid grid-cols-2 items-end gap-x-6 gap-y-8 text-xs leading-relaxed sm:mb-4 sm:grid-cols-12">
           {/* left: location + contact */}
           <div className="flex flex-col items-start sm:col-span-4">
             <p>South London</p>
