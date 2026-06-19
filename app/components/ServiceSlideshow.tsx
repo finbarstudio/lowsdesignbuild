@@ -29,6 +29,8 @@ export default function ServiceSlideshow({
   const wrapRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<number | null>(null);
   const [stack, setStack] = useState<Card[]>([]);
+  // orientation per source (true = portrait), learned at preload
+  const [portrait, setPortrait] = useState<Record<string, boolean>>({});
   const idRef = useRef(0);
   const iRef = useRef(0);
 
@@ -84,7 +86,18 @@ export default function ServiceSlideshow({
         className="pointer-events-none absolute left-0 top-0 h-px w-px overflow-hidden opacity-0"
       >
         {preload.map((src) => (
-          <img key={src} src={src} alt="" decoding="async" />
+          <img
+            key={src}
+            src={src}
+            alt=""
+            decoding="async"
+            onLoad={(e) => {
+              const { naturalWidth: w, naturalHeight: h } = e.currentTarget;
+              setPortrait((p) =>
+                src in p ? p : { ...p, [src]: h > w },
+              );
+            }}
+          />
         ))}
       </div>
       {/* cursor-following stack — desktop only (no cursor on touch) */}
@@ -95,6 +108,8 @@ export default function ServiceSlideshow({
         {stack.map((card, i) => {
           const depth = stack.length - 1 - i; // 0 = newest, on top and sharp
           const top = depth === 0;
+          // portraits read 30% smaller, landscapes 10% smaller, so heights even out
+          const cap = SIZE * (portrait[card.shot.hi] ? 0.7 : 0.9);
           return (
             <img
               key={card.id}
@@ -102,8 +117,8 @@ export default function ServiceSlideshow({
               alt=""
               className="absolute left-1/2 top-1/2 bg-line shadow-2xl ring-1 ring-black/5 transition-all duration-700 ease-out"
               style={{
-                maxWidth: SIZE,
-                maxHeight: SIZE,
+                maxWidth: cap,
+                maxHeight: cap,
                 width: "auto",
                 height: "auto",
                 transform: `translate(-50%, -50%) scale(${1 - depth * 0.03})`,
