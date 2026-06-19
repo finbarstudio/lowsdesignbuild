@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import AreaPills from "@/app/components/AreaPills";
 import ContactForm from "@/app/components/ContactForm";
 import Reveal from "@/app/components/Reveal";
+import ScrollNudge from "@/app/components/ScrollNudge";
 import WordReveal from "@/app/components/WordReveal";
 import { areas as fallbackAreas, site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
@@ -28,6 +29,7 @@ export default async function ContactPage() {
       : fallbackAreas;
   return (
     <main>
+      <ScrollNudge />
       {/* Hero — full screen: big centred slogan like the home page, with the
           phone + email sitting beneath it */}
       <section

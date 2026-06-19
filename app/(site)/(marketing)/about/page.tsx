@@ -137,7 +137,7 @@ export default async function AboutPage() {
         <Reveal>
           <p className="label mb-10 sm:mb-14">Where we work</p>
         </Reveal>
-        <AreaPills areas={areaList} />
+        <AreaPills areas={areaList} widthClass="max-w-3xl" />
       </section>
 
       {/* Quality guarantee CTA */}

@@ -9,9 +9,11 @@ import { useEffect, useRef, useState } from "react";
 export default function AreaPills({
   areas,
   align = "center",
+  widthClass = "max-w-5xl",
 }: {
   areas: string[];
   align?: "center" | "left";
+  widthClass?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
@@ -49,7 +51,7 @@ export default function AreaPills({
   return (
     <div
       ref={ref}
-      className={`flex max-w-5xl flex-wrap gap-3 sm:gap-4 ${
+      className={`flex ${widthClass} flex-wrap gap-3 sm:gap-4 ${
         align === "left" ? "justify-start" : "mx-auto justify-center"
       }`}
     >
