@@ -1,0 +1,7 @@
+Authentic Sans
+© AUTHENTIC (Christina Janus & Desmond Wong) — https://authentic.website/sans
+Licensed under the SIL Open Font License (OFL).
+
+The woff2 files in this directory are the free Authentic Sans weights
+(60/90/130/150), self-hosted under the terms of the OFL. See
+https://scripts.sil.org/OFL for the full license text.

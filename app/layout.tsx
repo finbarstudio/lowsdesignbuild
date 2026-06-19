@@ -1,13 +1,20 @@
 import type { Metadata } from "next";
-import { Archivo, Space_Mono } from "next/font/google";
+import { Space_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { siteUrl } from "@/app/lib/site";
 
-// Primary sans, Archivo (body, headings, display).
-const archivo = Archivo({
-  variable: "--font-archivo",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+// Primary sans — Authentic Sans (self-hosted, SIL OFL). The only typeface
+// besides Space Mono. Weights 60/90/130/150 map to light→bold.
+const authentic = localFont({
+  variable: "--font-authentic",
+  display: "swap",
+  src: [
+    { path: "./fonts/authentic-sans-60.woff2", weight: "300", style: "normal" },
+    { path: "./fonts/authentic-sans-90.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/authentic-sans-130.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/authentic-sans-150.woff2", weight: "700", style: "normal" },
+  ],
 });
 
 // Mono, Space Mono — used tracked + uppercase for labels / sub-headings.
@@ -61,7 +68,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${archivo.variable} ${spaceMono.variable} antialiased`}
+      className={`${authentic.variable} ${spaceMono.variable} antialiased`}
     >
       <body>{children}</body>
     </html>

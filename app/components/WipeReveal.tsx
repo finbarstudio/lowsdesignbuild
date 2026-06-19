@@ -30,11 +30,15 @@ export default function WipeReveal({
     const update = () => {
       const r = el.getBoundingClientRect();
       const vh = window.innerHeight;
-      // begin revealing as the top enters near the bottom of the viewport,
-      // finish once it has risen to the upper-middle of the screen
-      const start = vh * 0.95;
-      const end = vh * 0.4;
-      const p = Math.min(1, Math.max(0, (start - r.top) / (start - end)));
+      // Reveal over a scroll span that's deliberately SHORTER than the image is
+      // tall, centred in the middle of the screen. This makes the wipe line
+      // sweep down across the image (visible) rather than sitting still while
+      // the image slides up behind it (which happens at a 1:1 span≈height).
+      const start = vh * 0.72;
+      const end = vh * 0.42;
+      const raw = Math.min(1, Math.max(0, (start - r.top) / (start - end)));
+      // smoothstep so the sweep eases in/out instead of tracking scroll linearly
+      const p = raw * raw * (3 - 2 * raw);
       el.style.clipPath = `inset(0 0 ${((1 - p) * 100).toFixed(2)}% 0)`;
     };
     const onScroll = () => {
