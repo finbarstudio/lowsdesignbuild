@@ -117,7 +117,7 @@ function Field({
 }
 
 const inputClass =
-  "w-full appearance-none border-0 border-b border-line bg-transparent py-3 text-lg outline-none transition-colors focus:border-tertiary";
+  "w-full appearance-none border-0 border-b border-tertiary bg-transparent py-3 text-lg outline-none";
 
 // native <select> with the default arrow removed and our own chevron added, so
 // it matches the editorial underline inputs
@@ -199,7 +199,7 @@ function Calculator({ config }: { config: Config }) {
       </div>
 
       <div className="self-start lg:sticky lg:top-24">
-        <div className="border-t-2 border-tertiary pt-6">
+        <div className="border-t border-tertiary pt-6">
           <p className="label">Estimated cost</p>
           <p className="mt-3 text-5xl font-bold tracking-tight tabular-nums sm:text-6xl">
             {gbp(total)}
@@ -210,7 +210,7 @@ function Calculator({ config }: { config: Config }) {
           </p>
           <Link
             href="/contact"
-            className="mt-7 inline-block text-sm link-underline"
+            className="mt-7 inline-block font-mono text-sm uppercase tracking-[0.08em] link-underline"
           >
             Get an accurate quote
           </Link>
@@ -225,15 +225,13 @@ export default function EstimateCalculator() {
 
   return (
     <div>
-      <div className="flex gap-5 border-b border-line sm:gap-8">
+      <div className="flex gap-6 border-b border-tertiary sm:gap-10">
         {(["loft", "extension"] as const).map((m) => (
           <button
             key={m}
             onClick={() => setMode(m)}
-            className={`pb-3 text-lg font-semibold tracking-tight transition-colors sm:text-xl ${
-              mode === m
-                ? "-mb-px border-b-2 border-tertiary text-ink"
-                : "text-muted hover:text-ink"
+            className={`label pb-3 transition-colors ${
+              mode === m ? "!text-ink" : "hover:!text-ink"
             }`}
           >
             {m === "loft" ? "Loft conversion" : "Extension"}

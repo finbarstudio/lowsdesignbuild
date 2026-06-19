@@ -34,7 +34,6 @@ export default function EstimatePage() {
 
       {/* Calculator — full width, with a little extra breathing room L/R */}
       <section className={`${PAD} pb-24 sm:pb-32`}>
-        <p className="label mb-10 !text-ink">Estimate calculator</p>
         <div className="sm:px-4 lg:px-10">
           <EstimateCalculator />
         </div>
