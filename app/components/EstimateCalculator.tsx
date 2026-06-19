@@ -109,7 +109,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="label">{label}</span>
+      <span className="label !text-ink text-base">{label}</span>
       {hint && <span className="mt-1 block text-xs text-muted">{hint}</span>}
       <div className="mt-3">{children}</div>
     </label>
@@ -154,7 +154,7 @@ function Calculator({ config }: { config: Config }) {
 
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_340px] lg:gap-16">
-      <div className="space-y-9">
+      <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2">
         <Field label={config.rate.label} hint={config.rate.hint}>
           <Select value={rate} onChange={(e) => setRate(Number(e.target.value))}>
             {config.rate.options.map((o) => (
@@ -230,11 +230,14 @@ export default function EstimateCalculator() {
           <button
             key={m}
             onClick={() => setMode(m)}
-            className={`label pb-3 transition-colors ${
-              mode === m ? "!text-ink" : "hover:!text-ink"
+            className={`label relative pb-3 transition-colors ${
+              mode === m ? "!text-ink" : "!text-muted hover:!text-ink"
             }`}
           >
             {m === "loft" ? "Loft conversion" : "Extension"}
+            {mode === m && (
+              <span className="absolute -bottom-px left-0 h-[3px] w-full bg-tertiary" />
+            )}
           </button>
         ))}
       </div>
