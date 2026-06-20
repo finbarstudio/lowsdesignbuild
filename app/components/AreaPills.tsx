@@ -62,7 +62,7 @@ export default function AreaPills({
         // each pill rises up out of its own clip mask, one after another
         <span key={area} className="inline-block overflow-hidden align-bottom">
           <span
-            className="pill text-sm sm:text-base"
+            className="pill text-base sm:text-xl lg:text-2xl"
             style={{
               transform: shown ? "translateY(0)" : "translateY(110%)",
               transition: "transform 0.6s cubic-bezier(0.22,1,0.36,1)",

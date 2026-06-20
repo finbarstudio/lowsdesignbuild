@@ -183,8 +183,8 @@ export default async function HomePage() {
           placeholder="blur"
           blurDataURL={hero.blur}
           sizes="100vw"
-          style={{ transform: "scale(1.08)", willChange: "transform" }}
-          className="block h-full w-full object-cover sm:h-auto sm:object-contain"
+          style={{ transform: "scale(1.12)", willChange: "transform" }}
+          className="hero-reveal block h-full w-full object-cover sm:h-auto sm:object-contain"
         />
         {/* subtle bottom gradient so the wordmark + tagline stay legible */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/35 to-transparent" />

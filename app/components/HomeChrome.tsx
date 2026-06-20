@@ -63,8 +63,8 @@ export default function HomeChrome({
       if (heroImg) {
         // cap the lag at the headroom the 1.08 scale buys (≈3.5% each side) so
         // the downward shift never reveals an edge
-        const lag = Math.min(window.scrollY * 0.18, heroH * 0.035);
-        heroImg.style.transform = `translate3d(0, ${lag.toFixed(1)}px, 0) scale(1.08)`;
+        const lag = Math.min(window.scrollY * 0.28, heroH * 0.05);
+        heroImg.style.transform = `translate3d(0, ${lag.toFixed(1)}px, 0) scale(1.12)`;
       }
 
       // desktop sliding wordmark — position only; colour comes from `mode`.
@@ -123,7 +123,7 @@ export default function HomeChrome({
           <Link
             href="/"
             aria-label={`${site.name}, home`}
-            className={`flex items-center transition-colors duration-300 sm:hidden ${barColor}`}
+            className={`logo-mask flex items-center transition-colors duration-300 sm:hidden ${barColor}`}
           >
             <Wordmark className="h-[26px] w-[57px]" />
           </Link>
@@ -165,7 +165,7 @@ export default function HomeChrome({
         ref={wrapRef}
         href="/"
         aria-label={`${site.name}, home`}
-        className={`fixed left-0 top-0 z-50 hidden transition-colors duration-300 will-change-transform sm:block ${textColor}`}
+        className={`logo-mask fixed left-0 top-0 z-50 hidden transition-colors duration-300 will-change-transform sm:block ${textColor}`}
       >
         <Wordmark className="aspect-[121.71/55.33] w-full" />
       </Link>
