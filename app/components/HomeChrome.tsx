@@ -107,7 +107,8 @@ export default function HomeChrome({
         const targetH = 26;
         const s = 1 + (targetH / baseH - 1) * p;
         const y0 = Math.min(vh, heroH) - edge - baseH; // bottom of the hero
-        const y1 = (BAR - targetH) / 2; // centred in the bar
+        // +3 optical nudge so the 2-line lockup centres with the nav items
+        const y1 = (BAR - targetH) / 2 + 3; // docked in the bar
         const y = y0 + (y1 - y0) * p;
 
         // Lockup: once the wordmark has fully docked (p≈1) wait a beat, then the
@@ -215,7 +216,7 @@ export default function HomeChrome({
               e.preventDefault();
               smoothScrollTop();
             }}
-            className={`logo-mask flex items-center transition-colors duration-300 sm:hidden ${barColor}`}
+            className={`logo-mask flex translate-y-[3px] items-center transition-colors duration-300 sm:hidden ${barColor}`}
           >
             <Wordmark className="h-[26px] w-[57px]" />
           </Link>

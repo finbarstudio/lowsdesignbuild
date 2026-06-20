@@ -57,11 +57,13 @@ export default function Header({ projectCount }: { projectCount?: number }) {
       }`}
     >
       <div className="relative mx-auto flex h-full w-full max-w-[1900px] items-center px-4 sm:px-6">
-        {/* logo left — full lockup */}
+        {/* logo left — full lockup. Nudged down a touch so its dominant "LOWS"
+            line optically centres with the nav items (the 2-line lockup reads
+            high otherwise). */}
         <Link
           href="/"
           aria-label={`${site.name}, home`}
-          className={`flex items-center transition-colors duration-300 ${barColor}`}
+          className={`flex translate-y-[3px] items-center transition-colors duration-300 ${barColor}`}
         >
           <LogoLockup />
         </Link>
