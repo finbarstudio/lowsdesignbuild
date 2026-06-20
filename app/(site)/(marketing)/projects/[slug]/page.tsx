@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import HeroParallax from "@/app/components/HeroParallax";
 import ProjectAside, { type Swatch } from "@/app/components/ProjectAside";
 import ProjectHeroTitle from "@/app/components/ProjectHeroTitle";
 import Reveal from "@/app/components/Reveal";
@@ -150,9 +151,13 @@ export default async function ProjectPage({
       <ProjectHeroTitle title={project.title ?? ""} />
 
       {/* ---------------- Hero ---------------- */}
-      <section className="relative h-[100svh] w-full overflow-hidden">
+      <section
+        id="project-hero"
+        className="relative h-[100svh] w-full overflow-hidden"
+      >
         {project.mainImage && (
           <Image
+            id="project-hero-img"
             src={urlFor(project.mainImage).width(2400).height(1600).fit("crop").url()}
             alt={heroAlt}
             fill
@@ -160,9 +165,11 @@ export default async function ProjectPage({
             sizes="100vw"
             placeholder={project.lqip ? "blur" : undefined}
             blurDataURL={project.lqip ?? undefined}
+            style={{ transform: "scale(1.18)", willChange: "transform" }}
             className="object-cover"
           />
         )}
+        <HeroParallax targetId="project-hero-img" containerId="project-hero" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/15" />
       </section>
 

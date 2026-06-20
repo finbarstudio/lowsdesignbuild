@@ -183,17 +183,11 @@ export default async function HomePage() {
           placeholder="blur"
           blurDataURL={hero.blur}
           sizes="100vw"
-          style={{ transform: "scale(1.12)", willChange: "transform" }}
-          className="hero-reveal block h-full w-full object-cover sm:h-auto sm:object-contain"
+          style={{ transform: "scale(1.18)", willChange: "transform" }}
+          className="block h-full w-full object-cover sm:h-auto sm:object-contain"
         />
-        {/* subtle bottom gradient so the wordmark + tagline stay legible */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/35 to-transparent" />
-        {/* the hero blurs progressively as you scroll (driven in HomeChrome) */}
-        <div
-          id="hero-overlay"
-          style={{ backdropFilter: "blur(0px)", WebkitBackdropFilter: "blur(0px)" }}
-          className="pointer-events-none absolute inset-0"
-        />
+        {/* same gradient as the project hero, so the wordmark stays legible */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/15" />
         {/* Serif tagline carries the hero on mobile; on desktop the sliding
             wordmark takes over, so the tagline is hidden there. */}
         <p className="serif pointer-events-none absolute bottom-6 left-4 z-10 max-w-[15rem] text-2xl leading-[1.1] text-white sm:hidden">

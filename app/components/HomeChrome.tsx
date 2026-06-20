@@ -85,26 +85,14 @@ export default function HomeChrome({
       const dark = window.scrollY >= heroH - BAR;
       setMode(atFooter ? "footer" : dark ? "ink" : "hero");
 
-      // hero blurs progressively as you scroll into the page
-      const overlay = document.getElementById("hero-overlay");
-      if (overlay) {
-        const bp = Math.min(
-          1,
-          Math.max(0, window.scrollY / (window.innerHeight * 0.45)),
-        );
-        const px = (bp * 16).toFixed(1);
-        overlay.style.setProperty("backdrop-filter", `blur(${px}px)`);
-        overlay.style.setProperty("-webkit-backdrop-filter", `blur(${px}px)`);
-      }
-
       // hero image lags the scroll a touch (parallax) so the next section
       // appears to slide over it. The 1.06 scale gives headroom for the lag.
       const heroImg = document.getElementById("home-hero-img");
       if (heroImg) {
         // cap the lag at the headroom the 1.08 scale buys (≈3.5% each side) so
         // the downward shift never reveals an edge
-        const lag = Math.min(window.scrollY * 0.28, heroH * 0.05);
-        heroImg.style.transform = `translate3d(0, ${lag.toFixed(1)}px, 0) scale(1.12)`;
+        const lag = Math.min(window.scrollY * 0.42, heroH * 0.08);
+        heroImg.style.transform = `translate3d(0, ${lag.toFixed(1)}px, 0) scale(1.18)`;
       }
 
       // desktop sliding wordmark — position only; colour comes from `mode`.
