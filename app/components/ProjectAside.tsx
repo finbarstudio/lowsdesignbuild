@@ -45,10 +45,9 @@ export default function ProjectAside({
     if (!el) return;
     const measure = () => {
       const h = el.clientHeight;
-      const fit = Math.max(
-        1,
-        Math.min(5, colours.length, Math.floor(h / 56)),
-      );
+      const max = Math.min(5, colours.length);
+      const min = Math.min(3, colours.length); // always show at least 3
+      const fit = Math.max(min, Math.min(max, Math.floor(h / 56)));
       setCount(fit);
     };
     measure();

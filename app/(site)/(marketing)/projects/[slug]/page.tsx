@@ -5,10 +5,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import ProjectAside, { type Swatch } from "@/app/components/ProjectAside";
-import ProjectTitleDock from "@/app/components/ProjectTitleDock";
+import ProjectHeroTitle from "@/app/components/ProjectHeroTitle";
 import Reveal from "@/app/components/Reveal";
 import WipeReveal from "@/app/components/WipeReveal";
-import WordReveal from "@/app/components/WordReveal";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import { PROJECT_QUERY, PROJECT_SLUGS_QUERY } from "@/sanity/lib/queries";
@@ -25,13 +24,42 @@ function lum(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+// Lighten (amt>0) / darken (amt<0) a hex by a fraction.
+function shade(hex: string, amt: number): string {
+  const m = hex.replace("#", "");
+  const f = m.length === 3 ? m.split("").map((c) => c + c).join("") : m;
+  const ch = (i: number) => {
+    const v = parseInt(f.slice(i, i + 2), 16);
+    const next = amt >= 0 ? v + (255 - v) * amt : v * (1 + amt);
+    return Math.max(0, Math.min(255, Math.round(next)))
+      .toString(16)
+      .padStart(2, "0");
+  };
+  return `#${ch(0)}${ch(2)}${ch(4)}`;
+}
+
+// Guarantee at least 3 tiles by padding with tints/shades of what we have.
+function ensureMin3(colours: Swatch[]): Swatch[] {
+  if (colours.length === 0) return colours;
+  const out = [...colours];
+  let i = 0;
+  while (out.length < 3) {
+    const base = colours[i % colours.length].hex;
+    out.push({ hex: shade(base, i % 2 === 0 ? 0.2 : -0.2), name: "" });
+    i++;
+  }
+  return out;
+}
+
 // The colour tiles: the CMS palette if set, otherwise auto-derived from the
 // hero image's palette metadata, ordered dark→light so they read as a gradient.
 function projectColours(project: Project): Swatch[] {
   if (project.palette && project.palette.length > 0) {
-    return project.palette
-      .filter((p) => p.color)
-      .map((p) => ({ hex: p.color as string, name: p.name || "" }));
+    return ensureMin3(
+      project.palette
+        .filter((p) => p.color)
+        .map((p) => ({ hex: p.color as string, name: p.name || "" })),
+    );
   }
   const p: SanityPalette | null = project.heroPalette;
   if (!p) return [];
@@ -53,10 +81,12 @@ function projectColours(project: Project): Swatch[] {
       hexes.push(bg);
     }
   }
-  return hexes
-    .sort((a, b) => lum(a) - lum(b))
-    .slice(0, 5)
-    .map((hex) => ({ hex, name: "" }));
+  return ensureMin3(
+    hexes
+      .sort((a, b) => lum(a) - lum(b))
+      .slice(0, 5)
+      .map((hex) => ({ hex, name: "" })),
+  );
 }
 
 export const revalidate = 60;
@@ -128,7 +158,8 @@ export default async function ProjectPage({
 
   return (
     <main>
-      <ProjectTitleDock title={project.title ?? ""} />
+      {/* the h1 itself travels up into the nav as you scroll */}
+      <ProjectHeroTitle title={project.title ?? ""} />
 
       {/* ---------------- Hero ---------------- */}
       <section className="relative h-[100svh] w-full overflow-hidden">
@@ -145,11 +176,6 @@ export default async function ProjectPage({
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/15" />
-        <div className={`absolute inset-x-0 bottom-0 ${PAD} pb-8`}>
-          <h1 className="serif text-4xl text-white sm:text-6xl lg:text-7xl">
-            <WordReveal text={project.title ?? ""} />
-          </h1>
-        </div>
       </section>
 
       {/* ---------------- Intro statement ---------------- */}
