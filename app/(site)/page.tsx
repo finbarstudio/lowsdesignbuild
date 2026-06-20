@@ -169,7 +169,7 @@ export default async function HomePage() {
           sm+: the uncropped photo at its natural height (scroll for more). */}
       <section
         id="home-hero"
-        className="relative h-[80svh] w-full overflow-hidden sm:h-auto"
+        className="relative h-[100svh] w-full overflow-hidden"
       >
         {/* scrolls slightly slower than the page (parallax, driven in HomeChrome)
             — a touch of scale gives headroom so the lag never reveals an edge */}
@@ -183,8 +183,8 @@ export default async function HomePage() {
           placeholder="blur"
           blurDataURL={hero.blur}
           sizes="100vw"
-          style={{ transform: "scale(1.34)", willChange: "transform" }}
-          className="block h-full w-full object-cover sm:h-auto sm:object-contain"
+          style={{ transform: "scale(1.34)", willChange: "transform, opacity" }}
+          className="block h-full w-full object-cover"
         />
         {/* same gradient as the project hero, so the wordmark stays legible */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/15" />
@@ -198,7 +198,7 @@ export default async function HomePage() {
       {/* Sticky statement + featured projects share a wrapper so the pinned
           slogan is contained here; it releases and scrolls away once the
           featured block ends, never overlapping the sections below. */}
-      <div className="relative z-10 -mt-[9vh] sm:-mt-[12vh]">
+      <div className="relative z-10">
         {/* ---------------- Family-run statement (Futura) ---------------- */}
         <section className="sticky top-0 flex h-[100svh] flex-col items-center justify-center">
           {/* On mobile the slogan is inset to the same 10% as the project

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import HeroParallax from "@/app/components/HeroParallax";
+import HeroDepth from "@/app/components/HeroDepth";
 import ProjectAside, { type Swatch } from "@/app/components/ProjectAside";
 import ProjectHeroTitle from "@/app/components/ProjectHeroTitle";
 import Reveal from "@/app/components/Reveal";
@@ -151,9 +151,11 @@ export default async function ProjectPage({
       <ProjectHeroTitle title={project.title ?? ""} />
 
       {/* ---------------- Hero ---------------- */}
+      {/* Sticky: it holds full-height while the content below scrolls up over
+          it, and the image falls away (recede + fade) as it goes. */}
       <section
         id="project-hero"
-        className="relative h-[100svh] w-full overflow-hidden"
+        className="sticky top-0 z-0 h-[100svh] w-full overflow-hidden"
       >
         {project.mainImage && (
           <Image
@@ -163,22 +165,20 @@ export default async function ProjectPage({
             fill
             priority
             sizes="100vw"
-            placeholder={project.lqip ? "blur" : undefined}
-            blurDataURL={project.lqip ?? undefined}
-            style={{ transform: "scale(1.34)", willChange: "transform" }}
+            style={{ transform: "scale(1.34)", willChange: "transform, opacity" }}
             className="object-cover"
           />
         )}
-        <HeroParallax targetId="project-hero-img" containerId="project-hero" />
+        <HeroDepth targetId="project-hero-img" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/15" />
       </section>
 
+      {/* everything below scrolls up over the pinned hero */}
+      <div className="relative z-10 bg-background">
+
       {/* ---------------- Intro statement ---------------- */}
-      {/* pulled up over the hero so it scrolls up across the bottom of it */}
       {project.description && (
-        <section
-          className={`${PAD} relative z-10 -mt-[9vh] bg-background py-16 sm:-mt-[12vh] sm:py-28 lg:py-40`}
-        >
+        <section className={`${PAD} py-16 sm:py-28 lg:py-40`}>
           <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-12 lg:gap-x-10">
             {/* left rail: tags + colour tiles, both mask-revealing */}
             <div className="lg:col-span-4">
@@ -231,6 +231,7 @@ export default async function ProjectPage({
           </Link>
         </div>
       </section>
+      </div>
     </main>
   );
 }

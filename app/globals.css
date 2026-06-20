@@ -205,7 +205,7 @@ html.entrance-go .hero-reveal {
   animation: hero-drop 0.95s cubic-bezier(0.76, 0, 0.24, 1) 0.05s forwards;
 }
 html.entrance-go .logo-mask > * {
-  animation: logo-rise 0.85s cubic-bezier(0.76, 0, 0.24, 1) 0.7s forwards;
+  animation: logo-rise 0.85s cubic-bezier(0.76, 0, 0.24, 1) 0.3s forwards;
 }
 
 /* Hide the scrollbar on a horizontally-scrollable strip (the Instagram feed) */

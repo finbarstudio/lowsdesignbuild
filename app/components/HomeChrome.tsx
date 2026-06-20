@@ -85,14 +85,19 @@ export default function HomeChrome({
       const dark = window.scrollY >= heroH - BAR;
       setMode(atFooter ? "footer" : dark ? "ink" : "hero");
 
-      // hero image lags the scroll a touch (parallax) so the next section
-      // appears to slide over it. The 1.06 scale gives headroom for the lag.
+      // hero image holds for the first ~10% of scroll, then recedes (scale
+      // down + drift up + fade) so it falls away with depth as you scroll on.
       const heroImg = document.getElementById("home-hero-img");
       if (heroImg) {
-        // cap the lag at the headroom the 1.08 scale buys (≈3.5% each side) so
-        // the downward shift never reveals an edge
-        const lag = Math.min(window.scrollY * 0.55, heroH * 0.16);
-        heroImg.style.transform = `translate3d(0, ${lag.toFixed(1)}px, 0) scale(1.34)`;
+        const vh = window.innerHeight;
+        const q = Math.min(
+          1,
+          Math.max(0, (window.scrollY - vh * 0.1) / (vh * 0.75)),
+        );
+        const eq = q * q * (3 - 2 * q); // smoothstep
+        const s = 1.34 + (1.12 - 1.34) * eq;
+        heroImg.style.transform = `translate3d(0, ${(-eq * 48).toFixed(1)}px, 0) scale(${s.toFixed(3)})`;
+        heroImg.style.opacity = `${(1 - 0.35 * eq).toFixed(3)}`;
       }
 
       // desktop sliding wordmark — position only; colour comes from `mode`.
