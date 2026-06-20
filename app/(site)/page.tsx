@@ -91,9 +91,13 @@ export default async function HomePage() {
 
   // Images that trail the cursor across the big slogan (native aspect, no crop).
   // auto("format") so the preloaded <img> and the trail <img> hit the same URL.
-  const trailImgs = (home?.heroTrailImages ?? [])
-    .filter((img) => (img as { asset?: unknown })?.asset)
-    .map((img) => urlFor(img).width(600).quality(80).auto("format").url());
+  const trailImgs = Array.from(
+    new Set(
+      (home?.heroTrailImages ?? [])
+        .filter((img) => (img as { asset?: unknown })?.asset)
+        .map((img) => urlFor(img).width(600).quality(80).auto("format").url()),
+    ),
+  );
 
   // Editable copy + people, with the built-in content as a graceful fallback.
   const heroText =

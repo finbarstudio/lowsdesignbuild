@@ -92,7 +92,7 @@ export default function Header({ projectCount }: { projectCount?: number }) {
         {/* mobile menu button */}
         <button
           onClick={() => setOpen((v) => !v)}
-          className={`-mr-2 ml-auto flex h-11 w-11 flex-col items-end justify-center transition-colors duration-300 sm:hidden ${barColor}`}
+          className={`ml-auto flex h-12 w-12 flex-col items-center justify-center transition-colors duration-300 sm:hidden ${barColor}`}
           aria-label="Toggle menu"
         >
           {[0, 1, 2].map((i) => (

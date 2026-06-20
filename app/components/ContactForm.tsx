@@ -30,9 +30,13 @@ function Field({
     "w-full border-0 border-b border-line bg-transparent pb-2 text-xl outline-none transition-colors placeholder:text-muted/40 sm:text-2xl";
   return (
     <label className="group block">
+      {/* field title kept a level below section headings: sentence case + small,
+          matching the calculator form so the two read consistently */}
       <span className="mb-3 flex items-center gap-3">
         <span className="font-mono text-xs text-tertiary">{n}</span>
-        <span className="label">{label}</span>
+        <span className="text-sm font-semibold tracking-tight text-ink">
+          {label}
+        </span>
       </span>
       <div className="relative">
         {textarea ? (

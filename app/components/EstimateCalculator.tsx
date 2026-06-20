@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { site } from "@/app/lib/site";
 
@@ -104,9 +104,19 @@ const FINISH = [
   { label: "Luxury finish (+20%)", pct: 0.2 },
 ];
 
-const ADVANCED = [
-  { key: "conservation", label: "Conservation area", add: 5000 },
-  { key: "article4", label: "Article 4 restriction area", add: 5000 },
+const ADVANCED: { key: string; label: string; add: number; info?: string }[] = [
+  {
+    key: "conservation",
+    label: "Conservation area",
+    add: 5000,
+    info: "Stricter planning controls and material requirements apply in a designated conservation area.",
+  },
+  {
+    key: "article4",
+    label: "Article 4 restriction area",
+    add: 5000,
+    info: "An Article 4 Direction removes permitted-development rights, so works need full planning permission.",
+  },
   { key: "skip", label: "Skip permit required", add: 1500 },
   { key: "parking", label: "Parking suspension required", add: 2000 },
   { key: "logistics", label: "Difficult site logistics", add: 5000 },
@@ -115,10 +125,30 @@ const ADVANCED = [
   { key: "rewire", label: "Full house rewire included", add: 10000 },
   { key: "heating", label: "Heating system upgrade", add: 8000 },
   { key: "boiler", label: "Boiler upgrade", add: 4000 },
-  { key: "ashp", label: "ASHP installation interface", add: 10000 },
-  { key: "basement", label: "Basement interface / structural tie-in", add: 15000 },
-  { key: "drainage", label: "Complex drainage diversion", add: 10000 },
-  { key: "sewer", label: "Build over public sewer", add: 5000 },
+  {
+    key: "ashp",
+    label: "ASHP installation interface",
+    add: 10000,
+    info: "Allowing for connection and interface with an air-source heat pump system.",
+  },
+  {
+    key: "basement",
+    label: "Basement interface / structural tie-in",
+    add: 15000,
+    info: "Structural tie-in where the works connect to or sit above an existing basement.",
+  },
+  {
+    key: "drainage",
+    label: "Complex drainage diversion",
+    add: 10000,
+    info: "Rerouting existing drainage runs that clash with the new structure.",
+  },
+  {
+    key: "sewer",
+    label: "Build over public sewer",
+    add: 5000,
+    info: "A build-over agreement with the water authority where the structure sits over a public sewer.",
+  },
   { key: "largeSteel", label: "Large structural steel package", add: 10000 },
   { key: "complexSteel", label: "Complex structural steel package", add: 20000 },
 ];
@@ -152,36 +182,63 @@ const inputClass =
 function Field({
   label,
   hint,
+  info,
   children,
 }: {
   label: string;
   hint?: string;
+  info?: string;
   children: React.ReactNode;
 }) {
   return (
     <label className="block">
-      <span className="label !text-ink text-base">{label}</span>
+      {/* field title sits a level below the section headings (sentence case,
+          smaller) so it never clashes with a group title like "Bathrooms" */}
+      <span className="flex items-center text-sm font-semibold tracking-tight text-ink">
+        {label}
+        {info && <InfoTip text={info} />}
+      </span>
       {hint && <span className="mt-1 block text-xs text-muted">{hint}</span>}
       <div className="mt-3">{children}</div>
     </label>
   );
 }
 
+// A small ⓘ that reveals an explanation on hover (and on tap/focus for touch).
+function InfoTip({ text }: { text: string }) {
+  return (
+    <span className="group relative ml-1.5 inline-flex align-middle">
+      <button
+        type="button"
+        aria-label="More information"
+        className="flex h-4 w-4 items-center justify-center rounded-full border border-muted/60 text-[0.62rem] font-semibold leading-none text-muted transition-colors hover:border-tertiary hover:text-tertiary"
+      >
+        i
+      </button>
+      <span className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 w-60 rounded bg-ink px-3 py-2 text-xs font-normal normal-case leading-relaxed text-background opacity-0 shadow-xl transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+        {text}
+      </span>
+    </span>
+  );
+}
+
 function Select({
   label,
   hint,
+  info,
   value,
   onChange,
   options,
 }: {
   label: string;
   hint?: string;
+  info?: string;
   value: number;
   onChange: (v: number) => void;
   options: { label: string }[];
 }) {
   return (
-    <Field label={label} hint={hint}>
+    <Field label={label} hint={hint} info={info}>
       <div className="relative">
         <select
           value={value}
@@ -205,6 +262,7 @@ function Select({
 function NumberField({
   label,
   hint,
+  info,
   value,
   onChange,
   min = 0,
@@ -212,21 +270,45 @@ function NumberField({
 }: {
   label: string;
   hint?: string;
+  info?: string;
   value: number;
   onChange: (v: number) => void;
   min?: number;
   max?: number;
 }) {
+  // keep a raw string so the field can be cleared/edited freely (a plain
+  // controlled number snaps empties to 0 and won't let you delete a digit)
+  const [raw, setRaw] = useState(String(value));
+  useEffect(() => {
+    setRaw((r) => (Number(r) === value ? r : String(value)));
+  }, [value]);
+
   return (
-    <Field label={label} hint={hint}>
+    <Field label={label} hint={hint} info={info}>
       <input
         type="number"
+        inputMode="numeric"
         min={min}
         max={max}
-        value={value}
-        onChange={(e) =>
-          onChange(Math.min(max, Math.max(min, Number(e.target.value) || 0)))
-        }
+        value={raw}
+        onChange={(e) => {
+          const v = e.target.value;
+          setRaw(v);
+          if (v === "") return; // allow empty while typing
+          const n = Number(v);
+          if (!Number.isNaN(n)) onChange(Math.min(max, Math.max(min, n)));
+        }}
+        onBlur={() => {
+          const n = Number(raw);
+          if (raw === "" || Number.isNaN(n)) {
+            setRaw(String(min));
+            onChange(min);
+          } else {
+            const clamped = Math.min(max, Math.max(min, n));
+            setRaw(String(clamped));
+            onChange(clamped);
+          }
+        }}
         className={inputClass}
       />
     </Field>
@@ -277,11 +359,20 @@ export default function EstimateCalculator({
   const [finish, setFinish] = useState(0);
   const [showAdv, setShowAdv] = useState(false);
   const [sent, setSent] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
 
   const setE = (k: keyof typeof ext, v: number) =>
     setExt((s) => ({ ...s, [k]: v }));
   const setL = (k: keyof typeof loft, v: number) =>
     setLoft((s) => ({ ...s, [k]: v }));
+
+  function scrollToForm() {
+    const el = formRef.current;
+    if (!el) return;
+    const lenis = (window as unknown as { __lenis?: { scrollTo: (t: HTMLElement, o?: { offset?: number; duration?: number }) => void } }).__lenis;
+    if (lenis) lenis.scrollTo(el, { offset: -90, duration: 1.2 });
+    else el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   const { estimate, lower, upper } = useMemo(() => {
     let core: number;
@@ -403,21 +494,21 @@ export default function EstimateCalculator({
         ))}
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_340px] lg:gap-16">
-        {/* ---- inputs ---- */}
-        <div className="space-y-12">
+      <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_340px] lg:gap-x-16">
+        {/* ---- inputs (col 1, row 1) ---- */}
+        <div className="order-1 space-y-12 lg:col-start-1 lg:row-start-1">
           {mode === "extension" ? (
             <>
               <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2">
                 <Select label="Extension type" value={ext.type} onChange={(v) => setE("type", v)} options={EXT_TYPES} />
                 <NumberField label="Extension size" hint="Total floor area in m²" value={ext.size} onChange={(v) => setE("size", v)} max={500} />
-                <Select label="Structural opening" value={ext.opening} onChange={(v) => setE("opening", v)} options={OPENINGS} />
+                <Select label="Structural opening" info="The opening between the existing house and the new space — wider, full-width openings need more steel support." value={ext.opening} onChange={(v) => setE("opening", v)} options={OPENINGS} />
                 <Select label="Roof type" value={ext.roof} onChange={(v) => setE("roof", v)} options={ROOFS} />
                 <Select label="Glazing package" value={ext.glazing} onChange={(v) => setE("glazing", v)} options={GLAZING} />
                 <Select label="Utility room" value={ext.utility} onChange={(v) => setE("utility", v)} options={UTILITY} />
                 <Select label="Underfloor heating" value={ext.ufh} onChange={(v) => setE("ufh", v)} options={UFH} />
-                <Select label="Site access" value={ext.access} onChange={(v) => setE("access", v)} options={ACCESS} />
-                <Select label="Construction complexity" value={ext.complexity} onChange={(v) => setE("complexity", v)} options={COMPLEXITY} />
+                <Select label="Site access" info="How easily materials and skips can reach the work area. Restricted or no side access adds labour and time." value={ext.access} onChange={(v) => setE("access", v)} options={ACCESS} />
+                <Select label="Construction complexity" info="Reflects how involved the build is — awkward layouts, structural challenges or phasing push this from standard to moderate or high." value={ext.complexity} onChange={(v) => setE("complexity", v)} options={COMPLEXITY} />
               </div>
               <div>
                 <p className="label !text-ink mb-5">Bathrooms</p>
@@ -437,7 +528,7 @@ export default function EstimateCalculator({
                 <Select label="Built-in joinery" value={loft.joinery} onChange={(v) => setL("joinery", v)} options={JOINERY} />
                 <Select label="Air conditioning" value={loft.ac} onChange={(v) => setL("ac", v)} options={AC} />
                 <Select label="Chimney works" value={loft.chimney} onChange={(v) => setL("chimney", v)} options={CHIMNEY} />
-                <Select label="Steel complexity" value={loft.steel} onChange={(v) => setL("steel", v)} options={STEEL} />
+                <Select label="Steel complexity" info="How much structural steelwork the design needs — larger spans and multiple beams increase complexity." value={loft.steel} onChange={(v) => setL("steel", v)} options={STEEL} />
               </div>
               <div>
                 <p className="label !text-ink mb-5">Ensuites</p>
@@ -459,7 +550,13 @@ export default function EstimateCalculator({
 
           {/* ---- finish + advanced factors ---- */}
           <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2">
-            <Select label="Finish level" value={finish} onChange={setFinish} options={FINISH} />
+            <Select
+              label="Finish level"
+              info="Standard is a quality, functional finish. High-end adds 10% for premium materials and detailing; luxury adds 20% for bespoke, top-tier specification throughout."
+              value={finish}
+              onChange={setFinish}
+              options={FINISH}
+            />
           </div>
 
           <div className="border-t border-line pt-8">
@@ -488,9 +585,10 @@ export default function EstimateCalculator({
                         }
                         className="h-4 w-4 shrink-0 accent-[var(--tertiary)]"
                       />
-                      <span>
-                        {a.label}{" "}
-                        <span className="text-muted">(+{gbp(a.add)})</span>
+                      <span className="flex items-center">
+                        {a.label}
+                        <span className="ml-1 text-muted">(+{gbp(a.add)})</span>
+                        {a.info && <InfoTip text={a.info} />}
                       </span>
                     </label>
                   ))}
@@ -499,6 +597,7 @@ export default function EstimateCalculator({
                   <NumberField
                     label="Party wall — adjoining neighbours"
                     hint="£3,000 per neighbour"
+                    info="A Party Wall agreement is needed when you build on or near a shared boundary; each adjoining neighbour usually needs their own award."
                     value={partyWall}
                     onChange={setPartyWall}
                     max={10}
@@ -509,8 +608,78 @@ export default function EstimateCalculator({
           </div>
         </div>
 
-        {/* ---- result ---- */}
-        <div className="self-start lg:-mt-16 lg:sticky lg:top-24">
+        {/* ---- lead capture (col 1 / row 2 on desktop; below the estimate on
+            mobile so the range is seen first) ---- */}
+        <div
+          ref={formRef}
+          className="order-3 border-t border-line pt-12 lg:col-start-1 lg:row-start-2"
+        >
+            <p className="label !text-ink">Get your detailed estimate</p>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">
+              Send us your details and project and we&apos;ll follow up with a
+              tailored breakdown and next steps.
+            </p>
+
+            <form onSubmit={handleLead} className="mt-10 max-w-3xl space-y-9">
+              <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
+                <Field label="First name">
+                  <input name="firstName" required placeholder="Jane" className={inputClass} />
+                </Field>
+                <Field label="Last name">
+                  <input name="lastName" required placeholder="Low" className={inputClass} />
+                </Field>
+              </div>
+              <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
+                <Field label="Email">
+                  <input name="email" type="email" required placeholder="jane@email.com" className={inputClass} />
+                </Field>
+                <Field label="Phone">
+                  <input name="phone" required placeholder="07…" className={inputClass} />
+                </Field>
+              </div>
+              <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
+                <Field label="Project postcode">
+                  <input name="postcode" required placeholder="SE1…" className={inputClass} />
+                </Field>
+                <Field label="Project timescale">
+                  <div className="relative">
+                    <select name="timescale" defaultValue={TIMESCALES[0]} className={`${inputClass} pr-8`}>
+                      {TIMESCALES.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute bottom-3 right-1 text-muted">▾</span>
+                  </div>
+                </Field>
+              </div>
+              <Field label="Does this budget align with your expectations?">
+                <div className="relative">
+                  <select name="alignment" defaultValue={ALIGNMENTS[0]} className={`${inputClass} pr-8`}>
+                    {ALIGNMENTS.map((a) => (
+                      <option key={a} value={a}>{a}</option>
+                    ))}
+                  </select>
+                  <span className="pointer-events-none absolute bottom-3 right-1 text-muted">▾</span>
+                </div>
+              </Field>
+
+              {/* same link-underline token as every other link on the site */}
+              <button type="submit" className="link-underline w-fit text-base">
+                Send my details →
+              </button>
+
+              {sent && (
+                <p className="text-sm text-muted">
+                  Thanks. Your email app should have opened with your enquiry
+                  ready to send. If not, email us at {email}.
+                </p>
+              )}
+            </form>
+        </div>
+
+        {/* ---- result — col 2, spans both rows so it stays sticky beside the
+            inputs *and* the form. On mobile it sits between them. ---- */}
+        <div className="order-2 self-start lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:-mt-16 lg:sticky lg:top-24">
           <div className="border-t border-tertiary pt-6">
             <p className="label">Estimated budget range</p>
             <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums sm:text-4xl">
@@ -522,73 +691,15 @@ export default function EstimateCalculator({
               design development, planning requirements and specification
               choices.
             </p>
+            <button
+              type="button"
+              onClick={scrollToForm}
+              className="link-underline mt-7 block w-fit text-base"
+            >
+              Get your estimate →
+            </button>
           </div>
         </div>
-      </div>
-
-      {/* ---- lead capture ---- */}
-      <div className="mt-16 border-t border-line pt-12 sm:mt-24">
-        <p className="label !text-ink">Get your detailed estimate</p>
-        <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">
-          Send us your details and project and we&apos;ll follow up with a
-          tailored breakdown and next steps.
-        </p>
-
-        <form onSubmit={handleLead} className="mt-10 max-w-3xl space-y-9">
-          <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
-            <Field label="First name">
-              <input name="firstName" required placeholder="Jane" className={inputClass} />
-            </Field>
-            <Field label="Last name">
-              <input name="lastName" required placeholder="Low" className={inputClass} />
-            </Field>
-          </div>
-          <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
-            <Field label="Email">
-              <input name="email" type="email" required placeholder="jane@email.com" className={inputClass} />
-            </Field>
-            <Field label="Phone">
-              <input name="phone" required placeholder="07…" className={inputClass} />
-            </Field>
-          </div>
-          <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
-            <Field label="Project postcode">
-              <input name="postcode" required placeholder="SE1…" className={inputClass} />
-            </Field>
-            <Field label="Project timescale">
-              <div className="relative">
-                <select name="timescale" defaultValue={TIMESCALES[0]} className={`${inputClass} pr-8`}>
-                  {TIMESCALES.map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
-                <span className="pointer-events-none absolute bottom-3 right-1 text-muted">▾</span>
-              </div>
-            </Field>
-          </div>
-          <Field label="Does this budget align with your expectations?">
-            <div className="relative">
-              <select name="alignment" defaultValue={ALIGNMENTS[0]} className={`${inputClass} pr-8`}>
-                {ALIGNMENTS.map((a) => (
-                  <option key={a} value={a}>{a}</option>
-                ))}
-              </select>
-              <span className="pointer-events-none absolute bottom-3 right-1 text-muted">▾</span>
-            </div>
-          </Field>
-
-          {/* same link-underline token as every other link on the site */}
-          <button type="submit" className="link-underline w-fit text-base">
-            Send my details →
-          </button>
-
-          {sent && (
-            <p className="text-sm text-muted">
-              Thanks. Your email app should have opened with your enquiry ready
-              to send. If not, email us at {email}.
-            </p>
-          )}
-        </form>
       </div>
     </div>
   );
