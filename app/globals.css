@@ -279,7 +279,7 @@ html.lenis body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--slate);
+  background: var(--background);
   animation: preloader-out 0.7s cubic-bezier(0.76, 0, 0.24, 1) 1.6s forwards;
 }
 .preloader__logo {
@@ -289,7 +289,7 @@ html.lenis body {
 }
 .preloader__path {
   fill: none;
-  stroke: var(--white);
+  stroke: var(--slate);
   stroke-width: 4px;
   stroke-linecap: square; /* sharp, extruded */
   stroke-linejoin: miter;

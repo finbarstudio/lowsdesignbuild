@@ -33,6 +33,12 @@ export default function HomeChrome({
   const [mode, setMode] = useState<Mode>("hero");
   const wrapRef = useRef<HTMLAnchorElement>(null);
   const markRef = useRef<HTMLSpanElement>(null);
+  // Lockup (wordmark slides right + mark fades in) progress 0→1, started by a
+  // timer once the wordmark has fully docked — a deliberate beat after it lands.
+  const lockProgRef = useRef(0);
+  const lockPhaseRef = useRef<"out" | "pending" | "in">("out");
+  const lockTimerRef = useRef(0);
+  const lockRafRef = useRef(0);
 
   // Kick the entrance. Arm it (hide the hero + wordmark) on mount, then `go`
   // (reveal) once the preloader lifts on a fresh load — or almost immediately on
@@ -44,9 +50,11 @@ export default function HomeChrome({
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     html.classList.add("entrance-armed");
     const go = () => html.classList.add("entrance-go");
+    // wait for the preloader to fully lift (it fades 1.6s → 2.3s) so the hero +
+    // logo reveal is seen after it, not under it
     const hasPreloader = !!document.querySelector(".preloader");
-    const t1 = window.setTimeout(go, hasPreloader ? 1600 : 80);
-    const t2 = window.setTimeout(go, 3500); // safety net
+    const t1 = window.setTimeout(go, hasPreloader ? 2300 : 80);
+    const t2 = window.setTimeout(go, 4200); // safety net
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
@@ -105,28 +113,64 @@ export default function HomeChrome({
         const y1 = (BAR - targetH) / 2; // centred in the bar
         const y = y0 + (y1 - y0) * p;
 
-        // Once docked, the wordmark slides right to make room and the house mark
-        // fades/lands in on its left, completing the full logo. Ramp this over
-        // the last 30% of the dock so it reads as a distinct second beat.
+        // Lockup: once the wordmark has fully docked (p≈1) wait a beat, then the
+        // wordmark slides right and the house mark fades in on its left. Driven
+        // by lockProgRef (0→1), animated on a timer rather than by scroll.
         const markH = targetH;
         const markW = markH * MARK_RATIO;
         const gap = 12;
-        const q = Math.min(1, Math.max(0, (p - 0.7) / 0.3));
-        const eq = q * q * (3 - 2 * q); // smoothstep
-        const xShift = (markW + gap) * eq;
+        if (p >= 0.99) {
+          if (lockPhaseRef.current === "out") {
+            lockPhaseRef.current = "pending";
+            lockTimerRef.current = window.setTimeout(() => {
+              lockPhaseRef.current = "in";
+              animateLock(1);
+            }, 450); // delay after docking before the mark arrives
+          }
+        } else if (p < 0.9) {
+          if (lockTimerRef.current) {
+            clearTimeout(lockTimerRef.current);
+            lockTimerRef.current = 0;
+          }
+          if (lockPhaseRef.current !== "out") {
+            lockPhaseRef.current = "out";
+            animateLock(0);
+          }
+        }
+
+        const lp = lockProgRef.current;
+        const xShift = (markW + gap) * lp;
         wrap.style.transform = `translate(${edge + xShift}px, ${y}px) scale(${s})`;
 
         const mark = markRef.current;
         if (mark) {
           mark.style.width = `${markW}px`;
           mark.style.height = `${markH}px`;
-          mark.style.transform = `translate(${edge}px, ${y1}px)`;
           // slide in a touch from the left as it fades up
-          mark.style.opacity = `${eq}`;
-          mark.style.marginLeft = `${(1 - eq) * -8}px`;
+          mark.style.transform = `translate(${edge + (1 - lp) * -8}px, ${y1}px)`;
+          mark.style.opacity = `${lp}`;
         }
       }
     };
+
+    // Ease the lockup progress toward a target (1 = locked, 0 = retracted),
+    // re-running the layout each frame so the wordmark shift + mark track it.
+    function animateLock(target: number) {
+      cancelAnimationFrame(lockRafRef.current);
+      const step = () => {
+        const cur = lockProgRef.current;
+        const d = target - cur;
+        if (Math.abs(d) < 0.005) {
+          lockProgRef.current = target;
+          update();
+          return;
+        }
+        lockProgRef.current = cur + d * 0.16; // ease toward target
+        update();
+        lockRafRef.current = requestAnimationFrame(step);
+      };
+      step();
+    }
 
     const onScroll = () => {
       cancelAnimationFrame(raf);
@@ -140,6 +184,8 @@ export default function HomeChrome({
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(lockRafRef.current);
+      if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
     };
   }, []);
 
