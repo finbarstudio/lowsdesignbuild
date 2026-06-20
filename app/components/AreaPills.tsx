@@ -11,11 +11,13 @@ export default function AreaPills({
   align = "center",
   widthClass = "max-w-5xl",
   animate = true,
+  sizeClass = "text-lg sm:text-2xl lg:text-3xl",
 }: {
   areas: string[];
   align?: "center" | "left";
   widthClass?: string;
   animate?: boolean;
+  sizeClass?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(!animate);
@@ -62,7 +64,7 @@ export default function AreaPills({
         // each pill rises up out of its own clip mask, one after another
         <span key={area} className="inline-flex overflow-hidden align-bottom">
           <span
-            className="pill text-lg leading-none sm:text-2xl lg:text-3xl"
+            className={`pill leading-none ${sizeClass}`}
             style={{
               transform: shown ? "translateY(0)" : "translateY(110%)",
               transition: "transform 0.6s cubic-bezier(0.22,1,0.36,1)",

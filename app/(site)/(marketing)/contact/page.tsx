@@ -54,8 +54,13 @@ export default async function ContactPage() {
       <section className={`${PAD} pb-24 sm:pb-32`}>
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-16">
           <div className="lg:col-span-1">
-            <p className="label mb-8 !text-ink">Areas we cover</p>
-            <AreaPills areas={areas} align="left" animate={false} />
+            <p className="label mb-8 text-center !text-ink">Areas we cover</p>
+            <AreaPills
+              areas={areas}
+              align="center"
+              animate={false}
+              sizeClass="text-sm sm:text-base"
+            />
           </div>
           <div className="lg:col-span-2">
             <p className="label mb-8 !text-ink">Tell us about your project</p>
