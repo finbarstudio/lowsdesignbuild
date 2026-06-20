@@ -128,9 +128,6 @@ export async function generateMetadata({
   };
 }
 
-// Asymmetric gallery: alternating two-up rows and offset single images.
-const ROW_PATTERN = [2, 1, 2, 1, 2, 1, 2];
-
 export default async function ProjectPage({
   params,
 }: {
@@ -146,15 +143,6 @@ export default async function ProjectPage({
     .join(", ");
 
   const gallery = project.gallery ?? [];
-  const rows: { imgs: typeof gallery; size: number; i: number }[] = [];
-  let idx = 0;
-  let pi = 0;
-  while (idx < gallery.length) {
-    const size = ROW_PATTERN[pi % ROW_PATTERN.length];
-    rows.push({ imgs: gallery.slice(idx, idx + size), size, i: pi });
-    idx += size;
-    pi++;
-  }
 
   return (
     <main>
@@ -201,55 +189,20 @@ export default async function ProjectPage({
       )}
 
       {/* ---------------- Gallery ---------------- */}
+      {/* Clean, uniform 2-up grid — every image the same aspect so the rows
+          line up cleanly. Left column reveals just after the right. */}
       {gallery.length > 0 && (
         <section className={`${PAD} pb-28 sm:pb-40`}>
-          <div className="space-y-4 sm:space-y-6">
-            {rows.map((row) => {
-              if (row.size === 1) {
-                // single offset image with whitespace
-                const left = row.i % 4 === 1;
-                return (
-                  <div key={row.i} className="grid grid-cols-1 lg:grid-cols-12">
-                    <div
-                      className={
-                        left
-                          ? "lg:col-span-6 lg:col-start-1"
-                          : "lg:col-span-6 lg:col-start-7"
-                      }
-                    >
-                      <GalleryImage
-                        img={row.imgs[0]}
-                        ratio="aspect-[4/3]"
-                        alt={heroAlt}
-                      />
-                    </div>
-                  </div>
-                );
-              }
-              // two-up, differing widths/heights. The right image reveals first;
-              // the left follows (same stagger as the home family images).
-              const wideLeft = row.i % 4 === 0;
-              return (
-                <div
-                  key={row.i}
-                  className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 sm:gap-6"
-                >
-                  <GalleryImage
-                    img={row.imgs[0]}
-                    ratio={wideLeft ? "aspect-[5/4]" : "aspect-[3/4]"}
-                    alt={heroAlt}
-                    delay={0.3}
-                  />
-                  {row.imgs[1] && (
-                    <GalleryImage
-                      img={row.imgs[1]}
-                      ratio={wideLeft ? "aspect-[3/4]" : "aspect-[5/4]"}
-                      alt={heroAlt}
-                    />
-                  )}
-                </div>
-              );
-            })}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+            {gallery.map((img, i) => (
+              <GalleryImage
+                key={(img as { _key?: string })._key ?? i}
+                img={img}
+                ratio="aspect-[4/3]"
+                alt={heroAlt}
+                delay={i % 2 === 0 ? 0.3 : 0}
+              />
+            ))}
           </div>
         </section>
       )}
