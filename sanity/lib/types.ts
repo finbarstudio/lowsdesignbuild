@@ -58,6 +58,7 @@ export interface Family {
 
 export interface Contact {
   contactEmail: string | null;
+  formAccessKey: string | null;
   areas: string[] | null;
 }
 

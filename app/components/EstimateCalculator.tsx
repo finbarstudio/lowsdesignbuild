@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { site } from "@/app/lib/site";
+import { submitEnquiry } from "@/app/lib/submitEnquiry";
 
 /**
  * London Loft Conversion & Extension budget calculator. Fully client-side and
@@ -358,10 +359,13 @@ const LOFT0 = {
 
 export default function EstimateCalculator({
   email = site.email,
+  accessKey,
   infoOverrides,
 }: {
   email?: string;
-  /** CMS-editable tooltip copy keyed by INFO_KEYS; falls back to DEFAULT_INFO */
+  /** Web3Forms access key — when set, the lead is emailed directly (not mailto) */
+  accessKey?: string;
+  /** CMS-editable tooltip copy keyed by field; falls back to DEFAULT_INFO */
   infoOverrides?: Record<string, string>;
 }) {
   // tooltip text for a key: CMS override (if non-empty) → built-in default
@@ -374,7 +378,7 @@ export default function EstimateCalculator({
   const [partyWall, setPartyWall] = useState(0);
   const [finish, setFinish] = useState(0);
   const [showAdv, setShowAdv] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<"" | "sent" | "mailto">("");
   const formRef = useRef<HTMLDivElement>(null);
 
   const setE = (k: keyof typeof ext, v: number) =>
@@ -469,7 +473,7 @@ export default function EstimateCalculator({
     return lines.join("\n");
   }
 
-  function handleLead(e: React.FormEvent<HTMLFormElement>) {
+  async function handleLead(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const d = new FormData(e.currentTarget);
     const name = `${d.get("firstName")} ${d.get("lastName")}`.trim();
@@ -485,9 +489,13 @@ export default function EstimateCalculator({
       "",
       projectSummary(),
     ].join("\n");
-    const subject = encodeURIComponent(`Budget calculator enquiry — ${name}`);
-    window.location.href = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(body)}`;
-    setSent(true);
+    const result = await submitEnquiry({
+      accessKey,
+      recipient: email,
+      subject: `Budget calculator enquiry — ${name}`,
+      message: body,
+    });
+    setSent(result);
   }
 
   return (
@@ -684,7 +692,13 @@ export default function EstimateCalculator({
                 Send my details
               </button>
 
-              {sent && (
+              {sent === "sent" && (
+                <p className="text-sm text-muted">
+                  Thanks — your enquiry and estimate are on their way to us.
+                  We&apos;ll be in touch shortly.
+                </p>
+              )}
+              {sent === "mailto" && (
                 <p className="text-sm text-muted">
                   Thanks. Your email app should have opened with your enquiry
                   ready to send. If not, email us at {email}.

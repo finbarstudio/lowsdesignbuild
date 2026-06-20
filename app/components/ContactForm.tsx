@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { site } from "@/app/lib/site";
+import { submitEnquiry } from "@/app/lib/submitEnquiry";
 
 /**
  * An editorial, less-traditional contact form: no boxes — each field is an
@@ -63,10 +64,16 @@ function Field({
   );
 }
 
-export default function ContactForm({ email = site.email }: { email?: string }) {
-  const [sent, setSent] = useState(false);
+export default function ContactForm({
+  email = site.email,
+  accessKey,
+}: {
+  email?: string;
+  accessKey?: string;
+}) {
+  const [sent, setSent] = useState<"" | "sent" | "mailto">("");
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     const name = `${data.get("firstName")} ${data.get("lastName")}`.trim();
@@ -77,11 +84,13 @@ export default function ContactForm({ email = site.email }: { email?: string }) 
       "",
       `${data.get("message")}`,
     ].join("\n");
-    const subject = encodeURIComponent(`Project enquiry from ${name}`);
-    window.location.href = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(
-      body,
-    )}`;
-    setSent(true);
+    const result = await submitEnquiry({
+      accessKey,
+      recipient: email,
+      subject: `Project enquiry from ${name}`,
+      message: body,
+    });
+    setSent(result);
   }
 
   return (
@@ -115,7 +124,13 @@ export default function ContactForm({ email = site.email }: { email?: string }) 
         Send enquiry
       </button>
 
-      {sent && (
+      {sent === "sent" && (
+        <p className="text-sm text-muted">
+          Thanks — your message is on its way to us. We&apos;ll be in touch
+          shortly.
+        </p>
+      )}
+      {sent === "mailto" && (
         <p className="text-sm text-muted">
           Thanks. Your email app should have opened with your message ready to
           send. If not, email us directly at {email}.

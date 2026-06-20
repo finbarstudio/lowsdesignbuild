@@ -59,7 +59,10 @@ export default async function ContactPage() {
           </div>
           <div className="lg:col-span-2">
             <p className="label mb-8 !text-ink">Tell us about your project</p>
-            <ContactForm email={contact?.contactEmail || site.email} />
+            <ContactForm
+              email={contact?.contactEmail || site.email}
+              accessKey={contact?.formAccessKey || undefined}
+            />
           </div>
         </div>
       </section>

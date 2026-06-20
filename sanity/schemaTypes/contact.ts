@@ -15,6 +15,13 @@ export const contactType = defineType({
         "Where the contact / enquiry form sends to. Leave blank to use the default.",
     }),
     defineField({
+      name: "formAccessKey",
+      title: "Enquiry form access key (Web3Forms)",
+      type: "string",
+      description:
+        "Paste a free Web3Forms access key to have the contact and estimate forms email you directly (with the calculator data) — no need for the visitor's mail app. Get one at web3forms.com using your inbox address. Leave blank to fall back to mailto.",
+    }),
+    defineField({
       name: "areas",
       title: "Areas we cover",
       type: "array",

@@ -53,7 +53,11 @@ export default async function EstimatePage() {
       {/* Calculator — full width, with a little extra breathing room L/R */}
       <section className={`${PAD} pb-24 sm:pb-32`}>
         <div className="sm:px-4 lg:px-10">
-          <EstimateCalculator email={email} infoOverrides={infoOverrides} />
+          <EstimateCalculator
+            email={email}
+            accessKey={contact?.formAccessKey || undefined}
+            infoOverrides={infoOverrides}
+          />
         </div>
       </section>
     </main>

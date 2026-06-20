@@ -84,6 +84,7 @@ export const ESTIMATE_PAGE_QUERY = defineQuery(`
 export const CONTACT_QUERY = defineQuery(`
   *[_type == "contact"][0]{
     contactEmail,
+    formAccessKey,
     areas
   }
 `);
