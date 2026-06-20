@@ -110,18 +110,19 @@ export default async function ProjectPage({
         <section className={`${PAD} py-16 sm:py-28 lg:py-40`}>
           <Reveal>
             <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-12 lg:gap-x-6">
-              <div className="lg:col-span-2">
-                <Link href="/projects" className="link link-underline is-tracked">
-                  Projects
-                </Link>
+              {/* type / location / year as pills, to the left of the bio */}
+              <div className="flex flex-wrap gap-2 lg:col-span-3 lg:flex-col lg:items-start">
+                {[project.category, project.location, project.year]
+                  .filter(Boolean)
+                  .map((t) => (
+                    <span key={String(t)} className="pill text-ink">
+                      {t}
+                    </span>
+                  ))}
               </div>
-              <p className="serif text-xl leading-[1.3] sm:text-2xl lg:col-span-7 lg:col-start-3 lg:text-3xl">
+              <p className="serif text-xl leading-[1.3] sm:text-2xl lg:col-span-8 lg:col-start-4 lg:text-3xl">
                 {project.description}
               </p>
-              <div className="text-sm text-muted lg:col-span-2 lg:col-start-11 lg:self-end">
-                <p>{project.category}</p>
-                <p className="mt-1">{project.location}</p>
-              </div>
             </div>
           </Reveal>
         </section>

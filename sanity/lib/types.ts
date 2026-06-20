@@ -14,6 +14,7 @@ export interface ProjectListItem {
 
 export interface Project extends ProjectListItem {
   description: string | null;
+  year: number | null;
   lqip: string | null;
   gallery: Array<SanityImageSource & { _key?: string }> | null;
 }

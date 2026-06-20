@@ -35,6 +35,7 @@ export const PROJECT_QUERY = defineQuery(`
     "slug": slug.current,
     location,
     category,
+    year,
     description,
     mainImage,
     "lqip": mainImage.asset->metadata.lqip,

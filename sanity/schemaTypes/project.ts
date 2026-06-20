@@ -70,6 +70,13 @@ export const projectType = defineType({
       rows: 4,
     }),
     defineField({
+      name: "year",
+      title: "Year completed",
+      type: "number",
+      description: "The year the project finished, e.g. 2025. Shown as a pill.",
+      validation: (rule) => rule.min(1990).max(2100).integer(),
+    }),
+    defineField({
       name: "order",
       title: "Display order",
       type: "number",
