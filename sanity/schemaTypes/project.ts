@@ -12,8 +12,13 @@ export const projectType = defineType({
       name: "title",
       title: "Title",
       type: "string",
-      description: "e.g. Beckenham – Loft Conversion & Rear Extension",
-      validation: (rule) => rule.required(),
+      description:
+        "Keep it short — it's clamped to 2 lines on the cards and truncated with an ellipsis past that, so aim for roughly 30 characters / 4 words (be conservative). No need to include the place name (the location shows as its own pill). e.g. 'Loft Conversion & Rear Extension'.",
+      validation: (rule) =>
+        rule
+          .required()
+          .max(48)
+          .warning("Long titles get truncated on the cards — try to keep it to ~30 characters."),
     }),
     defineField({
       name: "slug",

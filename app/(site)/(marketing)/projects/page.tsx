@@ -60,7 +60,7 @@ export default async function ProjectsPage() {
             </div>
           </div>
         ) : (
-          <div className="grid w-screen grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid w-screen grid-cols-1 gap-[2px] bg-background sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((p) => {
               const meta = [p.category, p.location].filter(Boolean);
               return (
@@ -70,26 +70,33 @@ export default async function ProjectsPage() {
                   className="group relative block h-[56vw] overflow-hidden bg-background sm:h-[42vw] lg:h-[70vh]"
                 >
                   {/* caption sitting behind the image, anchored to the bottom —
-                      revealed as the image crops up on hover */}
+                      revealed as the image crops up on hover. Title + each pill
+                      mask-reveal (slide up out of their own clip) on a stagger. */}
                   <div className="absolute inset-x-0 bottom-0 flex flex-col gap-4 p-7 sm:p-9">
-                    <h2 className="text-2xl font-bold uppercase leading-[1.05] tracking-tight sm:text-3xl">
-                      {p.title}
-                    </h2>
+                    <span className="block overflow-hidden">
+                      <h2 className="line-clamp-2 translate-y-full text-2xl font-bold uppercase leading-[1.05] tracking-tight transition-transform duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] [transition-delay:80ms] group-hover:translate-y-0 sm:text-3xl">
+                        {p.title}
+                      </h2>
+                    </span>
                     {meta.length > 0 && (
                       <div className="flex flex-wrap gap-2">
-                        {meta.map((m) => (
-                          <span
-                            key={m}
-                            className="pill text-ink"
-                          >
-                            {m}
+                        {meta.map((m, i) => (
+                          <span key={m} className="block overflow-hidden">
+                            <span
+                              className="pill translate-y-[140%] text-ink transition-transform duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0"
+                              style={{ transitionDelay: `${200 + i * 110}ms` }}
+                            >
+                              {m}
+                            </span>
                           </span>
                         ))}
                       </div>
                     )}
                   </div>
 
-                  {/* hero image on top — crops up from the bottom on hover */}
+                  {/* hero image on top — crops up from the bottom on hover. The
+                      reveal (hover-in) is gentle; the return down is faster and
+                      snappier (shorter base duration + sharper ease). */}
                   {p.mainImage && (
                     <Image
                       src={urlFor(p.mainImage).width(1100).height(1730).fit("crop").url()}
@@ -98,7 +105,7 @@ export default async function ProjectsPage() {
                         .join(", ")}
                       fill
                       sizes="(max-width: 640px) 100vw, 50vw"
-                      className="object-cover [clip-path:inset(0_0_0_0)] transition-[clip-path] duration-[700ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:[clip-path:inset(0_0_11rem_0)]"
+                      className="object-cover [clip-path:inset(0_0_0_0)] transition-[clip-path] duration-[320ms] ease-[cubic-bezier(0.4,0,0.1,1)] group-hover:[clip-path:inset(0_0_11rem_0)] group-hover:duration-[520ms] group-hover:ease-[cubic-bezier(0.22,1,0.36,1)]"
                     />
                   )}
                 </Link>
