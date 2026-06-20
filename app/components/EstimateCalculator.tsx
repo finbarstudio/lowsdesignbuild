@@ -104,19 +104,9 @@ const FINISH = [
   { label: "Luxury finish (+20%)", pct: 0.2 },
 ];
 
-const ADVANCED: { key: string; label: string; add: number; info?: string }[] = [
-  {
-    key: "conservation",
-    label: "Conservation area",
-    add: 5000,
-    info: "Stricter planning controls and material requirements apply in a designated conservation area.",
-  },
-  {
-    key: "article4",
-    label: "Article 4 restriction area",
-    add: 5000,
-    info: "An Article 4 Direction removes permitted-development rights, so works need full planning permission.",
-  },
+const ADVANCED: { key: string; label: string; add: number }[] = [
+  { key: "conservation", label: "Conservation area", add: 5000 },
+  { key: "article4", label: "Article 4 restriction area", add: 5000 },
   { key: "skip", label: "Skip permit required", add: 1500 },
   { key: "parking", label: "Parking suspension required", add: 2000 },
   { key: "logistics", label: "Difficult site logistics", add: 5000 },
@@ -125,33 +115,56 @@ const ADVANCED: { key: string; label: string; add: number; info?: string }[] = [
   { key: "rewire", label: "Full house rewire included", add: 10000 },
   { key: "heating", label: "Heating system upgrade", add: 8000 },
   { key: "boiler", label: "Boiler upgrade", add: 4000 },
-  {
-    key: "ashp",
-    label: "ASHP installation interface",
-    add: 10000,
-    info: "Allowing for connection and interface with an air-source heat pump system.",
-  },
-  {
-    key: "basement",
-    label: "Basement interface / structural tie-in",
-    add: 15000,
-    info: "Structural tie-in where the works connect to or sit above an existing basement.",
-  },
-  {
-    key: "drainage",
-    label: "Complex drainage diversion",
-    add: 10000,
-    info: "Rerouting existing drainage runs that clash with the new structure.",
-  },
-  {
-    key: "sewer",
-    label: "Build over public sewer",
-    add: 5000,
-    info: "A build-over agreement with the water authority where the structure sits over a public sewer.",
-  },
+  { key: "ashp", label: "ASHP installation interface", add: 10000 },
+  { key: "basement", label: "Basement interface / structural tie-in", add: 15000 },
+  { key: "drainage", label: "Complex drainage diversion", add: 10000 },
+  { key: "sewer", label: "Build over public sewer", add: 5000 },
   { key: "largeSteel", label: "Large structural steel package", add: 10000 },
   { key: "complexSteel", label: "Complex structural steel package", add: 20000 },
 ];
+
+// Default tooltip copy, keyed. The CMS can override any of these by key, so the
+// client can edit the explanations without touching code. Keys with no entry
+// here (and no CMS override) simply show no info icon.
+export const INFO_KEYS = [
+  "finish",
+  "complexity",
+  "steel",
+  "opening",
+  "access",
+  "conservation",
+  "article4",
+  "ashp",
+  "basement",
+  "drainage",
+  "sewer",
+  "partyWall",
+] as const;
+
+const DEFAULT_INFO: Record<string, string> = {
+  finish:
+    "Standard is a quality, functional finish. High-end adds 10% for premium materials and detailing; luxury adds 20% for bespoke, top-tier specification throughout.",
+  complexity:
+    "Reflects how involved the build is — awkward layouts, structural challenges or phasing push this from standard to moderate or high.",
+  steel:
+    "How much structural steelwork the design needs — larger spans and multiple beams increase complexity.",
+  opening:
+    "The opening between the existing house and the new space — wider, full-width openings need more steel support.",
+  access:
+    "How easily materials and skips can reach the work area. Restricted or no side access adds labour and time.",
+  conservation:
+    "Stricter planning controls and material requirements apply in a designated conservation area.",
+  article4:
+    "An Article 4 Direction removes permitted-development rights, so works need full planning permission.",
+  ashp: "Allowing for connection and interface with an air-source heat pump system.",
+  basement:
+    "Structural tie-in where the works connect to or sit above an existing basement.",
+  drainage: "Rerouting existing drainage runs that clash with the new structure.",
+  sewer:
+    "A build-over agreement with the water authority where the structure sits over a public sewer.",
+  partyWall:
+    "A Party Wall agreement is needed when you build on or near a shared boundary; each adjoining neighbour usually needs their own award.",
+};
 
 const TIMESCALES = [
   "ASAP",
@@ -204,16 +217,28 @@ function Field({
   );
 }
 
-// A small ⓘ that reveals an explanation on hover (and on tap/focus for touch).
-function InfoTip({ text }: { text: string }) {
+// An info icon that reveals an explanation on hover (and on tap/focus for touch).
+function InfoTip({ text }: { text?: string }) {
+  if (!text) return null;
   return (
     <span className="group relative ml-1.5 inline-flex align-middle">
       <button
         type="button"
         aria-label="More information"
-        className="flex h-4 w-4 items-center justify-center rounded-full border border-muted/60 text-[0.62rem] font-semibold leading-none text-muted transition-colors hover:border-tertiary hover:text-tertiary"
+        className="block text-muted/80 transition-colors hover:text-tertiary"
       >
-        i
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          className="h-[1.1em] w-[1.1em]"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="9.25" />
+          <path d="M12 11.25v5" strokeLinecap="round" />
+          <circle cx="12" cy="7.75" r="1.05" fill="currentColor" stroke="none" />
+        </svg>
       </button>
       <span className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 w-60 rounded bg-ink px-3 py-2 text-xs font-normal normal-case leading-relaxed text-background opacity-0 shadow-xl transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
         {text}
@@ -348,9 +373,15 @@ const LOFT0 = {
 
 export default function EstimateCalculator({
   email = site.email,
+  infoOverrides,
 }: {
   email?: string;
+  /** CMS-editable tooltip copy keyed by INFO_KEYS; falls back to DEFAULT_INFO */
+  infoOverrides?: Record<string, string>;
 }) {
+  // tooltip text for a key: CMS override (if non-empty) → built-in default
+  const info = (k: string) => infoOverrides?.[k]?.trim() || DEFAULT_INFO[k] || "";
+
   const [mode, setMode] = useState<"extension" | "loft">("extension");
   const [ext, setExt] = useState({ ...EXT0 });
   const [loft, setLoft] = useState({ ...LOFT0 });
@@ -502,13 +533,13 @@ export default function EstimateCalculator({
               <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2">
                 <Select label="Extension type" value={ext.type} onChange={(v) => setE("type", v)} options={EXT_TYPES} />
                 <NumberField label="Extension size" hint="Total floor area in m²" value={ext.size} onChange={(v) => setE("size", v)} max={500} />
-                <Select label="Structural opening" info="The opening between the existing house and the new space — wider, full-width openings need more steel support." value={ext.opening} onChange={(v) => setE("opening", v)} options={OPENINGS} />
+                <Select label="Structural opening" info={info("opening")} value={ext.opening} onChange={(v) => setE("opening", v)} options={OPENINGS} />
                 <Select label="Roof type" value={ext.roof} onChange={(v) => setE("roof", v)} options={ROOFS} />
                 <Select label="Glazing package" value={ext.glazing} onChange={(v) => setE("glazing", v)} options={GLAZING} />
                 <Select label="Utility room" value={ext.utility} onChange={(v) => setE("utility", v)} options={UTILITY} />
                 <Select label="Underfloor heating" value={ext.ufh} onChange={(v) => setE("ufh", v)} options={UFH} />
-                <Select label="Site access" info="How easily materials and skips can reach the work area. Restricted or no side access adds labour and time." value={ext.access} onChange={(v) => setE("access", v)} options={ACCESS} />
-                <Select label="Construction complexity" info="Reflects how involved the build is — awkward layouts, structural challenges or phasing push this from standard to moderate or high." value={ext.complexity} onChange={(v) => setE("complexity", v)} options={COMPLEXITY} />
+                <Select label="Site access" info={info("access")} value={ext.access} onChange={(v) => setE("access", v)} options={ACCESS} />
+                <Select label="Construction complexity" info={info("complexity")} value={ext.complexity} onChange={(v) => setE("complexity", v)} options={COMPLEXITY} />
               </div>
               <div>
                 <p className="label !text-ink mb-5">Bathrooms</p>
@@ -528,7 +559,7 @@ export default function EstimateCalculator({
                 <Select label="Built-in joinery" value={loft.joinery} onChange={(v) => setL("joinery", v)} options={JOINERY} />
                 <Select label="Air conditioning" value={loft.ac} onChange={(v) => setL("ac", v)} options={AC} />
                 <Select label="Chimney works" value={loft.chimney} onChange={(v) => setL("chimney", v)} options={CHIMNEY} />
-                <Select label="Steel complexity" info="How much structural steelwork the design needs — larger spans and multiple beams increase complexity." value={loft.steel} onChange={(v) => setL("steel", v)} options={STEEL} />
+                <Select label="Steel complexity" info={info("steel")} value={loft.steel} onChange={(v) => setL("steel", v)} options={STEEL} />
               </div>
               <div>
                 <p className="label !text-ink mb-5">Ensuites</p>
@@ -552,7 +583,7 @@ export default function EstimateCalculator({
           <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2">
             <Select
               label="Finish level"
-              info="Standard is a quality, functional finish. High-end adds 10% for premium materials and detailing; luxury adds 20% for bespoke, top-tier specification throughout."
+              info={info("finish")}
               value={finish}
               onChange={setFinish}
               options={FINISH}
@@ -588,7 +619,7 @@ export default function EstimateCalculator({
                       <span className="flex items-center">
                         {a.label}
                         <span className="ml-1 text-muted">(+{gbp(a.add)})</span>
-                        {a.info && <InfoTip text={a.info} />}
+                        <InfoTip text={info(a.key)} />
                       </span>
                     </label>
                   ))}
@@ -597,7 +628,7 @@ export default function EstimateCalculator({
                   <NumberField
                     label="Party wall — adjoining neighbours"
                     hint="£3,000 per neighbour"
-                    info="A Party Wall agreement is needed when you build on or near a shared boundary; each adjoining neighbour usually needs their own award."
+                    info={info("partyWall")}
                     value={partyWall}
                     onChange={setPartyWall}
                     max={10}

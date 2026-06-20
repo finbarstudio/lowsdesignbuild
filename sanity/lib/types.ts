@@ -61,6 +61,14 @@ export interface Contact {
   areas: string[] | null;
 }
 
+export interface EstimatePage {
+  infoTips: Array<{
+    _key?: string;
+    key: string | null;
+    text: string | null;
+  }> | null;
+}
+
 export interface ServiceItem {
   _id: string;
   title: string | null;

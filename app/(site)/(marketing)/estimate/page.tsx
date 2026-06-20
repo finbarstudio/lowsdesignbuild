@@ -6,8 +6,8 @@ import ScrollNudge from "@/app/components/ScrollNudge";
 import WordReveal from "@/app/components/WordReveal";
 import { site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
-import { CONTACT_QUERY } from "@/sanity/lib/queries";
-import type { Contact } from "@/sanity/lib/types";
+import { CONTACT_QUERY, ESTIMATE_PAGE_QUERY } from "@/sanity/lib/queries";
+import type { Contact, EstimatePage } from "@/sanity/lib/types";
 
 
 export const metadata: Metadata = {
@@ -20,8 +20,17 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function EstimatePage() {
-  const contact = await client.fetch<Contact | null>(CONTACT_QUERY);
+  const [contact, estimate] = await Promise.all([
+    client.fetch<Contact | null>(CONTACT_QUERY),
+    client.fetch<EstimatePage | null>(ESTIMATE_PAGE_QUERY),
+  ]);
   const email = contact?.contactEmail || site.email;
+
+  // map the CMS tooltips to { key: text } for the calculator
+  const infoOverrides: Record<string, string> = {};
+  for (const t of estimate?.infoTips ?? []) {
+    if (t.key && t.text) infoOverrides[t.key] = t.text;
+  }
 
   return (
     <main>
@@ -44,7 +53,7 @@ export default async function EstimatePage() {
       {/* Calculator — full width, with a little extra breathing room L/R */}
       <section className={`${PAD} pb-24 sm:pb-32`}>
         <div className="sm:px-4 lg:px-10">
-          <EstimateCalculator email={email} />
+          <EstimateCalculator email={email} infoOverrides={infoOverrides} />
         </div>
       </section>
     </main>

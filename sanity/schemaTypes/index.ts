@@ -2,6 +2,7 @@ import { type SchemaTypeDefinition } from "sanity";
 
 import { aboutPageType } from "./aboutPage";
 import { contactType } from "./contact";
+import { estimatePageType } from "./estimatePage";
 import { familyType } from "./family";
 import { homePageType } from "./homePage";
 import { projectType } from "./project";
@@ -16,6 +17,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     serviceType,
     familyType,
     projectType,
+    estimatePageType,
     contactType,
   ],
 };

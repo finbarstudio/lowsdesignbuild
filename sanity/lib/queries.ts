@@ -73,6 +73,13 @@ export const FAMILY_QUERY = defineQuery(`
   }
 `);
 
+// Estimate page — the editable info-tooltip copy for the calculator.
+export const ESTIMATE_PAGE_QUERY = defineQuery(`
+  *[_type == "estimatePage"][0]{
+    infoTips[]{ key, text }
+  }
+`);
+
 // Contact details — form recipient + the areas pill list (shared with About).
 export const CONTACT_QUERY = defineQuery(`
   *[_type == "contact"][0]{
