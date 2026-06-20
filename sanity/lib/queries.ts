@@ -37,6 +37,8 @@ export const PROJECT_QUERY = defineQuery(`
     category,
     year,
     description,
+    palette,
+    "heroPalette": mainImage.asset->metadata.palette,
     mainImage,
     "lqip": mainImage.asset->metadata.lqip,
     gallery

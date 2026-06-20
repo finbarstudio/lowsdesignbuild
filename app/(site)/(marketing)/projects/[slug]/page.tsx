@@ -4,12 +4,58 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import ProjectAside, { type Swatch } from "@/app/components/ProjectAside";
 import Reveal from "@/app/components/Reveal";
 import WordReveal from "@/app/components/WordReveal";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import { PROJECT_QUERY, PROJECT_SLUGS_QUERY } from "@/sanity/lib/queries";
-import type { Project } from "@/sanity/lib/types";
+import type { Project, SanityPalette } from "@/sanity/lib/types";
+
+// Perceptual-ish luminance (0–1) for ordering swatches into a gradient.
+function lum(hex: string): number {
+  const m = hex.replace("#", "");
+  const f =
+    m.length === 3 ? m.split("").map((c) => c + c).join("") : m;
+  const r = parseInt(f.slice(0, 2), 16) / 255;
+  const g = parseInt(f.slice(2, 4), 16) / 255;
+  const b = parseInt(f.slice(4, 6), 16) / 255;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+// The colour tiles: the CMS palette if set, otherwise auto-derived from the
+// hero image's palette metadata, ordered dark→light so they read as a gradient.
+function projectColours(project: Project): Swatch[] {
+  if (project.palette && project.palette.length > 0) {
+    return project.palette
+      .filter((p) => p.color)
+      .map((p) => ({ hex: p.color as string, name: (p.name || p.color) as string }));
+  }
+  const p: SanityPalette | null = project.heroPalette;
+  if (!p) return [];
+  const keys = [
+    "darkMuted",
+    "darkVibrant",
+    "muted",
+    "dominant",
+    "vibrant",
+    "lightMuted",
+    "lightVibrant",
+  ] as const;
+  const seen = new Set<string>();
+  const hexes: string[] = [];
+  for (const k of keys) {
+    const bg = p[k]?.background;
+    if (bg && !seen.has(bg.toLowerCase())) {
+      seen.add(bg.toLowerCase());
+      hexes.push(bg);
+    }
+  }
+  return hexes
+    .sort((a, b) => lum(a) - lum(b))
+    .slice(0, 5)
+    .map((hex) => ({ hex, name: hex.toUpperCase() }));
+}
 
 export const revalidate = 60;
 
@@ -105,23 +151,22 @@ export default async function ProjectPage({
       {/* ---------------- Intro statement ---------------- */}
       {project.description && (
         <section className={`${PAD} py-16 sm:py-28 lg:py-40`}>
-          <Reveal>
-            <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-12 lg:gap-x-6">
-              {/* type / location / year as pills, to the left of the bio */}
-              <div className="flex flex-wrap gap-2 lg:col-span-3 lg:flex-col lg:items-start">
-                {[project.category, project.location, project.year]
+          <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-12 lg:gap-x-10">
+            {/* left rail: tags + colour tiles, both mask-revealing */}
+            <div className="lg:col-span-4">
+              <ProjectAside
+                tags={[project.category, project.location, project.year]
                   .filter(Boolean)
-                  .map((t) => (
-                    <span key={String(t)} className="pill text-ink">
-                      {t}
-                    </span>
-                  ))}
-              </div>
-              <p className="serif text-xl leading-[1.3] sm:text-2xl lg:col-span-8 lg:col-start-4 lg:text-3xl">
+                  .map(String)}
+                colours={projectColours(project)}
+              />
+            </div>
+            <Reveal className="lg:col-span-7 lg:col-start-6">
+              <p className="serif text-xl leading-[1.3] sm:text-2xl lg:text-3xl">
                 {project.description}
               </p>
-            </div>
-          </Reveal>
+            </Reveal>
+          </div>
         </section>
       )}
 

@@ -77,6 +77,39 @@ export const projectType = defineType({
       validation: (rule) => rule.min(1990).max(2100).integer(),
     }),
     defineField({
+      name: "palette",
+      title: "Colour palette",
+      type: "array",
+      validation: (rule) => rule.max(5),
+      description:
+        "Up to 5 colour tiles shown beside the project copy. Leave empty to auto-pull a palette from the hero image. Each tile reveals its name in mono type.",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({
+              name: "color",
+              title: "Colour (hex)",
+              type: "string",
+              description: "e.g. #5A5C4D",
+              validation: (rule) =>
+                rule.regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, {
+                  name: "hex colour",
+                }),
+            }),
+            defineField({
+              name: "name",
+              title: "Name",
+              type: "string",
+              description: "e.g. F&B Treron Satin",
+            }),
+          ],
+          preview: { select: { title: "name", subtitle: "color" } },
+        },
+      ],
+      options: { layout: "grid" },
+    }),
+    defineField({
       name: "order",
       title: "Display order",
       type: "number",

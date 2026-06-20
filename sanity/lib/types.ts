@@ -12,9 +12,27 @@ export interface ProjectListItem {
   mainImage: SanityImageSource | null;
 }
 
+export interface SanitySwatch {
+  background: string | null;
+  foreground?: string | null;
+  population?: number;
+}
+
+export interface SanityPalette {
+  dominant?: SanitySwatch;
+  vibrant?: SanitySwatch;
+  lightVibrant?: SanitySwatch;
+  darkVibrant?: SanitySwatch;
+  muted?: SanitySwatch;
+  lightMuted?: SanitySwatch;
+  darkMuted?: SanitySwatch;
+}
+
 export interface Project extends ProjectListItem {
   description: string | null;
   year: number | null;
+  palette: Array<{ _key?: string; color: string | null; name: string | null }> | null;
+  heroPalette: SanityPalette | null;
   lqip: string | null;
   gallery: Array<SanityImageSource & { _key?: string }> | null;
 }
