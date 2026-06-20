@@ -12,11 +12,9 @@ type Post = { img: string; url: string };
  */
 export default function InstagramStrip({
   posts,
-  handle,
   profileUrl,
 }: {
   posts: Post[];
-  handle: string;
   profileUrl: string;
 }) {
   if (posts.length === 0) return null;
@@ -25,26 +23,7 @@ export default function InstagramStrip({
 
   return (
     <div>
-      <div className="mx-auto flex max-w-[1900px] items-end justify-between px-[10%] sm:px-6">
-        <a
-          href={profileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="label !text-ink"
-        >
-          {handle}
-        </a>
-        <a
-          href={profileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="link-underline text-sm"
-        >
-          Follow on Instagram →
-        </a>
-      </div>
-
-      <div className="marquee group mt-8 overflow-hidden">
+      <div className="marquee group overflow-hidden">
         <div className="marquee-track flex w-max gap-4 pr-4">
           {track.map((p, i) => (
             <a

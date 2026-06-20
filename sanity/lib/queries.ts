@@ -51,6 +51,7 @@ export const HOME_PAGE_QUERY = defineQuery(`
     "heroDim": heroImage.asset->metadata.dimensions,
     heroTrailImages,
     homeHeroText,
+    instagramFeedId,
     instagramPosts[]{ url, image }
   }
 `);

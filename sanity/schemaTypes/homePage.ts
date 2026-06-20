@@ -30,8 +30,15 @@ export const homePageType = defineType({
       options: { layout: "grid" },
     }),
     defineField({
+      name: "instagramFeedId",
+      title: "Instagram live feed (Behold ID)",
+      type: "string",
+      description:
+        "Paste your Behold.so feed ID to show a live, auto-updating Instagram feed. Leave blank to use the image strip below instead.",
+    }),
+    defineField({
       name: "instagramPosts",
-      title: "Instagram strip",
+      title: "Instagram strip (fallback)",
       type: "array",
       description:
         "The scrolling Instagram band on the home page. Add a square photo for each post and the link to that post.",

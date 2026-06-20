@@ -6,6 +6,7 @@ import Link from "next/link";
 import CursorTrail from "@/app/components/CursorTrail";
 import DropReveal from "@/app/components/DropReveal";
 import HomeChrome from "@/app/components/HomeChrome";
+import InstagramFeed from "@/app/components/InstagramFeed";
 import InstagramStrip from "@/app/components/InstagramStrip";
 import WipeReveal from "@/app/components/WipeReveal";
 import WordReveal from "@/app/components/WordReveal";
@@ -144,6 +145,10 @@ export default async function HomePage() {
       url: p.url ?? site.instagram,
     }));
 
+  // Prefer the live Behold feed when its ID is set; otherwise the curated strip.
+  const igFeedId = home?.instagramFeedId?.trim() || "";
+  const hasInsta = igFeedId !== "" || instaPosts.length > 0;
+
   return (
     <>
       <HomeChrome projectCount={projects.length} />
@@ -222,14 +227,33 @@ export default async function HomePage() {
 
         {/* ---------------- Instagram ---------------- */}
         {/* Opaque band that slides up over the pinned slogan — it takes the
-            "cover" role, so the People section below it uses normal spacing. */}
-        {instaPosts.length > 0 && (
+            "cover" role, so the People section below it uses normal spacing.
+            Live Behold feed if its ID is set, otherwise the curated strip. */}
+        {hasInsta && (
           <section className="relative z-10 bg-background pb-20 pt-56 sm:pb-28 sm:pt-[28rem]">
-            <InstagramStrip
-              posts={instaPosts}
-              handle={site.instagramHandle}
-              profileUrl={site.instagram}
-            />
+            <div className="mx-auto mb-8 flex max-w-[1900px] items-end justify-between px-[10%] sm:px-6">
+              <a
+                href={site.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="label !text-ink"
+              >
+                {site.instagramHandle}
+              </a>
+              <a
+                href={site.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-underline text-sm"
+              >
+                Follow on Instagram →
+              </a>
+            </div>
+            {igFeedId ? (
+              <InstagramFeed feedId={igFeedId} />
+            ) : (
+              <InstagramStrip posts={instaPosts} profileUrl={site.instagram} />
+            )}
           </section>
         )}
 
