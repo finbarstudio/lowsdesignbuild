@@ -60,16 +60,16 @@ export default function AreaPills({
     >
       {areas.map((area, i) => (
         // each pill rises up out of its own clip mask, one after another
-        <span key={area} className="inline-block overflow-hidden align-bottom">
+        <span key={area} className="inline-flex overflow-hidden align-bottom">
           <span
-            className="pill text-base sm:text-xl lg:text-2xl"
+            className="pill text-lg leading-none sm:text-2xl lg:text-3xl"
             style={{
               transform: shown ? "translateY(0)" : "translateY(110%)",
               transition: "transform 0.6s cubic-bezier(0.22,1,0.36,1)",
               transitionDelay: `${i * 150}ms`,
             }}
           >
-            <span className="block translate-y-[0.06em]">{area}</span>
+            {area}
           </span>
         </span>
       ))}

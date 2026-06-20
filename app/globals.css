@@ -130,9 +130,12 @@ h1, h2, h3, .display {
     line-height: 1;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    padding: 0.5em 0.85em;
-    border: 0.16em solid currentColor;
-    border-radius: 0.85rem;
+    /* padding scales with the text (so bigger pills stay in proportion); the
+       stroke + radius are fixed so they look identical at any size — a thin
+       outline and a full-pill (stadium) corner, like the project-card pills. */
+    padding: 0.55em 0.95em;
+    border: 2px solid currentColor;
+    border-radius: 9999px;
   }
 }
 
