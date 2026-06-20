@@ -31,20 +31,20 @@ export default function ProjectHeroTitle({ title }: { title: string }) {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const y = window.scrollY;
-      const padX = vw >= 640 ? 24 : 16;
-      const y0 = vh - 32 - nH; // resting at the bottom of the hero
+      const y0 = vh - 40 - nH; // resting at the bottom of the hero
 
       if (vw < 640) {
-        // mobile: just scroll up and away with the page
-        el.style.transform = `translate(${padX}px, ${(y0 - y).toFixed(1)}px) scale(1)`;
+        // mobile: centred at the bottom, scrolls up and away with the page
+        const x = (vw - nW) / 2;
+        el.style.transform = `translate(${x.toFixed(1)}px, ${(y0 - y).toFixed(1)}px) scale(1)`;
       } else {
-        // desktop: travel up + scale down into the centre of the bar
+        // desktop: travel up + scale down into the centre of the bar, staying
+        // horizontally centred the whole way
         const p = Math.min(1, Math.max(0, y / (vh * 0.7)));
         const targetH = 34;
         const s = 1 + (targetH / nH - 1) * p;
-        const x1 = (vw - nW * (targetH / nH)) / 2; // centred once scaled
+        const x = (vw - nW * s) / 2; // centred at any scale
         const y1 = (BAR - targetH) / 2;
-        const x = padX + (x1 - padX) * p;
         const yy = y0 + (y1 - y0) * p;
         el.style.transform = `translate(${x.toFixed(1)}px, ${yy.toFixed(1)}px) scale(${s.toFixed(3)})`;
       }
@@ -84,8 +84,8 @@ export default function ProjectHeroTitle({ title }: { title: string }) {
   return (
     <h1
       ref={ref}
-      style={{ color, maxWidth: "min(92vw, 60rem)" }}
-      className="serif fixed left-0 top-0 z-50 text-4xl leading-[1.02] will-change-transform sm:text-6xl lg:text-7xl"
+      style={{ color }}
+      className="serif fixed left-0 top-0 z-50 whitespace-nowrap text-3xl uppercase leading-none will-change-transform sm:text-5xl lg:text-6xl"
     >
       <WordReveal text={title} />
     </h1>
