@@ -6,6 +6,12 @@ import { useEffect, useRef, useState } from "react";
 import Logomark from "@/app/components/Logomark";
 import Wordmark from "@/app/components/Wordmark";
 import { nav, site } from "@/app/lib/site";
+import { smoothScrollTop } from "@/app/lib/scrollTop";
+
+// True only for the very first home mount after a real document load (when the
+// preloader runs). Stays false for client-side returns to home within the same
+// page session — so we don't wait for a preloader that won't show.
+let homeFullLoad = true;
 
 // Logotype aspect ratio (viewBox 121.71 × 55.33).
 const RATIO = 121.71 / 55.33;
@@ -33,6 +39,7 @@ export default function HomeChrome({
   const [mode, setMode] = useState<Mode>("hero");
   const wrapRef = useRef<HTMLAnchorElement>(null);
   const markRef = useRef<HTMLSpanElement>(null);
+  const markInnerRef = useRef<HTMLSpanElement>(null);
   // Lockup (wordmark slides right + mark fades in) progress 0→1, started by a
   // timer once the wordmark has fully docked — a deliberate beat after it lands.
   const lockProgRef = useRef(0);
@@ -50,11 +57,13 @@ export default function HomeChrome({
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     html.classList.add("entrance-armed");
     const go = () => html.classList.add("entrance-go");
-    // wait for the preloader to fully lift (it fades 1.6s → 2.3s) so the hero +
-    // logo reveal is seen after it, not under it
-    const hasPreloader = !!document.querySelector(".preloader");
-    const t1 = window.setTimeout(go, hasPreloader ? 2300 : 80);
-    const t2 = window.setTimeout(go, 4200); // safety net
+    // On a fresh load wait for the preloader to fully lift (it fades 1.6s →
+    // 2.3s) so the hero + logo reveal is seen after it, not under it. On a
+    // client-side return there's no preloader, so reveal almost immediately.
+    const fresh = homeFullLoad;
+    homeFullLoad = false;
+    const t1 = window.setTimeout(go, fresh ? 2300 : 80);
+    const t2 = window.setTimeout(go, fresh ? 4200 : 1500); // safety net
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
@@ -146,10 +155,12 @@ export default function HomeChrome({
         if (mark) {
           mark.style.width = `${markW}px`;
           mark.style.height = `${markH}px`;
-          // slide in a touch from the left as it fades up
-          mark.style.transform = `translate(${edge + (1 - lp) * -8}px, ${y1}px)`;
-          mark.style.opacity = `${lp}`;
+          mark.style.transform = `translate(${edge}px, ${y1}px)`;
         }
+        // the mark slides in out of its own clip (mask reveal), and slides back
+        // out when scrolling to the top
+        const inner = markInnerRef.current;
+        if (inner) inner.style.transform = `translateX(${(lp - 1) * 100}%)`;
       }
     };
 
@@ -212,6 +223,10 @@ export default function HomeChrome({
           <Link
             href="/"
             aria-label={`${site.name}, home`}
+            onClick={(e) => {
+              e.preventDefault();
+              smoothScrollTop();
+            }}
             className={`logo-mask flex items-center transition-colors duration-300 sm:hidden ${barColor}`}
           >
             <Wordmark className="h-[26px] w-[57px]" />
@@ -254,18 +269,25 @@ export default function HomeChrome({
         ref={wrapRef}
         href="/"
         aria-label={`${site.name}, home`}
+        onClick={(e) => {
+          e.preventDefault();
+          smoothScrollTop();
+        }}
         className={`logo-mask fixed left-0 top-0 z-50 hidden transition-colors duration-300 will-change-transform sm:block ${textColor}`}
       >
         <Wordmark className="aspect-[121.71/55.33] w-full" />
       </Link>
 
-      {/* desktop: the house mark that lands in beside the docked wordmark */}
+      {/* desktop: the house mark that masks-in beside the docked wordmark. The
+          outer span clips; the inner slides in/out of it. */}
       <span
         ref={markRef}
         aria-hidden="true"
-        className={`pointer-events-none fixed left-0 top-0 z-50 hidden opacity-0 will-change-transform sm:block ${textColor}`}
+        className={`pointer-events-none fixed left-0 top-0 z-50 hidden overflow-hidden will-change-transform sm:block ${textColor}`}
       >
-        <Logomark className="h-full w-full" />
+        <span ref={markInnerRef} className="block h-full w-full">
+          <Logomark className="h-full w-full" />
+        </span>
       </span>
 
       {/* mobile menu panel */}

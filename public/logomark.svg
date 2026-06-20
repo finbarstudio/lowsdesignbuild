@@ -7,7 +7,7 @@
         stroke: #000;
         stroke-linecap: square;
         stroke-miterlimit: 10;
-        stroke-width: 4px;
+        stroke-width: 4.8px;
       }
     </style>
   </defs>

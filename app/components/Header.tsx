@@ -4,8 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import Wordmark from "@/app/components/Wordmark";
+import LogoLockup from "@/app/components/LogoLockup";
 import { nav, site } from "@/app/lib/site";
+import { smoothScrollTop } from "@/app/lib/scrollTop";
 
 const BAR = 64;
 
@@ -56,13 +57,13 @@ export default function Header({ projectCount }: { projectCount?: number }) {
       }`}
     >
       <div className="relative mx-auto flex h-full w-full max-w-[1900px] items-center px-4 sm:px-6">
-        {/* logo left */}
+        {/* logo left — full lockup */}
         <Link
           href="/"
           aria-label={`${site.name}, home`}
           className={`flex items-center transition-colors duration-300 ${barColor}`}
         >
-          <Wordmark className="h-[26px] w-[57px]" />
+          <LogoLockup />
         </Link>
 
         {/* nav right */}
@@ -73,7 +74,16 @@ export default function Header({ projectCount }: { projectCount?: number }) {
             const active =
               pathname === item.href || pathname?.startsWith(`${item.href}/`);
             return (
-              <Link key={item.href} href={item.href}>
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={(e) => {
+                  if (active) {
+                    e.preventDefault();
+                    smoothScrollTop();
+                  }
+                }}
+              >
                 <span
                   className={`link-underline is-tracked ${active ? "link-active" : ""}`}
                 >
@@ -106,11 +116,20 @@ export default function Header({ projectCount }: { projectCount?: number }) {
 
       {open && (
         <nav className="flex flex-col gap-1 border-t border-line bg-background px-4 py-4 font-mono text-sm uppercase tracking-[0.12em] text-ink sm:hidden">
-          {nav.map((item) => (
+          {nav.map((item) => {
+            const active =
+              pathname === item.href || pathname?.startsWith(`${item.href}/`);
+            return (
             <Link
               key={item.href}
               href={item.href}
-              onClick={() => setOpen(false)}
+              onClick={(e) => {
+                setOpen(false);
+                if (active) {
+                  e.preventDefault();
+                  smoothScrollTop();
+                }
+              }}
               className="w-fit py-3"
             >
               <span className="link-underline">{item.label}</span>
@@ -120,7 +139,8 @@ export default function Header({ projectCount }: { projectCount?: number }) {
                 </sup>
               ) : null}
             </Link>
-          ))}
+            );
+          })}
         </nav>
       )}
     </header>
