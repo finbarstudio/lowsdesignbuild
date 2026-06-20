@@ -91,8 +91,8 @@ export default function HomeChrome({
       if (heroImg) {
         // cap the lag at the headroom the 1.08 scale buys (≈3.5% each side) so
         // the downward shift never reveals an edge
-        const lag = Math.min(window.scrollY * 0.42, heroH * 0.08);
-        heroImg.style.transform = `translate3d(0, ${lag.toFixed(1)}px, 0) scale(1.18)`;
+        const lag = Math.min(window.scrollY * 0.55, heroH * 0.16);
+        heroImg.style.transform = `translate3d(0, ${lag.toFixed(1)}px, 0) scale(1.34)`;
       }
 
       // desktop sliding wordmark — position only; colour comes from `mode`.

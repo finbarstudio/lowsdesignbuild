@@ -11,12 +11,13 @@ import { useEffect } from "react";
 export default function HeroParallax({
   targetId,
   containerId,
-  scale = 1.18,
+  scale = 1.34,
 }: {
   targetId: string;
   containerId: string;
   scale?: number;
 }) {
+  // default scale gives enough headroom for the 16% lag
   useEffect(() => {
     const img = document.getElementById(targetId);
     if (!img) return;
@@ -24,7 +25,8 @@ export default function HeroParallax({
     const update = () => {
       const box = document.getElementById(containerId);
       const h = box ? box.offsetHeight : window.innerHeight;
-      const lag = Math.min(window.scrollY * 0.42, h * 0.08);
+      // strong lag so the next section visibly scrolls up over the hero
+      const lag = Math.min(window.scrollY * 0.55, h * 0.16);
       img.style.transform = `translate3d(0, ${lag.toFixed(1)}px, 0) scale(${scale})`;
     };
     const onScroll = () => {

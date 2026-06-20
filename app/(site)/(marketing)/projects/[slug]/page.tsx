@@ -165,7 +165,7 @@ export default async function ProjectPage({
             sizes="100vw"
             placeholder={project.lqip ? "blur" : undefined}
             blurDataURL={project.lqip ?? undefined}
-            style={{ transform: "scale(1.18)", willChange: "transform" }}
+            style={{ transform: "scale(1.34)", willChange: "transform" }}
             className="object-cover"
           />
         )}
@@ -174,8 +174,11 @@ export default async function ProjectPage({
       </section>
 
       {/* ---------------- Intro statement ---------------- */}
+      {/* pulled up over the hero so it scrolls up across the bottom of it */}
       {project.description && (
-        <section className={`${PAD} py-16 sm:py-28 lg:py-40`}>
+        <section
+          className={`${PAD} relative z-10 -mt-[9vh] bg-background py-16 sm:-mt-[12vh] sm:py-28 lg:py-40`}
+        >
           <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-12 lg:gap-x-10">
             {/* left rail: tags + colour tiles, both mask-revealing */}
             <div className="lg:col-span-4">

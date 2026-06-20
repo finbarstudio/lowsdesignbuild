@@ -183,7 +183,7 @@ export default async function HomePage() {
           placeholder="blur"
           blurDataURL={hero.blur}
           sizes="100vw"
-          style={{ transform: "scale(1.18)", willChange: "transform" }}
+          style={{ transform: "scale(1.34)", willChange: "transform" }}
           className="block h-full w-full object-cover sm:h-auto sm:object-contain"
         />
         {/* same gradient as the project hero, so the wordmark stays legible */}
@@ -198,7 +198,7 @@ export default async function HomePage() {
       {/* Sticky statement + featured projects share a wrapper so the pinned
           slogan is contained here; it releases and scrolls away once the
           featured block ends, never overlapping the sections below. */}
-      <div className="relative">
+      <div className="relative z-10 -mt-[9vh] sm:-mt-[12vh]">
         {/* ---------------- Family-run statement (Futura) ---------------- */}
         <section className="sticky top-0 flex h-[100svh] flex-col items-center justify-center">
           {/* On mobile the slogan is inset to the same 10% as the project
