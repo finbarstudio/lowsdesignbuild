@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 
 
 function ProjectCard({ p }: { p: ProjectListItem }) {
-  const tags = [p.category, p.location].filter(Boolean) as string[];
+  const tags = [p.category, p.location, p.year].filter(Boolean).map(String);
   return (
     <Link
       href={`/projects/${p.slug}`}

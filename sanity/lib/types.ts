@@ -9,6 +9,7 @@ export interface ProjectListItem {
   slug: string | null;
   location: string | null;
   category: string | null;
+  year: number | null;
   mainImage: SanityImageSource | null;
 }
 

@@ -12,6 +12,7 @@ export const PROJECTS_QUERY = defineQuery(`
     "slug": slug.current,
     location,
     category,
+    year,
     mainImage
   }
 `);
@@ -60,6 +61,7 @@ export const HOME_PAGE_QUERY = defineQuery(`
       "slug": slug.current,
       location,
       category,
+      year,
       mainImage
     },
     instagramFeedId,

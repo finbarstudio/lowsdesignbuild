@@ -134,17 +134,19 @@ export default function ProjectAside({
                   transitionDelay: `${delay}ms`,
                 }}
               />
-              <span
-                className="absolute inset-0 flex items-center px-4 font-mono text-[0.7rem] uppercase tracking-[0.12em]"
-                style={{
-                  color: isDark(c.hex) ? "#ffffff" : "#1a1a1a",
-                  opacity: shown ? 1 : 0,
-                  transition: "opacity 0.5s ease",
-                  transitionDelay: `${delay + 280}ms`,
-                }}
-              >
-                {c.name}
-              </span>
+              {c.name && (
+                <span
+                  className="absolute inset-0 flex items-center px-4 font-mono text-[0.7rem] uppercase tracking-[0.12em]"
+                  style={{
+                    color: isDark(c.hex) ? "#ffffff" : "#1a1a1a",
+                    opacity: shown ? 1 : 0,
+                    transition: "opacity 0.5s ease",
+                    transitionDelay: `${delay + 280}ms`,
+                  }}
+                >
+                  {c.name}
+                </span>
+              )}
             </div>
           );
         })}

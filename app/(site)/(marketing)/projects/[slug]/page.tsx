@@ -30,7 +30,7 @@ function projectColours(project: Project): Swatch[] {
   if (project.palette && project.palette.length > 0) {
     return project.palette
       .filter((p) => p.color)
-      .map((p) => ({ hex: p.color as string, name: (p.name || p.color) as string }));
+      .map((p) => ({ hex: p.color as string, name: p.name || "" }));
   }
   const p: SanityPalette | null = project.heroPalette;
   if (!p) return [];
@@ -55,7 +55,7 @@ function projectColours(project: Project): Swatch[] {
   return hexes
     .sort((a, b) => lum(a) - lum(b))
     .slice(0, 5)
-    .map((hex) => ({ hex, name: hex.toUpperCase() }));
+    .map((hex) => ({ hex, name: "" }));
 }
 
 export const revalidate = 60;

@@ -67,7 +67,7 @@ export default function ProjectsGrid({
 
       <div className="grid w-screen grid-cols-1 gap-[2px] bg-background sm:grid-cols-2 lg:grid-cols-3">
         {shown.map((p) => {
-          const meta = [p.category, p.location].filter(Boolean);
+          const meta = [p.category, p.location, p.year].filter(Boolean);
           return (
             <Link
               key={p._id}
