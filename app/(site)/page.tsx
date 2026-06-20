@@ -50,20 +50,29 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
           className="object-cover"
         />
       )}
-      {/* simple gradient so the overlay text stays legible */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
+      {/* grey gradient — opaque at the bottom, transparent up top — keeps the
+          white text legible. It fades away on hover as the card scales. */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/20 to-transparent opacity-100 transition-opacity duration-500 ease-out group-hover:opacity-0" />
 
-      {/* overlay text: title and tags scale a touch more than the card and
-          with a stagger, so they lift off the image on hover (parallax feel) */}
+      {/* overlay text: title (same style as the projects-page overlays) + tags.
+          On hover the whole caption swipes up out of its own mask and clears the
+          image, staggered per item. */}
       <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-5 sm:gap-3 sm:p-8">
-        <h3 className="origin-bottom-left text-xl font-semibold leading-tight tracking-tight text-white transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] [transition-delay:120ms] group-hover:scale-[1.05] sm:text-3xl lg:text-4xl">
-          {p.title}
-        </h3>
+        <span className="block overflow-hidden">
+          <h3 className="text-2xl font-bold uppercase leading-[1.05] tracking-tight text-white transition-transform duration-[450ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:-translate-y-[130%] sm:text-3xl lg:text-4xl">
+            {p.title}
+          </h3>
+        </span>
         {tags.length > 0 && (
-          <div className="flex origin-bottom-left flex-wrap gap-2 transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] [transition-delay:220ms] group-hover:scale-[1.1]">
-            {tags.map((t) => (
-              <span key={t} className="pill text-white backdrop-blur-sm">
-                {t}
+          <div className="flex flex-wrap gap-2">
+            {tags.map((t, i) => (
+              <span key={t} className="block overflow-hidden">
+                <span
+                  className="pill text-white backdrop-blur-sm transition-transform duration-[450ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:-translate-y-[160%]"
+                  style={{ transitionDelay: `${60 + i * 70}ms` }}
+                >
+                  {t}
+                </span>
               </span>
             ))}
           </div>

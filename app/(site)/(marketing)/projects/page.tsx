@@ -111,6 +111,21 @@ export default async function ProjectsPage() {
                 </Link>
               );
             })}
+
+            {/* Closing CTA — fills whatever column comes next after the last
+                project, so the grid always ends on a clean tile. */}
+            <Link
+              href="/estimate"
+              className="group flex h-[56vw] flex-col justify-end bg-background p-7 text-ink sm:h-[42vw] sm:p-9 lg:h-[70vh]"
+            >
+              <p className="label mb-4 !text-tertiary">Free estimate</p>
+              <h2 className="text-2xl font-bold uppercase leading-[1.05] tracking-tight sm:text-3xl">
+                Have a similar project?
+              </h2>
+              <span className="link link-underline is-tracked mt-6 w-fit">
+                Reach out for a free estimate
+              </span>
+            </Link>
           </div>
         )}
       </section>
