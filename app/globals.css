@@ -173,9 +173,6 @@ h1, h2, h3, .display {
     clip-path: inset(0 0 0 0);
   }
 }
-.hero-reveal {
-  animation: hero-drop 0.95s cubic-bezier(0.76, 0, 0.24, 1) 0.15s both;
-}
 @keyframes logo-rise {
   from {
     transform: translateY(110%);
@@ -184,12 +181,28 @@ h1, h2, h3, .display {
     transform: translateY(0);
   }
 }
+/* Entrance reveal — fail-open. By default the hero + wordmark are fully
+   visible (so a JS failure never leaves a blank hero). HomeChrome `arms` the
+   reveal (hides them) on mount, then `go`es once the preloader lifts on a fresh
+   load — or almost immediately on a client-side return — so the entrance is
+   actually seen rather than playing under the preloader. */
 .logo-mask {
   overflow: hidden;
 }
 .logo-mask > * {
   display: block;
-  animation: logo-rise 0.85s cubic-bezier(0.76, 0, 0.24, 1) 1s both;
+}
+html.entrance-armed .hero-reveal {
+  clip-path: inset(0 0 100% 0);
+}
+html.entrance-armed .logo-mask > * {
+  transform: translateY(110%);
+}
+html.entrance-go .hero-reveal {
+  animation: hero-drop 0.95s cubic-bezier(0.76, 0, 0.24, 1) 0.05s forwards;
+}
+html.entrance-go .logo-mask > * {
+  animation: logo-rise 0.85s cubic-bezier(0.76, 0, 0.24, 1) 0.7s forwards;
 }
 
 /* Hide the scrollbar on a horizontally-scrollable strip (the Instagram feed) */
@@ -315,8 +328,14 @@ html.lenis body {
     animation: none;
     stroke-dashoffset: 0;
   }
-  .hero-reveal,
-  .logo-mask > * {
+  html.entrance-armed .hero-reveal,
+  html.entrance-go .hero-reveal {
     animation: none;
+    clip-path: none;
+  }
+  html.entrance-armed .logo-mask > *,
+  html.entrance-go .logo-mask > * {
+    animation: none;
+    transform: none;
   }
 }

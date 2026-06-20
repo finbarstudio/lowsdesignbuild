@@ -16,9 +16,10 @@ export default function Preloader() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
+    // Show on every full page load of the home page (first load + hard refresh).
+    // It lives in the persistent layout, so it only mounts on a real document
+    // load — client-side navigation back to home doesn't replay it.
     if (pathname !== "/") return;
-    if (sessionStorage.getItem("lows-preloaded")) return;
-    sessionStorage.setItem("lows-preloaded", "1");
     setShow(true);
   }, []); // run once on mount
 

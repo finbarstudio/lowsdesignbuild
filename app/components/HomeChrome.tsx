@@ -3,11 +3,14 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import Logomark from "@/app/components/Logomark";
 import Wordmark from "@/app/components/Wordmark";
 import { nav, site } from "@/app/lib/site";
 
 // Logotype aspect ratio (viewBox 121.71 × 55.33).
 const RATIO = 121.71 / 55.33;
+// House-mark aspect ratio (viewBox 121.43 × 86.64).
+const MARK_RATIO = 121.43 / 86.64;
 const BAR = 64; // bar height (h-16)
 
 type Mode = "hero" | "ink" | "footer";
@@ -29,6 +32,26 @@ export default function HomeChrome({
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>("hero");
   const wrapRef = useRef<HTMLAnchorElement>(null);
+  const markRef = useRef<HTMLSpanElement>(null);
+
+  // Kick the entrance. Arm it (hide the hero + wordmark) on mount, then `go`
+  // (reveal) once the preloader lifts on a fresh load — or almost immediately on
+  // a client-side return. A safety timer guarantees the reveal always fires, so
+  // the hero can never get stuck hidden.
+  useEffect(() => {
+    const html = document.documentElement;
+    if (html.classList.contains("entrance-go")) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    html.classList.add("entrance-armed");
+    const go = () => html.classList.add("entrance-go");
+    const hasPreloader = !!document.querySelector(".preloader");
+    const t1 = window.setTimeout(go, hasPreloader ? 1600 : 80);
+    const t2 = window.setTimeout(go, 3500); // safety net
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, []);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -81,7 +104,27 @@ export default function HomeChrome({
         const y0 = Math.min(vh, heroH) - edge - baseH; // bottom of the hero
         const y1 = (BAR - targetH) / 2; // centred in the bar
         const y = y0 + (y1 - y0) * p;
-        wrap.style.transform = `translate(${edge}px, ${y}px) scale(${s})`;
+
+        // Once docked, the wordmark slides right to make room and the house mark
+        // fades/lands in on its left, completing the full logo. Ramp this over
+        // the last 30% of the dock so it reads as a distinct second beat.
+        const markH = targetH;
+        const markW = markH * MARK_RATIO;
+        const gap = 12;
+        const q = Math.min(1, Math.max(0, (p - 0.7) / 0.3));
+        const eq = q * q * (3 - 2 * q); // smoothstep
+        const xShift = (markW + gap) * eq;
+        wrap.style.transform = `translate(${edge + xShift}px, ${y}px) scale(${s})`;
+
+        const mark = markRef.current;
+        if (mark) {
+          mark.style.width = `${markW}px`;
+          mark.style.height = `${markH}px`;
+          mark.style.transform = `translate(${edge}px, ${y1}px)`;
+          // slide in a touch from the left as it fades up
+          mark.style.opacity = `${eq}`;
+          mark.style.marginLeft = `${(1 - eq) * -8}px`;
+        }
       }
     };
 
@@ -169,6 +212,15 @@ export default function HomeChrome({
       >
         <Wordmark className="aspect-[121.71/55.33] w-full" />
       </Link>
+
+      {/* desktop: the house mark that lands in beside the docked wordmark */}
+      <span
+        ref={markRef}
+        aria-hidden="true"
+        className={`pointer-events-none fixed left-0 top-0 z-50 hidden opacity-0 will-change-transform sm:block ${textColor}`}
+      >
+        <Logomark className="h-full w-full" />
+      </span>
 
       {/* mobile menu panel */}
       {open && (
