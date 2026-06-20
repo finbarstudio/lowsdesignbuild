@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import ProjectAside, { type Swatch } from "@/app/components/ProjectAside";
 import ProjectTitleDock from "@/app/components/ProjectTitleDock";
 import Reveal from "@/app/components/Reveal";
+import WipeReveal from "@/app/components/WipeReveal";
 import WordReveal from "@/app/components/WordReveal";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
@@ -182,44 +183,45 @@ export default async function ProjectPage({
                 // single offset image with whitespace
                 const left = row.i % 4 === 1;
                 return (
-                  <Reveal key={row.i}>
-                    <div className="grid grid-cols-1 lg:grid-cols-12">
-                      <div
-                        className={
-                          left
-                            ? "lg:col-span-6 lg:col-start-1"
-                            : "lg:col-span-6 lg:col-start-7"
-                        }
-                      >
-                        <GalleryImage
-                          img={row.imgs[0]}
-                          ratio="aspect-[4/3]"
-                          alt={heroAlt}
-                        />
-                      </div>
-                    </div>
-                  </Reveal>
-                );
-              }
-              // two-up, differing widths/heights
-              const wideLeft = row.i % 4 === 0;
-              return (
-                <Reveal key={row.i}>
-                  <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 sm:gap-6">
-                    <GalleryImage
-                      img={row.imgs[0]}
-                      ratio={wideLeft ? "aspect-[5/4]" : "aspect-[3/4]"}
-                      alt={heroAlt}
-                    />
-                    {row.imgs[1] && (
+                  <div key={row.i} className="grid grid-cols-1 lg:grid-cols-12">
+                    <div
+                      className={
+                        left
+                          ? "lg:col-span-6 lg:col-start-1"
+                          : "lg:col-span-6 lg:col-start-7"
+                      }
+                    >
                       <GalleryImage
-                        img={row.imgs[1]}
-                        ratio={wideLeft ? "aspect-[3/4]" : "aspect-[5/4]"}
+                        img={row.imgs[0]}
+                        ratio="aspect-[4/3]"
                         alt={heroAlt}
                       />
-                    )}
+                    </div>
                   </div>
-                </Reveal>
+                );
+              }
+              // two-up, differing widths/heights. The right image reveals first;
+              // the left follows (same stagger as the home family images).
+              const wideLeft = row.i % 4 === 0;
+              return (
+                <div
+                  key={row.i}
+                  className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 sm:gap-6"
+                >
+                  <GalleryImage
+                    img={row.imgs[0]}
+                    ratio={wideLeft ? "aspect-[5/4]" : "aspect-[3/4]"}
+                    alt={heroAlt}
+                    delay={0.3}
+                  />
+                  {row.imgs[1] && (
+                    <GalleryImage
+                      img={row.imgs[1]}
+                      ratio={wideLeft ? "aspect-[3/4]" : "aspect-[5/4]"}
+                      alt={heroAlt}
+                    />
+                  )}
+                </div>
               );
             })}
           </div>
@@ -248,13 +250,15 @@ function GalleryImage({
   img,
   ratio,
   alt,
+  delay = 0,
 }: {
   img: NonNullable<Project["gallery"]>[number];
   ratio: string;
   alt: string;
+  delay?: number;
 }) {
   return (
-    <div className={`relative overflow-hidden bg-line ${ratio}`}>
+    <WipeReveal delay={delay} className={`relative overflow-hidden bg-line ${ratio}`}>
       <Image
         src={urlFor(img).width(1400).height(1400).fit("crop").url()}
         alt={alt}
@@ -262,6 +266,6 @@ function GalleryImage({
         sizes="(max-width: 640px) 100vw, 50vw"
         className="object-cover"
       />
-    </div>
+    </WipeReveal>
   );
 }
