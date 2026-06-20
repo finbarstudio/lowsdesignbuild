@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import ColourSwatches from "@/app/components/ColourSwatches";
 import HeroDepth from "@/app/components/HeroDepth";
 import ProjectAside, { type Swatch } from "@/app/components/ProjectAside";
 import ProjectHeroTitle from "@/app/components/ProjectHeroTitle";
@@ -144,6 +145,11 @@ export default async function ProjectPage({
     .join(", ");
 
   const gallery = project.gallery ?? [];
+  // first 3 of the project's colours (from the hero image, or the CMS palette),
+  // overlaid on each gallery item
+  const swatchColours = projectColours(project)
+    .slice(0, 3)
+    .map((c) => c.hex);
 
   return (
     <main>
@@ -211,6 +217,7 @@ export default async function ProjectPage({
                 ratio="aspect-[4/3]"
                 alt={heroAlt}
                 delay={i % 2 === 0 ? 0.3 : 0}
+                colours={swatchColours}
               />
             ))}
           </div>
@@ -241,21 +248,26 @@ function GalleryImage({
   ratio,
   alt,
   delay = 0,
+  colours = [],
 }: {
   img: NonNullable<Project["gallery"]>[number];
   ratio: string;
   alt: string;
   delay?: number;
+  colours?: string[];
 }) {
   return (
-    <WipeReveal delay={delay} className={`relative overflow-hidden bg-line ${ratio}`}>
-      <Image
-        src={urlFor(img).width(1400).height(1400).fit("crop").url()}
-        alt={alt}
-        fill
-        sizes="(max-width: 640px) 100vw, 50vw"
-        className="object-cover"
-      />
-    </WipeReveal>
+    <div className={`relative ${ratio}`}>
+      <WipeReveal delay={delay} className="absolute inset-0 overflow-hidden bg-line">
+        <Image
+          src={urlFor(img).width(1400).height(1400).fit("crop").url()}
+          alt={alt}
+          fill
+          sizes="(max-width: 640px) 100vw, 50vw"
+          className="object-cover"
+        />
+      </WipeReveal>
+      {colours.length > 0 && <ColourSwatches colours={colours} />}
+    </div>
   );
 }
