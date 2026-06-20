@@ -112,6 +112,18 @@ h1, h2, h3, .display {
   line-height: 1.2;
 }
 
+/* The standard pill token — a 3px outlined chip with a soft 0.7rem radius.
+   Border + text use currentColor so it inherits ink/gold/etc. from context.
+   Consumers set their own padding / text-size / font / tracking. Used for area
+   pills, project meta pills, and any other pill on the site. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  border: 3px solid currentColor;
+  border-radius: 0.7rem;
+  text-transform: uppercase;
+}
+
 /* ---- Wipe reveal (token) ----
    Draws an image/element in from the top to the bottom — no opacity, no scale.
    Use .wipe-in for a one-shot reveal (e.g. cycling images), or transition

@@ -60,14 +60,14 @@ export default async function ProjectsPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-px bg-line sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-[3px] bg-ink sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((p) => {
               const meta = [p.category, p.location].filter(Boolean);
               return (
                 <Link
                   key={p._id}
                   href={`/projects/${p.slug}`}
-                  className="group relative block aspect-[0.635] overflow-hidden bg-background"
+                  className="group relative block aspect-[0.635] max-h-[70vh] overflow-hidden bg-background"
                 >
                   {/* caption sitting behind the image, anchored to the bottom —
                       revealed as the image crops up on hover */}
@@ -80,7 +80,7 @@ export default async function ProjectsPage() {
                         {meta.map((m) => (
                           <span
                             key={m}
-                            className="inline-flex items-center border border-ink/30 px-3 py-1 font-mono text-[0.7rem] uppercase tracking-[0.12em] text-ink"
+                            className="pill px-3 py-1 font-mono text-[0.7rem] tracking-[0.12em] text-ink"
                           >
                             {m}
                           </span>
