@@ -67,7 +67,7 @@ export default async function ProjectsPage() {
                 <Link
                   key={p._id}
                   href={`/projects/${p.slug}`}
-                  className="group relative block aspect-[0.635] max-h-[70vh] overflow-hidden bg-background"
+                  className="group relative block h-[56vw] overflow-hidden bg-background sm:h-[42vw] lg:h-[70vh]"
                 >
                   {/* caption sitting behind the image, anchored to the bottom —
                       revealed as the image crops up on hover */}
