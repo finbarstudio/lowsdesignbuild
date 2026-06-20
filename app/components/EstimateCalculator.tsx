@@ -225,7 +225,7 @@ function InfoTip({ text }: { text?: string }) {
       <button
         type="button"
         aria-label="More information"
-        className="block text-muted/80 transition-colors hover:text-tertiary"
+        className="block text-muted transition-colors hover:text-tertiary"
       >
         <svg
           viewBox="0 0 24 24"
@@ -694,9 +694,9 @@ export default function EstimateCalculator({
                 </div>
               </Field>
 
-              {/* same link-underline token as every other link on the site */}
-              <button type="submit" className="link-underline w-fit text-base">
-                Send my details →
+              {/* shared link token (Space Mono, uppercase) */}
+              <button type="submit" className="link link-underline is-tracked w-fit">
+                Send my details
               </button>
 
               {sent && (
@@ -725,9 +725,9 @@ export default function EstimateCalculator({
             <button
               type="button"
               onClick={scrollToForm}
-              className="link-underline mt-7 block w-fit text-base"
+              className="link link-underline is-tracked mt-7 block w-fit"
             >
-              Get your estimate →
+              Get your estimate
             </button>
           </div>
         </div>

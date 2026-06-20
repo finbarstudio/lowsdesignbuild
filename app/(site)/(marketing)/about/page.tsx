@@ -158,11 +158,11 @@ export default async function AboutPage() {
           <h2 className="serif mx-auto mt-6 max-w-3xl text-4xl sm:text-6xl">
             Built to a standard we&apos;re proud to put our name to.
           </h2>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm">
-            <Link href="/contact" className="link-underline">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+            <Link href="/contact" className="link link-underline is-tracked">
               Get in touch
             </Link>
-            <a href={site.phoneHref} className="link-underline">
+            <a href={site.phoneHref} className="link link-underline is-tracked">
               {site.phone}
             </a>
           </div>

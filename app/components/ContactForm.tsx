@@ -110,9 +110,9 @@ export default function ContactForm({ email = site.email }: { email?: string }) 
         placeholder="Tell us what you're dreaming up…"
       />
 
-      {/* same link-underline token as every other link on the site */}
-      <button type="submit" className="link-underline w-fit text-base">
-        Send enquiry →
+      {/* shared link token (Space Mono, uppercase) — same as every other link */}
+      <button type="submit" className="link link-underline is-tracked w-fit">
+        Send enquiry
       </button>
 
       {sent && (

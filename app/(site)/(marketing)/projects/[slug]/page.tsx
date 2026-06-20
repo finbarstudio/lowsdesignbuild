@@ -111,8 +111,8 @@ export default async function ProjectPage({
           <Reveal>
             <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-12 lg:gap-x-6">
               <div className="lg:col-span-2">
-                <Link href="/projects" className="label link-underline">
-                  ← Projects
+                <Link href="/projects" className="link link-underline is-tracked">
+                  Projects
                 </Link>
               </div>
               <p className="serif text-xl leading-[1.3] sm:text-2xl lg:col-span-7 lg:col-start-3 lg:text-3xl">
@@ -188,7 +188,7 @@ export default async function ProjectPage({
           </h2>
           <Link
             href="/contact"
-            className="mt-7 inline-block text-sm link-underline"
+            className="link link-underline is-tracked mt-7 inline-block"
           >
             Start your project
           </Link>

@@ -6,14 +6,14 @@
    ============================================================ */
 :root {
   --background: #f4f1ea; /* warm paper */
-  --foreground: #424952; /* grey (used in place of black everywhere) */
-  --ink: #424952;
+  --foreground: #737373; /* neutral grey — used in place of black everywhere */
+  --ink: #737373;
   --tertiary: #a97e1f; /* antique gold — the highlight/accent colour */
   --copper: var(--tertiary); /* highlights map to the tertiary gold */
   --copper-deep: #856115;
-  --slate: #424952; /* dark slate */
+  --slate: #737373;
   --slate-blue: #2b5672;
-  --muted: #737373; /* neutral secondary text grey */
+  --muted: #737373; /* secondary text grey */
   --line: #e2dcd0; /* warm hairlines */
   --white: #ffffff;
 
@@ -99,6 +99,17 @@ h1, h2, h3, .display {
 .link-underline:hover::after,
 .link-active::after {
   transform: scaleX(1);
+}
+
+/* The standard action-link token — Space Mono, uppercase, tracked. Pair with
+   .link-underline (and .is-tracked) for the hover underline. Used for every
+   standalone link/CTA so they read consistently. Never add an arrow. */
+.link {
+  font-family: var(--font-mono-stack);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.8rem;
+  line-height: 1.2;
 }
 
 /* ---- Wipe reveal (token) ----

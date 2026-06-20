@@ -48,7 +48,7 @@ export default async function ProjectsPage() {
               New projects coming soon
             </p>
             <p className="mt-3 text-sm text-muted">
-              <Link href="/contact" className="link-underline">
+              <Link href="/contact" className="link link-underline is-tracked">
                 Get in touch
               </Link>{" "}
               to discuss yours.

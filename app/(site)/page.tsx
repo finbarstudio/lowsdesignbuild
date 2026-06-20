@@ -230,8 +230,8 @@ export default async function HomePage() {
             "cover" role, so the People section below it uses normal spacing.
             Live Behold feed if its ID is set, otherwise the curated strip. */}
         {hasInsta && (
-          <section className="relative z-10 bg-background pb-20 pt-56 sm:pb-28 sm:pt-[28rem]">
-            <div className="mx-auto mb-8 flex max-w-[1900px] items-end justify-between px-[10%] sm:px-6">
+          <section className="relative z-10 bg-background pb-32 pt-56 sm:pb-48 sm:pt-[30rem]">
+            <div className="mx-auto mb-12 flex max-w-[1900px] items-end justify-between px-[10%] sm:mb-16 sm:px-6">
               <a
                 href={site.instagram}
                 target="_blank"
@@ -244,9 +244,9 @@ export default async function HomePage() {
                 href={site.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="link-underline text-sm"
+                className="link link-underline is-tracked"
               >
-                Follow on Instagram →
+                Follow on Instagram
               </a>
             </div>
             {igFeedId ? (
