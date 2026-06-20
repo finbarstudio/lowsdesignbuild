@@ -24,6 +24,11 @@ export interface HomePage {
   heroDim: { width: number; height: number } | null;
   heroTrailImages: Array<SanityImageSource & { _key?: string }> | null;
   homeHeroText: string | null;
+  instagramPosts: Array<{
+    _key?: string;
+    url: string | null;
+    image: SanityImageSource | null;
+  }> | null;
 }
 
 export interface AboutPage {

@@ -6,9 +6,14 @@ import Link from "next/link";
 import CursorTrail from "@/app/components/CursorTrail";
 import DropReveal from "@/app/components/DropReveal";
 import HomeChrome from "@/app/components/HomeChrome";
+import InstagramStrip from "@/app/components/InstagramStrip";
 import WipeReveal from "@/app/components/WipeReveal";
 import WordReveal from "@/app/components/WordReveal";
-import { team as fallbackTeam, teamLead as fallbackTeamLead } from "@/app/lib/site";
+import {
+  site,
+  team as fallbackTeam,
+  teamLead as fallbackTeamLead,
+} from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import { FAMILY_QUERY, HOME_PAGE_QUERY, PROJECTS_QUERY } from "@/sanity/lib/queries";
@@ -126,6 +131,19 @@ export default async function HomePage() {
         }))
       : fallbackTeam;
 
+  // Instagram strip — square, cropped, native colour (the tile desaturates in CSS).
+  const instaPosts = (home?.instagramPosts ?? [])
+    .filter((p) => p.image && (p.image as { asset?: unknown }).asset)
+    .map((p) => ({
+      img: urlFor(p.image as Parameters<typeof urlFor>[0])
+        .width(640)
+        .height(640)
+        .fit("crop")
+        .auto("format")
+        .url(),
+      url: p.url ?? site.instagram,
+    }));
+
   return (
     <>
       <HomeChrome projectCount={projects.length} />
@@ -202,12 +220,27 @@ export default async function HomePage() {
           </section>
         )}
 
+        {/* ---------------- Instagram ---------------- */}
+        {/* Opaque band that slides up over the pinned slogan — it takes the
+            "cover" role, so the People section below it uses normal spacing. */}
+        {instaPosts.length > 0 && (
+          <section className="relative z-10 bg-background pb-20 pt-56 sm:pb-28 sm:pt-[28rem]">
+            <InstagramStrip
+              posts={instaPosts}
+              handle={site.instagramHandle}
+              profileUrl={site.instagram}
+            />
+          </section>
+        )}
+
         {/* ---------------- People ---------------- */}
-        {/* Kept inside the sticky wrapper and given an opaque paper background:
-            it slides up over the pinned slogan as a continuous cover, so the
-            slogan never re-emerges in the gap below the last project. */}
+        {/* Opaque paper background that slides up over the pinned slogan. When
+            the Instagram band is present it already covers the slogan, so this
+            uses normal top spacing; otherwise it takes the cover role itself. */}
         <section
-          className={`${PAD} relative z-10 bg-background pb-24 pt-56 sm:pb-32 sm:pt-[28rem]`}
+          className={`${PAD} relative z-10 bg-background pb-24 sm:pb-32 ${
+            instaPosts.length > 0 ? "pt-12 sm:pt-20" : "pt-56 sm:pt-[28rem]"
+          }`}
         >
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           {/* left third: sticky title that stays put as the cards scroll */}

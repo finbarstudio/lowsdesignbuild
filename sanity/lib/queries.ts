@@ -50,7 +50,8 @@ export const HOME_PAGE_QUERY = defineQuery(`
     "heroLqip": heroImage.asset->metadata.lqip,
     "heroDim": heroImage.asset->metadata.dimensions,
     heroTrailImages,
-    homeHeroText
+    homeHeroText,
+    instagramPosts[]{ url, image }
   }
 `);
 

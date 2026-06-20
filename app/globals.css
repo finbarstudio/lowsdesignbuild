@@ -125,6 +125,29 @@ h1, h2, h3, .display {
   transition: clip-path 0.65s cubic-bezier(0.76, 0, 0.24, 1);
 }
 
+/* ---- Marquee (token) ----
+   Continuous horizontal scroll. The track holds the items twice; translating by
+   -50% moves exactly one set, so the loop is seamless. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee 55s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
 /* ---- Mask reveal (token) ----
    A "masked line reveal": the wrapper clips (overflow:hidden) while the inner
    element slides up from behind its own top edge (translateY -110% → 0). The
