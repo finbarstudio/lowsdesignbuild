@@ -123,24 +123,9 @@ const ADVANCED: { key: string; label: string; add: number }[] = [
   { key: "complexSteel", label: "Complex structural steel package", add: 20000 },
 ];
 
-// Default tooltip copy, keyed. The CMS can override any of these by key, so the
-// client can edit the explanations without touching code. Keys with no entry
-// here (and no CMS override) simply show no info icon.
-export const INFO_KEYS = [
-  "finish",
-  "complexity",
-  "steel",
-  "opening",
-  "access",
-  "conservation",
-  "article4",
-  "ashp",
-  "basement",
-  "drainage",
-  "sewer",
-  "partyWall",
-] as const;
-
+// Built-in tooltip copy for a few fields. The CMS can override any of these and
+// add tooltips to fields not listed here (see app/lib/estimateInfoFields.ts for
+// the full set of keys). A field with no default and no CMS text shows no icon.
 const DEFAULT_INFO: Record<string, string> = {
   finish:
     "Standard is a quality, functional finish. High-end adds 10% for premium materials and detailing; luxury adds 20% for bespoke, top-tier specification throughout.",
@@ -531,49 +516,49 @@ export default function EstimateCalculator({
           {mode === "extension" ? (
             <>
               <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2">
-                <Select label="Extension type" value={ext.type} onChange={(v) => setE("type", v)} options={EXT_TYPES} />
-                <NumberField label="Extension size" hint="Total floor area in m²" value={ext.size} onChange={(v) => setE("size", v)} max={500} />
+                <Select label="Extension type" info={info("extType")} value={ext.type} onChange={(v) => setE("type", v)} options={EXT_TYPES} />
+                <NumberField label="Extension size" hint="Total floor area in m²" info={info("extSize")} value={ext.size} onChange={(v) => setE("size", v)} max={500} />
                 <Select label="Structural opening" info={info("opening")} value={ext.opening} onChange={(v) => setE("opening", v)} options={OPENINGS} />
-                <Select label="Roof type" value={ext.roof} onChange={(v) => setE("roof", v)} options={ROOFS} />
-                <Select label="Glazing package" value={ext.glazing} onChange={(v) => setE("glazing", v)} options={GLAZING} />
-                <Select label="Utility room" value={ext.utility} onChange={(v) => setE("utility", v)} options={UTILITY} />
-                <Select label="Underfloor heating" value={ext.ufh} onChange={(v) => setE("ufh", v)} options={UFH} />
+                <Select label="Roof type" info={info("roof")} value={ext.roof} onChange={(v) => setE("roof", v)} options={ROOFS} />
+                <Select label="Glazing package" info={info("glazing")} value={ext.glazing} onChange={(v) => setE("glazing", v)} options={GLAZING} />
+                <Select label="Utility room" info={info("utility")} value={ext.utility} onChange={(v) => setE("utility", v)} options={UTILITY} />
+                <Select label="Underfloor heating" info={info("ufh")} value={ext.ufh} onChange={(v) => setE("ufh", v)} options={UFH} />
                 <Select label="Site access" info={info("access")} value={ext.access} onChange={(v) => setE("access", v)} options={ACCESS} />
                 <Select label="Construction complexity" info={info("complexity")} value={ext.complexity} onChange={(v) => setE("complexity", v)} options={COMPLEXITY} />
               </div>
               <div>
                 <p className="label !text-ink mb-5">Bathrooms</p>
                 <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-3">
-                  <NumberField label="WCs" value={ext.wc} onChange={(v) => setE("wc", v)} max={20} />
-                  <NumberField label="Ensuites" value={ext.ensuite} onChange={(v) => setE("ensuite", v)} max={20} />
-                  <NumberField label="Bathrooms" value={ext.bathroom} onChange={(v) => setE("bathroom", v)} max={20} />
+                  <NumberField label="WCs" info={info("wc")} value={ext.wc} onChange={(v) => setE("wc", v)} max={20} />
+                  <NumberField label="Ensuites" info={info("extEnsuite")} value={ext.ensuite} onChange={(v) => setE("ensuite", v)} max={20} />
+                  <NumberField label="Bathrooms" info={info("bathroom")} value={ext.bathroom} onChange={(v) => setE("bathroom", v)} max={20} />
                 </div>
               </div>
             </>
           ) : (
             <>
               <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2">
-                <Select label="Loft type" value={loft.type} onChange={(v) => setL("type", v)} options={LOFT_TYPES} />
-                <Select label="Bedrooms created" value={loft.bedrooms} onChange={(v) => setL("bedrooms", v)} options={BEDROOMS} />
-                <Select label="Staircase" value={loft.staircase} onChange={(v) => setL("staircase", v)} options={STAIRCASE} />
-                <Select label="Built-in joinery" value={loft.joinery} onChange={(v) => setL("joinery", v)} options={JOINERY} />
-                <Select label="Air conditioning" value={loft.ac} onChange={(v) => setL("ac", v)} options={AC} />
-                <Select label="Chimney works" value={loft.chimney} onChange={(v) => setL("chimney", v)} options={CHIMNEY} />
+                <Select label="Loft type" info={info("loftType")} value={loft.type} onChange={(v) => setL("type", v)} options={LOFT_TYPES} />
+                <Select label="Bedrooms created" info={info("bedrooms")} value={loft.bedrooms} onChange={(v) => setL("bedrooms", v)} options={BEDROOMS} />
+                <Select label="Staircase" info={info("staircase")} value={loft.staircase} onChange={(v) => setL("staircase", v)} options={STAIRCASE} />
+                <Select label="Built-in joinery" info={info("joinery")} value={loft.joinery} onChange={(v) => setL("joinery", v)} options={JOINERY} />
+                <Select label="Air conditioning" info={info("ac")} value={loft.ac} onChange={(v) => setL("ac", v)} options={AC} />
+                <Select label="Chimney works" info={info("chimney")} value={loft.chimney} onChange={(v) => setL("chimney", v)} options={CHIMNEY} />
                 <Select label="Steel complexity" info={info("steel")} value={loft.steel} onChange={(v) => setL("steel", v)} options={STEEL} />
               </div>
               <div>
                 <p className="label !text-ink mb-5">Ensuites</p>
                 <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2">
-                  <NumberField label="Standard ensuites" value={loft.ensuiteStd} onChange={(v) => setL("ensuiteStd", v)} max={20} />
-                  <NumberField label="Premium ensuites" value={loft.ensuitePrem} onChange={(v) => setL("ensuitePrem", v)} max={20} />
+                  <NumberField label="Standard ensuites" info={info("ensuiteStd")} value={loft.ensuiteStd} onChange={(v) => setL("ensuiteStd", v)} max={20} />
+                  <NumberField label="Premium ensuites" info={info("ensuitePrem")} value={loft.ensuitePrem} onChange={(v) => setL("ensuitePrem", v)} max={20} />
                 </div>
               </div>
               <div>
                 <p className="label !text-ink mb-5">Rooflights</p>
                 <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-3">
-                  <NumberField label="Standard" value={loft.rlStd} onChange={(v) => setL("rlStd", v)} max={30} />
-                  <NumberField label="Premium" value={loft.rlPrem} onChange={(v) => setL("rlPrem", v)} max={30} />
-                  <NumberField label="Cabrio balcony" value={loft.rlCabrio} onChange={(v) => setL("rlCabrio", v)} max={30} />
+                  <NumberField label="Standard" info={info("rlStd")} value={loft.rlStd} onChange={(v) => setL("rlStd", v)} max={30} />
+                  <NumberField label="Premium" info={info("rlPrem")} value={loft.rlPrem} onChange={(v) => setL("rlPrem", v)} max={30} />
+                  <NumberField label="Cabrio balcony" info={info("rlCabrio")} value={loft.rlCabrio} onChange={(v) => setL("rlCabrio", v)} max={30} />
                 </div>
               </div>
             </>
