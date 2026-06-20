@@ -119,7 +119,7 @@ h1, h2, h3, .display {
 .pill {
   display: inline-flex;
   align-items: center;
-  border: 3px solid currentColor;
+  border: 0.1rem solid currentColor;
   border-radius: 0.7rem;
   text-transform: uppercase;
 }
