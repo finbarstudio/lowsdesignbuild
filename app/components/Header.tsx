@@ -73,12 +73,13 @@ export default function Header({ projectCount }: { projectCount?: number }) {
           {nav.map((item) => {
             const active =
               pathname === item.href || pathname?.startsWith(`${item.href}/`);
+            const isCurrent = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={(e) => {
-                  if (active) {
+                  if (isCurrent) {
                     e.preventDefault();
                     smoothScrollTop();
                   }
@@ -117,15 +118,14 @@ export default function Header({ projectCount }: { projectCount?: number }) {
       {open && (
         <nav className="flex flex-col gap-1 border-t border-line bg-background px-4 py-4 font-mono text-sm uppercase tracking-[0.12em] text-ink sm:hidden">
           {nav.map((item) => {
-            const active =
-              pathname === item.href || pathname?.startsWith(`${item.href}/`);
+            const isCurrent = pathname === item.href;
             return (
             <Link
               key={item.href}
               href={item.href}
               onClick={(e) => {
                 setOpen(false);
-                if (active) {
+                if (isCurrent) {
                   e.preventDefault();
                   smoothScrollTop();
                 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import ProjectAside, { type Swatch } from "@/app/components/ProjectAside";
+import ProjectTitleDock from "@/app/components/ProjectTitleDock";
 import Reveal from "@/app/components/Reveal";
 import WordReveal from "@/app/components/WordReveal";
 import { client } from "@/sanity/lib/client";
@@ -126,6 +127,8 @@ export default async function ProjectPage({
 
   return (
     <main>
+      <ProjectTitleDock title={project.title ?? ""} />
+
       {/* ---------------- Hero ---------------- */}
       <section className="relative h-[100svh] w-full overflow-hidden">
         {project.mainImage && (
