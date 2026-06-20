@@ -62,10 +62,7 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
         {tags.length > 0 && (
           <div className="flex origin-bottom-left flex-wrap gap-2 transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] [transition-delay:220ms] group-hover:scale-[1.1]">
             {tags.map((t) => (
-              <span
-                key={t}
-                className="rounded-full border border-white/40 bg-white/10 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.08em] text-white backdrop-blur-sm"
-              >
+              <span key={t} className="pill text-white backdrop-blur-sm">
                 {t}
               </span>
             ))}
@@ -82,7 +79,12 @@ export default async function HomePage() {
     client.fetch<HomePage | null>(HOME_PAGE_QUERY),
     client.fetch<Family | null>(FAMILY_QUERY),
   ]);
-  const featured = projects.slice(0, 3);
+  // Curated in the CMS (Home Page → Featured projects) when set; otherwise the
+  // first three projects.
+  const featured =
+    home?.featuredProjects && home.featuredProjects.length > 0
+      ? home.featuredProjects
+      : projects.slice(0, 3);
 
   // Hero comes from the CMS when set; Sanity supplies a tiny lqip blur as the
   // instant placeholder. Otherwise fall back to the bundled image + its blur.

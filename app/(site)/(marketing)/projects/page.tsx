@@ -80,7 +80,7 @@ export default async function ProjectsPage() {
                         {meta.map((m) => (
                           <span
                             key={m}
-                            className="pill px-3 py-1 font-mono text-[0.7rem] tracking-[0.12em] text-ink"
+                            className="pill text-ink"
                           >
                             {m}
                           </span>

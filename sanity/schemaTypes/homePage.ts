@@ -30,6 +30,15 @@ export const homePageType = defineType({
       options: { layout: "grid" },
     }),
     defineField({
+      name: "featuredProjects",
+      title: "Featured projects",
+      type: "array",
+      of: [{ type: "reference", to: [{ type: "project" }] }],
+      validation: (rule) => rule.max(3),
+      description:
+        "The (up to 3) projects shown as the big image cards on the home page. Leave empty to automatically show the first three projects.",
+    }),
+    defineField({
       name: "instagramFeedId",
       title: "Instagram live feed (Behold ID)",
       type: "string",

@@ -112,16 +112,26 @@ h1, h2, h3, .display {
   line-height: 1.2;
 }
 
-/* The standard pill token — a 3px outlined chip with a soft 0.7rem radius.
-   Border + text use currentColor so it inherits ink/gold/etc. from context.
-   Consumers set their own padding / text-size / font / tracking. Used for area
-   pills, project meta pills, and any other pill on the site. */
+/* The standard pill token — an outlined chip used everywhere (project meta,
+   area pills, home featured cards). Everything scales off the font size so a
+   pill resizes cleanly just by changing its text size:
+     • font  — Space Mono, uppercase, tracked (shared across the site)
+     • padding + stroke — in `em`, so they grow with the font (stroke tracks the
+       visual weight of the glyphs)
+     • radius — a fixed `rem`, so the corner looks identical on every size
+   Border + text use currentColor, inheriting ink / white / gold from context. */
 .pill {
   display: inline-flex;
   align-items: center;
-  border: 0.1rem solid currentColor;
-  border-radius: 0.7rem;
+  font-family: var(--font-mono-stack);
+  font-size: 0.72rem;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  padding: 0.5em 0.85em;
+  border: 0.16em solid currentColor;
+  border-radius: 0.85rem;
 }
 
 /* ---- Wipe reveal (token) ----

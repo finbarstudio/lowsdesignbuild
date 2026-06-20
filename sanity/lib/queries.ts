@@ -51,6 +51,14 @@ export const HOME_PAGE_QUERY = defineQuery(`
     "heroDim": heroImage.asset->metadata.dimensions,
     heroTrailImages,
     homeHeroText,
+    "featuredProjects": featuredProjects[]->{
+      _id,
+      title,
+      "slug": slug.current,
+      location,
+      category,
+      mainImage
+    },
     instagramFeedId,
     instagramPosts[]{ url, image }
   }
