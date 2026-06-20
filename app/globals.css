@@ -6,12 +6,12 @@
    ============================================================ */
 :root {
   --background: #f4f1ea; /* warm paper */
-  --foreground: #737373; /* neutral grey — used in place of black everywhere */
-  --ink: #737373;
+  --foreground: #424952; /* dark slate-grey — headings, body, the logo */
+  --ink: #424952;
   --tertiary: #a97e1f; /* antique gold — the highlight/accent colour */
   --copper: var(--tertiary); /* highlights map to the tertiary gold */
   --copper-deep: #856115;
-  --slate: #737373;
+  --slate: #424952;
   --slate-blue: #2b5672;
   --muted: #737373; /* secondary text grey */
   --line: #e2dcd0; /* warm hairlines */

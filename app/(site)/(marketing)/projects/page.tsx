@@ -40,55 +40,70 @@ export default async function ProjectsPage() {
         </p>
       </section>
 
-      {/* Grid */}
-      <section className={`${PAD} py-16 sm:py-24`}>
+      {/* Grid — full-bleed portrait cards. The image fills a frame whose aspect
+          sits between 9:16 and A4; on hover the image's bottom edge crops up
+          (clip-path inset, no scale) to reveal the title + location/type pills
+          sitting beneath it. */}
+      <section className="py-16 sm:py-24">
         {projects.length === 0 ? (
-          <div className="border border-dashed border-line p-12 text-center">
-            <p className="text-xl font-semibold tracking-tight">
-              New projects coming soon
-            </p>
-            <p className="mt-3 text-sm text-muted">
-              <Link href="/contact" className="link link-underline is-tracked">
-                Get in touch
-              </Link>{" "}
-              to discuss yours.
-            </p>
+          <div className={`${PAD}`}>
+            <div className="border border-dashed border-line p-12 text-center">
+              <p className="text-xl font-semibold tracking-tight">
+                New projects coming soon
+              </p>
+              <p className="mt-3 text-sm text-muted">
+                <Link href="/contact" className="link link-underline is-tracked">
+                  Get in touch
+                </Link>{" "}
+                to discuss yours.
+              </p>
+            </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.map((p) => (
-              <Link
-                key={p._id}
-                href={`/projects/${p.slug}`}
-                className="group block"
-              >
-                <div className="relative aspect-[4/5] overflow-hidden bg-line sm:aspect-auto sm:h-[34vw] lg:h-[26rem]">
+          <div className="grid grid-cols-1 gap-px bg-line sm:grid-cols-2">
+            {projects.map((p) => {
+              const meta = [p.category, p.location].filter(Boolean);
+              return (
+                <Link
+                  key={p._id}
+                  href={`/projects/${p.slug}`}
+                  className="group relative block aspect-[0.635] overflow-hidden bg-background"
+                >
+                  {/* caption sitting behind the image, anchored to the bottom —
+                      revealed as the image crops up on hover */}
+                  <div className="absolute inset-x-0 bottom-0 flex flex-col gap-4 p-7 sm:p-9">
+                    <h2 className="text-2xl font-bold uppercase leading-[1.05] tracking-tight sm:text-3xl">
+                      {p.title}
+                    </h2>
+                    {meta.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {meta.map((m) => (
+                          <span
+                            key={m}
+                            className="inline-flex items-center border border-ink/30 px-3 py-1 font-mono text-[0.7rem] uppercase tracking-[0.12em] text-ink"
+                          >
+                            {m}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* hero image on top — crops up from the bottom on hover */}
                   {p.mainImage && (
                     <Image
-                      src={urlFor(p.mainImage)
-                        .width(1000)
-                        .height(1100)
-                        .fit("crop")
-                        .url()}
+                      src={urlFor(p.mainImage).width(1100).height(1730).fit("crop").url()}
                       alt={[p.title, p.category, p.location]
                         .filter(Boolean)
                         .join(", ")}
                       fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                      className="object-cover [clip-path:inset(0_0_0_0)] transition-[clip-path] duration-[700ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:[clip-path:inset(0_0_11rem_0)]"
                     />
                   )}
-                </div>
-                <div className="mt-4">
-                  <p className="label">
-                    {[p.category, p.location].filter(Boolean).join(" · ")}
-                  </p>
-                  <h2 className="mt-2 text-xl font-semibold tracking-tight">
-                    {p.title}
-                  </h2>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
       </section>
