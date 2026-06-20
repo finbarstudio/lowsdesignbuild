@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import Reveal from "@/app/components/Reveal";
+import WordReveal from "@/app/components/WordReveal";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import { PROJECT_QUERY, PROJECT_SLUGS_QUERY } from "@/sanity/lib/queries";
@@ -96,12 +97,8 @@ export default async function ProjectPage({
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/15" />
         <div className={`absolute inset-x-0 bottom-0 ${PAD} pb-8`}>
           <h1 className="serif text-4xl text-white sm:text-6xl lg:text-7xl">
-            {project.title}
+            <WordReveal text={project.title ?? ""} />
           </h1>
-          <div className="mt-5 flex flex-col gap-1 text-white sm:flex-row sm:justify-between">
-            <span className="label !text-white">{project.location}</span>
-            <span className="label !text-white">{project.category}</span>
-          </div>
         </div>
       </section>
 
