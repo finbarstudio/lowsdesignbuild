@@ -4,92 +4,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import ColourSwatches from "@/app/components/ColourSwatches";
 import HeroDepth from "@/app/components/HeroDepth";
-import ProjectAside, { type Swatch } from "@/app/components/ProjectAside";
+import ProjectAside from "@/app/components/ProjectAside";
 import ProjectHeroTitle from "@/app/components/ProjectHeroTitle";
 import Reveal from "@/app/components/Reveal";
 import WipeReveal from "@/app/components/WipeReveal";
+import { deriveColours } from "@/app/lib/colours";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import { PROJECT_QUERY, PROJECT_SLUGS_QUERY } from "@/sanity/lib/queries";
-import type { Project, SanityPalette } from "@/sanity/lib/types";
-
-// Perceptual-ish luminance (0–1) for ordering swatches into a gradient.
-function lum(hex: string): number {
-  const m = hex.replace("#", "");
-  const f =
-    m.length === 3 ? m.split("").map((c) => c + c).join("") : m;
-  const r = parseInt(f.slice(0, 2), 16) / 255;
-  const g = parseInt(f.slice(2, 4), 16) / 255;
-  const b = parseInt(f.slice(4, 6), 16) / 255;
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-// Lighten (amt>0) / darken (amt<0) a hex by a fraction.
-function shade(hex: string, amt: number): string {
-  const m = hex.replace("#", "");
-  const f = m.length === 3 ? m.split("").map((c) => c + c).join("") : m;
-  const ch = (i: number) => {
-    const v = parseInt(f.slice(i, i + 2), 16);
-    const next = amt >= 0 ? v + (255 - v) * amt : v * (1 + amt);
-    return Math.max(0, Math.min(255, Math.round(next)))
-      .toString(16)
-      .padStart(2, "0");
-  };
-  return `#${ch(0)}${ch(2)}${ch(4)}`;
-}
-
-// Guarantee at least 3 tiles by padding with tints/shades of what we have.
-function ensureMin3(colours: Swatch[]): Swatch[] {
-  if (colours.length === 0) return colours;
-  const out = [...colours];
-  let i = 0;
-  while (out.length < 3) {
-    const base = colours[i % colours.length].hex;
-    out.push({ hex: shade(base, i % 2 === 0 ? 0.2 : -0.2), name: "" });
-    i++;
-  }
-  return out;
-}
-
-// The colour tiles: the CMS palette if set, otherwise auto-derived from the
-// hero image's palette metadata, ordered dark→light so they read as a gradient.
-function projectColours(project: Project): Swatch[] {
-  if (project.palette && project.palette.length > 0) {
-    return ensureMin3(
-      project.palette
-        .filter((p) => p.color)
-        .map((p) => ({ hex: p.color as string, name: p.name || "" })),
-    );
-  }
-  const p: SanityPalette | null = project.heroPalette;
-  if (!p) return [];
-  const keys = [
-    "darkMuted",
-    "darkVibrant",
-    "muted",
-    "dominant",
-    "vibrant",
-    "lightMuted",
-    "lightVibrant",
-  ] as const;
-  const seen = new Set<string>();
-  const hexes: string[] = [];
-  for (const k of keys) {
-    const bg = p[k]?.background;
-    if (bg && !seen.has(bg.toLowerCase())) {
-      seen.add(bg.toLowerCase());
-      hexes.push(bg);
-    }
-  }
-  return ensureMin3(
-    hexes
-      .sort((a, b) => lum(a) - lum(b))
-      .slice(0, 5)
-      .map((hex) => ({ hex, name: "" })),
-  );
-}
+import type { Project } from "@/sanity/lib/types";
 
 export const revalidate = 60;
 
@@ -145,11 +69,6 @@ export default async function ProjectPage({
     .join(", ");
 
   const gallery = project.gallery ?? [];
-  // first 3 of the project's colours (from the hero image, or the CMS palette),
-  // overlaid on each gallery item
-  const swatchColours = projectColours(project)
-    .slice(0, 3)
-    .map((c) => c.hex);
 
   return (
     <main>
@@ -192,7 +111,7 @@ export default async function ProjectPage({
                 tags={[project.category, project.location, project.year]
                   .filter(Boolean)
                   .map(String)}
-                colours={projectColours(project)}
+                colours={deriveColours(project.palette, project.heroPalette)}
               />
             </div>
             <Reveal className="lg:col-span-7 lg:col-start-6">
@@ -217,7 +136,6 @@ export default async function ProjectPage({
                 ratio="aspect-[4/3]"
                 alt={heroAlt}
                 delay={i % 2 === 0 ? 0.3 : 0}
-                colours={swatchColours}
               />
             ))}
           </div>
@@ -248,26 +166,21 @@ function GalleryImage({
   ratio,
   alt,
   delay = 0,
-  colours = [],
 }: {
   img: NonNullable<Project["gallery"]>[number];
   ratio: string;
   alt: string;
   delay?: number;
-  colours?: string[];
 }) {
   return (
-    <div className={`relative ${ratio}`}>
-      <WipeReveal delay={delay} className="absolute inset-0 overflow-hidden bg-line">
-        <Image
-          src={urlFor(img).width(1400).height(1400).fit("crop").url()}
-          alt={alt}
-          fill
-          sizes="(max-width: 640px) 100vw, 50vw"
-          className="object-cover"
-        />
-      </WipeReveal>
-      {colours.length > 0 && <ColourSwatches colours={colours} />}
-    </div>
+    <WipeReveal delay={delay} className={`relative overflow-hidden bg-line ${ratio}`}>
+      <Image
+        src={urlFor(img).width(1400).height(1400).fit("crop").url()}
+        alt={alt}
+        fill
+        sizes="(max-width: 640px) 100vw, 50vw"
+        className="object-cover"
+      />
+    </WipeReveal>
   );
 }

@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import ColourSwatches from "@/app/components/ColourSwatches";
+import { deriveColours } from "@/app/lib/colours";
 import { urlFor } from "@/sanity/lib/image";
 import type { ProjectListItem } from "@/sanity/lib/types";
 
@@ -68,6 +70,9 @@ export default function ProjectsGrid({
       <div className="grid w-screen grid-cols-1 gap-[2px] bg-background sm:grid-cols-2 lg:grid-cols-3">
         {shown.map((p) => {
           const meta = [p.category, p.location, p.year].filter(Boolean);
+          const swatch = deriveColours(p.palette ?? null, p.heroPalette ?? null)
+            .slice(0, 3)
+            .map((c) => c.hex);
           return (
             <Link
               key={p._id}
@@ -111,6 +116,9 @@ export default function ProjectsGrid({
                   className="object-cover [clip-path:inset(0_0_0_0)] transition-[clip-path] duration-[320ms] ease-[cubic-bezier(0.4,0,0.1,1)] group-hover:[clip-path:inset(0_0_11rem_0)] group-hover:duration-[520ms] group-hover:ease-[cubic-bezier(0.22,1,0.36,1)]"
                 />
               )}
+
+              {/* first 3 hero colours, rectangular, wiping in L→R top-left */}
+              {swatch.length > 0 && <ColourSwatches colours={swatch} />}
             </Link>
           );
         })}

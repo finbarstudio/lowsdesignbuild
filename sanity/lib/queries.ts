@@ -13,6 +13,8 @@ export const PROJECTS_QUERY = defineQuery(`
     location,
     category,
     year,
+    palette,
+    "heroPalette": mainImage.asset->metadata.palette,
     mainImage
   }
 `);

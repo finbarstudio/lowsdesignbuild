@@ -45,20 +45,19 @@ export default function ColourSwatches({ colours }: { colours: string[] }) {
   return (
     <div
       ref={ref}
-      className="pointer-events-none absolute left-3 top-3 z-10 flex gap-1.5 sm:left-4 sm:top-4"
+      className="pointer-events-none absolute left-3 top-3 z-20 flex flex-col gap-1 sm:left-4 sm:top-4"
     >
       {colours.map((hex, i) => (
-        <span key={`${hex}-${i}`} className="block overflow-hidden">
-          <span
-            className="block h-4 w-4 sm:h-5 sm:w-5"
-            style={{
-              background: hex,
-              transform: shown ? "translateY(0)" : "translateY(110%)",
-              transition: "transform 0.55s cubic-bezier(0.76,0,0.24,1)",
-              transitionDelay: `${i * 120}ms`,
-            }}
-          />
-        </span>
+        <span
+          key={`${hex}-${i}`}
+          className="block h-2.5 w-9 sm:h-3 sm:w-12"
+          style={{
+            background: hex,
+            clipPath: shown ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
+            transition: "clip-path 0.6s cubic-bezier(0.76,0,0.24,1)",
+            transitionDelay: `${i * 120}ms`,
+          }}
+        />
       ))}
     </div>
   );
