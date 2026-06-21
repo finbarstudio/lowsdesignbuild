@@ -50,7 +50,7 @@ export default function ColourSwatches({ colours }: { colours: string[] }) {
       {colours.map((hex, i) => (
         <span
           key={`${hex}-${i}`}
-          className="block h-2.5 w-9 sm:h-3 sm:w-12"
+          className="block h-4 w-14 sm:h-5 sm:w-20"
           style={{
             background: hex,
             clipPath: shown ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
