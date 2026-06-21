@@ -66,7 +66,7 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
             {tags.map((t, i) => (
               <span key={t} className="block overflow-hidden">
                 <span
-                  className="pill translate-y-[140%] text-white backdrop-blur-sm transition-transform duration-[450ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0"
+                  className="pill translate-y-[140%] text-white backdrop-blur-sm transition-transform duration-[450ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0 text-[0.62rem] [border-width:1px]"
                   style={{ transitionDelay: `${120 + i * 90}ms` }}
                 >
                   {t}
