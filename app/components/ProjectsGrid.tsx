@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import ColourSwatches from "@/app/components/ColourSwatches";
 import { deriveColours } from "@/app/lib/colours";
 import { urlFor } from "@/sanity/lib/image";
 import type { ProjectListItem } from "@/sanity/lib/types";
@@ -80,28 +79,49 @@ export default function ProjectsGrid({
               className="group relative block h-[56vw] overflow-hidden bg-background sm:h-[42vw] lg:h-[70vh]"
             >
               {/* caption sitting behind the image, anchored to the bottom —
-                  revealed as the image crops up on hover. Title + each pill
-                  mask-reveal (slide up out of their own clip) on a stagger. */}
+                  revealed as the image crops up on hover. Title + pills + colour
+                  squares all mask-reveal on a stagger. */}
               <div className="absolute inset-x-0 bottom-0 flex flex-col gap-4 p-7 sm:p-9">
                 <span className="block overflow-hidden">
                   <h2 className="line-clamp-2 translate-y-full text-2xl font-bold uppercase leading-[1.05] tracking-tight transition-transform duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] [transition-delay:80ms] group-hover:translate-y-0 sm:text-3xl">
                     {p.title}
                   </h2>
                 </span>
-                {meta.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {meta.map((m, i) => (
-                      <span key={m} className="block overflow-hidden">
-                        <span
-                          className="pill translate-y-[140%] text-ink transition-transform duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0"
-                          style={{ transitionDelay: `${200 + i * 110}ms` }}
-                        >
-                          {m}
+                {/* pills (left) + colour squares (right) on the same row */}
+                <div className="flex items-end justify-between gap-4">
+                  {meta.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {meta.map((m, i) => (
+                        <span key={m} className="block overflow-hidden">
+                          <span
+                            className="pill translate-y-[140%] text-ink transition-transform duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0"
+                            style={{ transitionDelay: `${200 + i * 110}ms` }}
+                          >
+                            {m}
+                          </span>
                         </span>
-                      </span>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                  {/* colour squares — L→R wipe, staggered, aligned to the right */}
+                  {swatch.length > 0 && (
+                    <div className="flex shrink-0 gap-1.5">
+                      {swatch.map((hex, i) => (
+                        <span key={`${hex}-${i}`} className="block overflow-hidden">
+                          <span
+                            className="block h-5 w-5 sm:h-6 sm:w-6"
+                            style={{
+                              background: hex,
+                              clipPath: "inset(0 100% 0 0)",
+                              transition: "clip-path 0.55s cubic-bezier(0.76,0,0.24,1)",
+                              transitionDelay: `${330 + i * 110}ms`,
+                            }}
+                          />
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* hero image on top — crops up from the bottom on hover. The
@@ -116,9 +136,6 @@ export default function ProjectsGrid({
                   className="object-cover [clip-path:inset(0_0_0_0)] transition-[clip-path] duration-[320ms] ease-[cubic-bezier(0.4,0,0.1,1)] group-hover:[clip-path:inset(0_0_11rem_0)] group-hover:duration-[520ms] group-hover:ease-[cubic-bezier(0.22,1,0.36,1)]"
                 />
               )}
-
-              {/* first 3 hero colours, rectangular, wiping in L→R top-left */}
-              {swatch.length > 0 && <ColourSwatches colours={swatch} />}
             </Link>
           );
         })}
