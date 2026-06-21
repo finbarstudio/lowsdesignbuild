@@ -50,16 +50,14 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
           className="object-cover"
         />
       )}
-      {/* grey gradient — opaque at the bottom, transparent up top — keeps the
-          white text legible. It fades away on hover as the card scales. */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/20 to-transparent opacity-100 transition-opacity duration-500 ease-out group-hover:opacity-0" />
+      {/* grey gradient — hidden by default (clean image), fades in on hover */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/20 to-transparent opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100" />
 
-      {/* overlay text: title (same style as the projects-page overlays) + tags.
-          On hover the whole caption swipes up out of its own mask and clears the
-          image, staggered per item. */}
+      {/* overlay text: title + tags. Hidden by default (and on touch, where
+          there's no hover); on hover they mask in bottom-to-top, staggered. */}
       <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-5 sm:gap-3 sm:p-8">
         <span className="block overflow-hidden">
-          <h3 className="text-2xl font-bold uppercase leading-[1.05] tracking-tight text-white transition-transform duration-[450ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:-translate-y-[130%] sm:text-3xl lg:text-4xl">
+          <h3 className="translate-y-full text-2xl font-bold uppercase leading-[1.05] tracking-tight text-white transition-transform duration-[450ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0 sm:text-3xl lg:text-4xl">
             {p.title}
           </h3>
         </span>
@@ -68,8 +66,8 @@ function ProjectCard({ p }: { p: ProjectListItem }) {
             {tags.map((t, i) => (
               <span key={t} className="block overflow-hidden">
                 <span
-                  className="pill text-white backdrop-blur-sm transition-transform duration-[450ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:-translate-y-[160%]"
-                  style={{ transitionDelay: `${60 + i * 70}ms` }}
+                  className="pill translate-y-[140%] text-white backdrop-blur-sm transition-transform duration-[450ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0"
+                  style={{ transitionDelay: `${120 + i * 90}ms` }}
                 >
                   {t}
                 </span>
