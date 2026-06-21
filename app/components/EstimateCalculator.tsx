@@ -193,11 +193,15 @@ function Field({
     <label className="block">
       {/* field title sits a level below the section headings (sentence case,
           smaller) so it never clashes with a group title like "Bathrooms" */}
+      {/* label, info icon and hint all on one line so every field's input row
+          lines up with its siblings regardless of whether it has a hint */}
       <span className="flex items-center text-sm font-semibold tracking-tight text-ink">
         {label}
         {info && <InfoTip text={info} />}
+        {hint && (
+          <span className="ml-2 text-xs font-normal text-muted">{hint}</span>
+        )}
       </span>
-      {hint && <span className="mt-1 block text-xs text-muted">{hint}</span>}
       <div className="mt-3">{children}</div>
     </label>
   );
@@ -523,7 +527,7 @@ export default function EstimateCalculator({
         <div className="order-1 space-y-12 lg:col-start-1 lg:row-start-1">
           {mode === "extension" ? (
             <>
-              <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
                 <Select label="Extension type" info={info("extType")} value={ext.type} onChange={(v) => setE("type", v)} options={EXT_TYPES} />
                 <NumberField label="Extension size" hint="Total floor area in m²" info={info("extSize")} value={ext.size} onChange={(v) => setE("size", v)} max={500} />
                 <Select label="Structural opening" info={info("opening")} value={ext.opening} onChange={(v) => setE("opening", v)} options={OPENINGS} />
@@ -545,7 +549,7 @@ export default function EstimateCalculator({
             </>
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
                 <Select label="Loft type" info={info("loftType")} value={loft.type} onChange={(v) => setL("type", v)} options={LOFT_TYPES} />
                 <Select label="Bedrooms created" info={info("bedrooms")} value={loft.bedrooms} onChange={(v) => setL("bedrooms", v)} options={BEDROOMS} />
                 <Select label="Staircase" info={info("staircase")} value={loft.staircase} onChange={(v) => setL("staircase", v)} options={STAIRCASE} />
@@ -583,7 +587,7 @@ export default function EstimateCalculator({
             />
           </div>
 
-          <div className="border-t border-line pt-8">
+          <div>
             <button
               type="button"
               onClick={() => setShowAdv((v) => !v)}
@@ -598,7 +602,7 @@ export default function EstimateCalculator({
 
             {showAdv && (
               <div className="mt-7 space-y-8">
-                <div className="grid grid-cols-1 gap-x-10 gap-y-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-x-10 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
                   {ADVANCED.map((a) => (
                     <label key={a.key} className="flex cursor-pointer items-center gap-3 text-sm">
                       <input
