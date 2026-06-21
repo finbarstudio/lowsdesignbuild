@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { deriveColours } from "@/app/lib/colours";
+
 import { urlFor } from "@/sanity/lib/image";
 import type { ProjectListItem } from "@/sanity/lib/types";
 
@@ -69,9 +69,6 @@ export default function ProjectsGrid({
       <div className="grid w-screen grid-cols-1 gap-[2px] bg-background sm:grid-cols-2 lg:grid-cols-3">
         {shown.map((p) => {
           const meta = [p.category, p.location, p.year].filter(Boolean);
-          const swatch = deriveColours(p.palette ?? null, p.heroPalette ?? null)
-            .slice(0, 3)
-            .map((c) => c.hex);
           return (
             <Link
               key={p._id}
@@ -87,41 +84,20 @@ export default function ProjectsGrid({
                     {p.title}
                   </h2>
                 </span>
-                {/* pills (left) + colour squares (right) on the same row */}
-                <div className="flex items-end justify-between gap-4">
-                  {meta.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {meta.map((m, i) => (
-                        <span key={m} className="block overflow-hidden">
-                          <span
-                            className="pill translate-y-[140%] text-ink transition-transform duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0"
-                            style={{ transitionDelay: `${200 + i * 110}ms` }}
-                          >
-                            {m}
-                          </span>
+                {meta.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {meta.map((m, i) => (
+                      <span key={m} className="block overflow-hidden">
+                        <span
+                          className="pill translate-y-[140%] text-ink transition-transform duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0"
+                          style={{ transitionDelay: `${200 + i * 110}ms` }}
+                        >
+                          {m}
                         </span>
-                      ))}
-                    </div>
-                  )}
-                  {/* colour squares — L→R wipe, staggered, aligned to the right */}
-                  {swatch.length > 0 && (
-                    <div className="flex shrink-0 gap-1.5">
-                      {swatch.map((hex, i) => (
-                        <span key={`${hex}-${i}`} className="block overflow-hidden">
-                          <span
-                            className="block h-5 w-5 sm:h-6 sm:w-6"
-                            style={{
-                              background: hex,
-                              clipPath: "inset(0 100% 0 0)",
-                              transition: "clip-path 0.55s cubic-bezier(0.76,0,0.24,1)",
-                              transitionDelay: `${330 + i * 110}ms`,
-                            }}
-                          />
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* hero image on top — crops up from the bottom on hover. The
