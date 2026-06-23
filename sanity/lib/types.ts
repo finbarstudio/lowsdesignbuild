@@ -44,6 +44,7 @@ export interface HomePage {
   heroImage: SanityImageSource | null;
   heroLqip: string | null;
   heroDim: { width: number; height: number } | null;
+  heroVideoUrl: string | null;
   heroTrailImages: Array<SanityImageSource & { _key?: string }> | null;
   homeHeroText: string | null;
   featuredProjects: ProjectListItem[] | null;

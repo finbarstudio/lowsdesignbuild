@@ -11,7 +11,14 @@ export const homePageType = defineType({
       title: "Hero image",
       type: "image",
       options: { hotspot: true },
-      description: "The large image at the top of the home page.",
+      description: "The large image at the top of the home page. Ignored when a Hero video is set.",
+    }),
+    defineField({
+      name: "heroVideo",
+      title: "Hero video",
+      type: "file",
+      options: { accept: "video/*" },
+      description: "Optional. Upload an MP4/WebM to use a looping video instead of the hero image. Keep under 10 MB for fast loads.",
     }),
     defineField({
       name: "homeHeroText",

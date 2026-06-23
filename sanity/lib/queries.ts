@@ -55,6 +55,7 @@ export const HOME_PAGE_QUERY = defineQuery(`
     heroImage,
     "heroLqip": heroImage.asset->metadata.lqip,
     "heroDim": heroImage.asset->metadata.dimensions,
+    "heroVideoUrl": heroVideo.asset->url,
     heroTrailImages,
     homeHeroText,
     "featuredProjects": featuredProjects[]->{

@@ -163,27 +163,38 @@ export default async function HomePage() {
       <HomeChrome projectCount={projects.length} />
 
       {/* ---------------- Hero ---------------- */}
-      {/* Mobile: a tall 80svh crop so the image reads as a proper hero.
-          sm+: the uncropped photo at its natural height (scroll for more). */}
       <section
         id="home-hero"
         className="relative h-[100svh] w-full overflow-hidden"
       >
-        {/* scrolls slightly slower than the page (parallax, driven in HomeChrome)
-            — a touch of scale gives headroom so the lag never reveals an edge */}
-        <Image
-          id="home-hero-img"
-          src={hero.src}
-          alt="A Lows Design & Build living room"
-          width={hero.w}
-          height={hero.h}
-          priority
-          placeholder="blur"
-          blurDataURL={hero.blur}
-          sizes="100vw"
-          style={{ transform: "scale(1.34)", willChange: "transform, opacity" }}
-          className="block h-full w-full object-cover"
-        />
+        {home?.heroVideoUrl ? (
+          /* Video hero — loops silently, covers the viewport. Depth driven by
+             HomeChrome the same way as the image (targets #home-hero-img). */
+          <video
+            id="home-hero-img"
+            src={home.heroVideoUrl}
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{ transform: "scale(1.34)", willChange: "transform, opacity" }}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <Image
+            id="home-hero-img"
+            src={hero.src}
+            alt="A Lows Design & Build living room"
+            width={hero.w}
+            height={hero.h}
+            priority
+            placeholder="blur"
+            blurDataURL={hero.blur}
+            sizes="100vw"
+            style={{ transform: "scale(1.34)", willChange: "transform, opacity" }}
+            className="block h-full w-full object-cover"
+          />
+        )}
         {/* same gradient as the project hero, so the wordmark stays legible */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/15" />
         {/* Serif tagline carries the hero on mobile; on desktop the sliding
