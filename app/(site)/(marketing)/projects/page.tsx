@@ -35,7 +35,7 @@ export default async function ProjectsPage() {
         </h1>
         <p className="mt-10 max-w-xl text-base leading-relaxed text-muted sm:mt-14 sm:text-lg">
           A selection of recent loft conversions, extensions and full
-          refurbishments across South London and Kent.
+          refurbishments across London and surrounding areas.
         </p>
       </section>
 

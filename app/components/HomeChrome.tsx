@@ -303,6 +303,23 @@ export default function HomeChrome({
           ))}
         </nav>
       )}
+
+      {/* "Get an instant quote" — floating CTA to the estimator. Hidden once you
+          reach the gold footer so it never clashes with it. */}
+      {mode !== "footer" && (
+        <Link
+          href="/estimate"
+          className="group/cta fixed bottom-5 right-5 z-30 inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-3 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-background shadow-[0_6px_24px_rgba(0,0,0,0.18)] transition-transform duration-300 hover:scale-[1.04] sm:bottom-7 sm:right-7 sm:text-xs"
+        >
+          Get an instant quote
+          <span
+            aria-hidden="true"
+            className="text-tertiary transition-transform duration-300 group-hover/cta:translate-x-0.5"
+          >
+            →
+          </span>
+        </Link>
+      )}
     </>
   );
 }

@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-import CursorTrail from "@/app/components/CursorTrail";
 import DropReveal from "@/app/components/DropReveal";
 import HomeChrome from "@/app/components/HomeChrome";
 import InstagramFeed from "@/app/components/InstagramFeed";
@@ -104,19 +103,10 @@ export default async function HomePage() {
       }
     : { src: "/hero-main.jpg", blur: FALLBACK_HERO_BLUR, w: 3200, h: 2133 };
 
-  // Images that trail the cursor across the big slogan (native aspect, no crop).
-  // auto("format") so the preloaded <img> and the trail <img> hit the same URL.
-  const trailImgs = Array.from(
-    new Set(
-      (home?.heroTrailImages ?? [])
-        .filter((img) => (img as { asset?: unknown })?.asset)
-        .map((img) => urlFor(img).width(600).quality(80).auto("format").url()),
-    ),
-  );
-
   // Editable copy + people, with the built-in content as a graceful fallback.
   const heroText =
-    home?.homeHeroText || "Family run start to finish construction services";
+    home?.homeHeroText ||
+    "Family Run Construction Services in London and Surrounding Areas";
 
   const teamLead = family?.teamLead?.image
     ? {
@@ -212,15 +202,11 @@ export default async function HomePage() {
         <section className="sticky top-0 flex h-[100svh] flex-col items-center justify-center">
           {/* On mobile the slogan is inset to the same 10% as the project
               thumbnails below so the wide caps never spill past their edges. */}
-          <CursorTrail
-            images={trailImgs}
-            width={220}
-            className="mx-auto w-full max-w-[1900px] px-[10%] sm:px-6"
-          >
+          <div className="mx-auto w-full max-w-[1900px] px-[10%] sm:px-6">
             <h1 className="mx-auto max-w-6xl text-center font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
               <WordReveal text={heroText} />
             </h1>
-          </CursorTrail>
+          </div>
         </section>
 
         {/* ---------------- Featured projects (image cards) ------------- */}
@@ -275,7 +261,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           {/* left third: sticky title that stays put as the cards scroll */}
           <div className="lg:col-span-1">
-            <h2 className="label sticky top-24 !text-ink">Family</h2>
+            <h2 className="label sticky top-24 !text-ink">Team</h2>
           </div>
 
           {/* right two-thirds: people cards in rows of two */}
