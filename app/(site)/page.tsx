@@ -178,7 +178,7 @@ export default async function HomePage() {
             muted
             playsInline
             style={{ transform: "scale(1.34)", willChange: "transform, opacity" }}
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute left-0 top-0 h-[120vh] w-screen object-cover"
           />
         ) : (
           <Image
@@ -192,7 +192,7 @@ export default async function HomePage() {
             blurDataURL={hero.blur}
             sizes="100vw"
             style={{ transform: "scale(1.34)", willChange: "transform, opacity" }}
-            className="block h-full w-full object-cover"
+            className="absolute left-0 top-0 h-[120vh] w-screen object-cover"
           />
         )}
         {/* same gradient as the project hero, so the wordmark stays legible */}
