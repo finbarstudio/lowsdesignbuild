@@ -9,6 +9,12 @@ import { dataset, projectId } from "../env";
 // photo-heavy site.
 const builder = createImageUrlBuilder({ projectId, dataset });
 
+// Every image gets the same baseline treatment so lower-quality source photos
+// (low-res, compressed, slightly soft) come out crisp:
+//  - auto("format")  → modern formats (avif/webp), less compression mush
+//  - quality(86)     → fewer JPEG artefacts than the default 75
+//  - sharpen(35)     → counteracts softness / upscaling blur
+// Callers can still chain .width()/.height()/.quality()/etc. to override.
 export function urlFor(source: SanityImageSource) {
-  return builder.image(source);
+  return builder.image(source).auto("format").quality(86).sharpen(35);
 }

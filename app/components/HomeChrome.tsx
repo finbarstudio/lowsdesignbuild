@@ -233,7 +233,7 @@ export default function HomeChrome({
               <Link key={item.href} href={item.href}>
                 <span className="link-underline is-tracked">{item.label}</span>
                 {item.href === "/projects" && projectCount ? (
-                  <sup className="ml-0.5 text-[0.6em] font-medium text-tertiary">
+                  <sup className="ml-0.5 text-[0.6em] font-medium">
                     {projectCount}
                   </sup>
                 ) : null}
@@ -289,7 +289,7 @@ export default function HomeChrome({
       <nav
         aria-hidden={!open}
         style={{ clipPath: open ? "inset(0 0 0 0)" : "inset(0 0 100% 0)" }}
-        className={`fixed inset-x-0 top-16 z-40 flex flex-col gap-1 border-b border-line bg-background px-4 py-4 font-mono text-sm uppercase tracking-[0.12em] text-ink transition-[clip-path] duration-[500ms] ease-[cubic-bezier(0.76,0,0.24,1)] sm:hidden ${
+        className={`fixed inset-x-0 top-16 z-40 flex flex-col gap-1 bg-background px-4 py-4 font-mono text-sm uppercase tracking-[0.12em] text-ink transition-[clip-path] duration-[500ms] ease-[cubic-bezier(0.76,0,0.24,1)] sm:hidden ${
           open ? "" : "pointer-events-none"
         }`}
       >
@@ -306,7 +306,7 @@ export default function HomeChrome({
             >
               <span className="link-underline">{item.label}</span>
               {item.href === "/projects" && projectCount ? (
-                <sup className="ml-0.5 text-[0.6em] font-medium text-tertiary">
+                <sup className="ml-0.5 text-[0.6em] font-medium">
                   {projectCount}
                 </sup>
               ) : null}

@@ -7,7 +7,9 @@ import HomeChrome from "@/app/components/HomeChrome";
 import InstagramFeed from "@/app/components/InstagramFeed";
 import InstagramStrip from "@/app/components/InstagramStrip";
 import ProcessPath from "@/app/components/ProcessPath";
+import StickySlogan from "@/app/components/StickySlogan";
 import WordReveal from "@/app/components/WordReveal";
+import Wordmark from "@/app/components/Wordmark";
 import { processSteps as fallbackProcess, site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
@@ -126,11 +128,9 @@ export default async function HomePage() {
         )}
         {/* same gradient as the project hero, so the wordmark stays legible */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/15" />
-        {/* Serif tagline carries the hero on mobile; on desktop the sliding
-            wordmark takes over, so the tagline is hidden there. */}
-        <p className="serif pointer-events-none absolute bottom-6 left-4 z-10 max-w-[15rem] text-2xl leading-[1.1] text-white sm:hidden">
-          Family-run design &amp; build across South London.
-        </p>
+        {/* Mobile: the LOWS wordmark sits on the hero image (desktop has the
+            sliding wordmark instead, so this is hidden there). */}
+        <Wordmark className="pointer-events-none absolute bottom-7 left-4 z-10 h-[58px] w-[128px] text-white sm:hidden" />
       </section>
 
       {/* Sticky statement + featured projects share a wrapper so the pinned
@@ -140,12 +140,15 @@ export default async function HomePage() {
         {/* ---------------- Family-run statement (Futura) ---------------- */}
         <section className="sticky top-0 flex h-[100svh] flex-col items-center justify-center">
           {/* On mobile the slogan is inset to the same 10% as the project
-              thumbnails below so the wide caps never spill past their edges. */}
-          <div className="mx-auto w-full max-w-[1900px] px-[10%] sm:px-6">
-            <h1 className="mx-auto max-w-6xl text-center font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
-              <WordReveal text={heroText} />
-            </h1>
-          </div>
+              thumbnails below so the wide caps never spill past their edges.
+              It fades out as the first featured thumbnail covers it. */}
+          <StickySlogan>
+            <div className="mx-auto w-full max-w-[1900px] px-[10%] sm:px-6">
+              <h1 className="mx-auto max-w-6xl text-center font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
+                <WordReveal text={heroText} />
+              </h1>
+            </div>
+          </StickySlogan>
         </section>
 
         {/* ---------------- Featured projects (image cards) ------------- */}
@@ -157,8 +160,8 @@ export default async function HomePage() {
         {featured.length > 0 && (
           <section className="relative z-20 px-[10%] pt-24 sm:pt-32">
             <div className="space-y-16 sm:space-y-56 lg:space-y-[22rem]">
-              {featured.map((p) => (
-                <FeaturedCard key={p._id} p={p} />
+              {featured.map((p, i) => (
+                <FeaturedCard key={p._id} p={p} first={i === 0} />
               ))}
             </div>
           </section>
@@ -170,7 +173,7 @@ export default async function HomePage() {
             Live Behold feed if its ID is set, otherwise the curated strip. */}
         {hasInsta && (
           <section className="relative z-10 bg-background pb-32 pt-56 sm:pb-48 sm:pt-[30rem]">
-            <div className="mx-auto mb-10 max-w-[1900px] px-[10%] sm:mb-14 sm:px-6">
+            <div className="mb-6 px-4 sm:mb-14 sm:px-6">
               <a
                 href={site.instagram}
                 target="_blank"

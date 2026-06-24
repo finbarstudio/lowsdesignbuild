@@ -12,7 +12,13 @@ import type { ProjectListItem } from "@/sanity/lib/types";
  * with the cursor (a subtle parallax), the whole card lifts on hover, and a
  * soft black gradient + the title/tags reveal (mask up, staggered) on hover.
  */
-export default function FeaturedCard({ p }: { p: ProjectListItem }) {
+export default function FeaturedCard({
+  p,
+  first = false,
+}: {
+  p: ProjectListItem;
+  first?: boolean;
+}) {
   const tags = [p.category, p.location, p.year].filter(Boolean).map(String);
   const [t, setT] = useState({ x: 0, y: 0 });
   const raf = useRef(0);
@@ -36,6 +42,7 @@ export default function FeaturedCard({ p }: { p: ProjectListItem }) {
       href={`/projects/${p.slug}`}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
+      data-featured-first={first ? "" : undefined}
       className="group relative block aspect-[16/9] w-full overflow-hidden bg-line transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform hover:z-10 hover:scale-[1.03]"
     >
       {/* image drifts with the cursor — slightly scaled so the drift never

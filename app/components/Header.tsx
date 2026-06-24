@@ -91,7 +91,7 @@ export default function Header({ projectCount }: { projectCount?: number }) {
                   {item.label}
                 </span>
                 {item.href === "/projects" && projectCount ? (
-                  <sup className="ml-0.5 text-[0.6em] font-medium text-tertiary">
+                  <sup className="ml-0.5 text-[0.6em] font-medium">
                     {projectCount}
                   </sup>
                 ) : null}
@@ -144,7 +144,7 @@ export default function Header({ projectCount }: { projectCount?: number }) {
               >
                 <span className="link-underline">{item.label}</span>
                 {item.href === "/projects" && projectCount ? (
-                  <sup className="ml-0.5 text-[0.6em] font-medium text-tertiary">
+                  <sup className="ml-0.5 text-[0.6em] font-medium">
                     {projectCount}
                   </sup>
                 ) : null}

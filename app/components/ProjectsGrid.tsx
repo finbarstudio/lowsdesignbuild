@@ -73,7 +73,7 @@ export default function ProjectsGrid({
             <Link
               key={p._id}
               href={`/projects/${p.slug}`}
-              className="group relative block h-[56vw] overflow-hidden bg-background sm:h-[42vw] lg:h-[70vh]"
+              className="group relative block h-[82vw] overflow-hidden bg-background sm:h-[42vw] lg:h-[70vh]"
             >
               {/* caption sitting behind the image, anchored to the bottom —
                   revealed as the image crops up on hover. Title + pills + colour
@@ -112,6 +112,14 @@ export default function ProjectsGrid({
                   className="object-cover [clip-path:inset(0_0_0_0)] transition-[clip-path] duration-[320ms] ease-[cubic-bezier(0.4,0,0.1,1)] group-hover:[clip-path:inset(0_0_11rem_0)] group-hover:duration-[520ms] group-hover:ease-[cubic-bezier(0.22,1,0.36,1)]"
                 />
               )}
+
+              {/* mobile: always-visible title at the bottom of the thumbnail
+                  (there's no hover to reveal the caption on touch) */}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent p-5 sm:hidden">
+                <h2 className="line-clamp-2 text-lg font-bold uppercase leading-[1.1] tracking-tight text-white">
+                  {p.title}
+                </h2>
+              </div>
             </Link>
           );
         })}
