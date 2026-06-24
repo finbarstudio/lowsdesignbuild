@@ -70,7 +70,12 @@ export interface Family {
   teamLead: {
     image: SanityImageSource | null;
     alt: string | null;
-    people: Array<{ _key?: string; name: string | null; role: string | null }> | null;
+    people: Array<{
+      _key?: string;
+      name: string | null;
+      role: string | null;
+      bio?: string | null;
+    }> | null;
   } | null;
   team: Array<{
     _key?: string;

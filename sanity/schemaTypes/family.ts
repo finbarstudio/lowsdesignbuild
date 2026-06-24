@@ -42,6 +42,15 @@ export const familyType = defineType({
                   validation: (rule) => rule.required(),
                 }),
                 defineField({ name: "role", title: "Role", type: "string" }),
+                defineField({
+                  name: "bio",
+                  title: "Short bio",
+                  type: "text",
+                  rows: 3,
+                  description:
+                    "Revealed when their half of the shared photo slides up. Keep it under 400 characters.",
+                  validation: (rule) => rule.max(400),
+                }),
               ],
               preview: { select: { title: "name", subtitle: "role" } },
             },
