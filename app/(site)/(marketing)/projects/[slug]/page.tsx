@@ -90,6 +90,8 @@ export default async function ProjectPage({
             fill
             priority
             sizes="100vw"
+            placeholder={project.lqip ? "blur" : undefined}
+            blurDataURL={project.lqip ?? undefined}
             style={{ transform: "scale(1.34)", willChange: "transform, opacity" }}
             className="object-cover"
           />
@@ -172,6 +174,7 @@ function GalleryImage({
   alt: string;
   delay?: number;
 }) {
+  const lqip = (img as { lqip?: string }).lqip;
   return (
     <WipeReveal delay={delay} className={`relative overflow-hidden bg-line ${ratio}`}>
       <Image
@@ -179,6 +182,8 @@ function GalleryImage({
         alt={alt}
         fill
         sizes="(max-width: 640px) 100vw, 50vw"
+        placeholder={lqip ? "blur" : undefined}
+        blurDataURL={lqip ?? undefined}
         className="object-cover"
       />
     </WipeReveal>

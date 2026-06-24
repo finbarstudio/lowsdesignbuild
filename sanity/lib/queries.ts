@@ -15,6 +15,7 @@ export const PROJECTS_QUERY = defineQuery(`
     year,
     palette,
     "heroPalette": mainImage.asset->metadata.palette,
+    "lqip": mainImage.asset->metadata.lqip,
     mainImage
   }
 `);
@@ -44,7 +45,7 @@ export const PROJECT_QUERY = defineQuery(`
     "heroPalette": mainImage.asset->metadata.palette,
     mainImage,
     "lqip": mainImage.asset->metadata.lqip,
-    gallery
+    gallery[]{ ..., "lqip": asset->metadata.lqip }
   }
 `);
 
@@ -65,6 +66,7 @@ export const HOME_PAGE_QUERY = defineQuery(`
       location,
       category,
       year,
+      "lqip": mainImage.asset->metadata.lqip,
       mainImage
     },
     instagramFeedId,

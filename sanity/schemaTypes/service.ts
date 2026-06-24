@@ -30,7 +30,7 @@ export const serviceType = defineType({
       type: "array",
       of: [{ type: "image", options: { hotspot: true } }],
       description:
-        "The first photo is the thumbnail. Add more and they cycle on hover.",
+        "The first photo is the thumbnail. Add more and they cycle on hover. Recommended: upload landscape 4:3 photos — others are centre-cropped to fit the 4:3 grid.",
       options: { layout: "grid" },
       validation: (rule) => rule.min(1).error("Add at least one photo."),
     }),

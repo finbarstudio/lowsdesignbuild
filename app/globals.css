@@ -112,6 +112,14 @@ h1, h2, h3, .display {
   line-height: 1.2;
 }
 
+/* Every link/button gives a quick tactile response on press, so a click always
+   registers visibly even before the next view loads. */
+a:active,
+button:active {
+  opacity: 0.55;
+  transition: opacity 0.08s ease;
+}
+
 /* The standard pill token — an outlined chip used everywhere (project meta,
    area pills, home featured cards). Everything scales off the font size so a
    pill resizes cleanly just by changing its text size:

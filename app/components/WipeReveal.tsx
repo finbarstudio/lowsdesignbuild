@@ -3,11 +3,11 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Scroll-linked wipe reveal. The clip-path (top→bottom) is driven directly by
- * the element's position in the viewport, so the image uncovers in lock-step
- * with the scroll — no opacity, no scale. As the element travels up from the
- * bottom of the viewport it reveals proportionally, fully open by the time it
- * reaches the upper-middle of the screen.
+ * Scroll-TRIGGERED wipe reveal. The clip-path (right→left) starts when the
+ * element scrolls into the trigger zone, then always animates through to
+ * completion — even if you scroll back up mid-reveal it never gets stuck part
+ * way. The finish duration is derived from the scroll velocity at the moment it
+ * triggered, so a fast scroll snaps it shut and a slow scroll eases it in.
  */
 export default function WipeReveal({
   children,
@@ -16,8 +16,7 @@ export default function WipeReveal({
 }: {
   children: React.ReactNode;
   className?: string;
-  /** Shifts the trigger later (in fractions of the viewport height) so items in
-   *  the same row can stagger — e.g. the left column reveals after the right. */
+  /** shifts the trigger later (fractions of the viewport) to stagger a row */
   delay?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -31,42 +30,64 @@ export default function WipeReveal({
     }
 
     let raf = 0;
-    let maxP = 0; // ratchet: progress only ever increases, so it never reverses
-    const update = () => {
-      const r = el.getBoundingClientRect();
+    let animRaf = 0;
+    let triggered = false;
+    let lastY = window.scrollY;
+    let lastT = performance.now();
+    let vel = 0; // px per ms
+
+    const smoothstep = (x: number) => x * x * (3 - 2 * x);
+
+    const finish = () => {
       const vh = window.innerHeight;
-      // Reveal over a scroll span that's deliberately SHORTER than the image is
-      // wide, centred in the middle of the screen, so the wipe edge visibly
-      // sweeps across the image. `delay` lowers the thresholds so the element
-      // reveals later in the scroll (used to stagger a row — the left item only
-      // begins once the right has finished).
-      const start = vh * (0.6 - delay);
-      const end = vh * (0.32 - delay);
-      const raw = Math.min(1, Math.max(0, (start - r.top) / (start - end)));
-      // smoothstep so the sweep eases in/out instead of tracking scroll linearly
-      const p = raw * raw * (3 - 2 * raw);
-      if (p <= maxP) return; // don't let scrolling back up un-reveal it
-      maxP = p;
-      // right→left: uncover from the right edge inward
-      el.style.clipPath = `inset(0 0 0 ${((1 - p) * 100).toFixed(2)}%)`;
-      if (maxP >= 1) {
+      const span = vh * 0.28; // the scroll span the reveal used to map across
+      const v = Math.max(vel, 0.18); // floor so a slow/paused scroll still moves
+      const dur = Math.min(1100, Math.max(280, span / v));
+      const startT = performance.now();
+      const step = () => {
+        const p = Math.min(1, (performance.now() - startT) / dur);
+        const e = smoothstep(p);
+        el.style.clipPath = `inset(0 0 0 ${((1 - e) * 100).toFixed(2)}%)`;
+        if (p < 1) animRaf = requestAnimationFrame(step);
+      };
+      step();
+    };
+
+    const check = () => {
+      if (triggered) return;
+      const top = el.getBoundingClientRect().top;
+      if (top < window.innerHeight * (0.6 - delay)) {
+        triggered = true;
         window.removeEventListener("scroll", onScroll);
-        window.removeEventListener("resize", onScroll);
+        window.removeEventListener("resize", onResize);
+        finish();
       }
     };
+
     const onScroll = () => {
+      const y = window.scrollY;
+      const t = performance.now();
+      vel = Math.abs(y - lastY) / Math.max(1, t - lastT);
+      lastY = y;
+      lastT = t;
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(update);
+      raf = requestAnimationFrame(check);
     };
-    update();
+    const onResize = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(check);
+    };
+
+    check(); // in case it's already in view on load
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onResize);
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(animRaf);
     };
-  }, []);
+  }, [delay]);
 
   return (
     <div

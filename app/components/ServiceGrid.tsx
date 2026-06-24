@@ -7,10 +7,11 @@ type Shot = { hi: string; lo: string };
 type Service = { title: string; blurb: string; imgs: Shot[] };
 
 /**
- * "What we do" as an always-visible grid. Images are shown in full (object-
- * contain, so neither landscape nor portrait gets cropped) on a soft frame.
- * They sit in greyscale and bloom to colour as they scroll into view; on hover
- * the card scrolls through that service's other photos in place.
+ * "What we do" as an always-visible 3-up grid. Photos fill a clean 4:3 frame
+ * (object-cover, so the grid stays aligned with no letterboxing). They sit in
+ * greyscale and bloom to colour as they scroll into view; on hover the card
+ * scrolls through that service's other photos in place. 4:3 is the recommended
+ * upload ratio (noted on the Sanity image field).
  */
 function ServiceCard({ s }: { s: Service }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -76,7 +77,7 @@ function ServiceCard({ s }: { s: Service }) {
               src={img.hi}
               alt=""
               loading="lazy"
-              className={`absolute inset-0 h-full w-full object-contain transition-[opacity,filter] duration-700 ease-out ${
+              className={`absolute inset-0 h-full w-full object-cover transition-[opacity,filter] duration-700 ease-out ${
                 shown ? "grayscale-0" : "grayscale"
               } ${i === idx ? "opacity-100" : "opacity-0"}`}
             />
@@ -97,7 +98,7 @@ function ServiceCard({ s }: { s: Service }) {
 
 export default function ServiceGrid({ services }: { services: Service[] }) {
   return (
-    <div className="mx-auto grid max-w-5xl grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:max-w-none lg:grid-cols-3 lg:gap-x-10 lg:gap-y-16">
+    <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-8">
       {services.map((s) => (
         <ServiceCard key={s.title} s={s} />
       ))}

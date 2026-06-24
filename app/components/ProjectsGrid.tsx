@@ -73,7 +73,7 @@ export default function ProjectsGrid({
             <Link
               key={p._id}
               href={`/projects/${p.slug}`}
-              className="group relative block h-[82vw] overflow-hidden bg-background sm:h-[42vw] lg:h-[70vh]"
+              className="group relative block h-[82vw] overflow-hidden bg-background transition-[transform,opacity] duration-100 active:scale-[0.99] active:opacity-90 sm:h-[42vw] lg:h-[70vh]"
             >
               {/* caption sitting behind the image, anchored to the bottom —
                   revealed as the image crops up on hover. Title + pills + colour
@@ -109,6 +109,8 @@ export default function ProjectsGrid({
                   alt={[p.title, p.category, p.location].filter(Boolean).join(", ")}
                   fill
                   sizes="(max-width: 640px) 100vw, 50vw"
+                  placeholder={p.lqip ? "blur" : undefined}
+                  blurDataURL={p.lqip ?? undefined}
                   className="object-cover [clip-path:inset(0_0_0_0)] transition-[clip-path] duration-[320ms] ease-[cubic-bezier(0.4,0,0.1,1)] group-hover:[clip-path:inset(0_0_11rem_0)] group-hover:duration-[520ms] group-hover:ease-[cubic-bezier(0.22,1,0.36,1)]"
                 />
               )}

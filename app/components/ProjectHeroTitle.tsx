@@ -9,6 +9,9 @@ const EDGE = 10; // tiny side breathing room when filling the width
 const BOTTOM = 22; // bottom padding at rest
 const NAV = 14; // docked size — same as the nav items
 const REF = 100; // reference font-size we measure at
+// WordReveal gives every word a trailing margin-right of 0.28em (incl. the last
+// word), which would inflate the measured width and push the title off-centre.
+const TRAIL = 0.28 * REF;
 type Mode = "hero" | "ink" | "footer";
 
 /**
@@ -61,7 +64,7 @@ export default function ProjectHeroTitle({ title }: { title: string }) {
     const measure = () => {
       el.style.transform = "none";
       el.style.fontSize = `${REF}px`;
-      const w = el.offsetWidth;
+      const w = el.offsetWidth - TRAIL; // drop the trailing word margin
       if (w > 0) dims.current = { w, h: el.offsetHeight };
       update();
     };

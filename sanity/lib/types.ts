@@ -12,6 +12,7 @@ export interface ProjectListItem {
   year: number | null;
   palette?: Array<{ color: string | null; name: string | null }> | null;
   heroPalette?: SanityPalette | null;
+  lqip?: string | null;
   mainImage: SanityImageSource | null;
 }
 
@@ -37,7 +38,7 @@ export interface Project extends ProjectListItem {
   palette: Array<{ _key?: string; color: string | null; name: string | null }> | null;
   heroPalette: SanityPalette | null;
   lqip: string | null;
-  gallery: Array<SanityImageSource & { _key?: string }> | null;
+  gallery: Array<SanityImageSource & { _key?: string; lqip?: string }> | null;
 }
 
 export interface HomePage {
