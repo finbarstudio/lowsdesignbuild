@@ -8,7 +8,7 @@ import ScrollText from "@/app/components/ScrollText";
 import TeamGrid from "@/app/components/TeamGrid";
 import WordReveal from "@/app/components/WordReveal";
 import Reveal from "@/app/components/Reveal";
-import ServiceSlideshow from "@/app/components/ServiceSlideshow";
+import ServiceGrid from "@/app/components/ServiceGrid";
 import {
   areas,
   services,
@@ -138,19 +138,13 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* What we do */}
+      {/* What we do — an always-visible 3-up grid; each card scrolls through its
+          photos on hover (in place). */}
       <section className={`${PAD} py-24 sm:py-32`}>
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-          {/* left: sticky title */}
-          <div className="lg:col-span-1">
-            <h2 className="label sticky top-24 !text-ink">What we do</h2>
-          </div>
-
-          {/* right: hover-list of services — name reveals a cursor-following image */}
-          <Reveal className="lg:col-span-2">
-            <ServiceSlideshow services={serviceCards} />
-          </Reveal>
-        </div>
+        <h2 className="label mb-10 !text-ink sm:mb-14">What we do</h2>
+        <Reveal>
+          <ServiceGrid services={serviceCards} />
+        </Reveal>
       </section>
 
       {/* Team (moved here from the home page; swapped with Our process) */}
