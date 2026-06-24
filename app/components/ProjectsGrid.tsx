@@ -54,7 +54,7 @@ export default function ProjectsGrid({
                   onClick={() => setActive(t.key)}
                   className={`link-underline pb-1 transition-colors ${
                     active === t.key
-                      ? "link-active text-ink"
+                      ? "link-active text-tertiary"
                       : "text-muted hover:text-ink"
                   }`}
                 >

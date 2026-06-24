@@ -163,7 +163,7 @@ export default async function AboutPage() {
         className={`${PAD} flex min-h-0 flex-col justify-center py-20 text-center sm:min-h-[70vh] sm:py-24`}
       >
         <Reveal>
-          <p className="label mb-10 sm:mb-14">Where we work</p>
+          <p className="label mb-10 !text-tertiary sm:mb-14">Where we work</p>
         </Reveal>
         <AreaPills areas={areaList} widthClass="max-w-3xl" />
       </section>
@@ -173,7 +173,7 @@ export default async function AboutPage() {
         className={`${PAD} flex min-h-0 flex-col justify-center py-20 text-center sm:min-h-[90vh] sm:py-24`}
       >
         <Reveal>
-          <p className="label">Our quality guarantee</p>
+          <p className="label !text-tertiary">Our quality guarantee</p>
           <h2 className="serif mx-auto mt-6 max-w-4xl text-2xl leading-[1.3] sm:text-4xl">
             We are passionate about our quality of work. We always aim for the
             highest standard of work that we and our clients can always be happy

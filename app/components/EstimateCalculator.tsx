@@ -750,7 +750,7 @@ export default function EstimateCalculator({
             inputs *and* the form. On mobile it sits between them. ---- */}
         <div className="order-2 self-start lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:-mt-16 lg:sticky lg:top-24">
           <div className="border-t border-tertiary pt-6">
-            <p className="label">Estimated budget range</p>
+            <p className="label !text-tertiary">Estimated budget range</p>
             <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums sm:text-4xl">
               {gbp(lower)} – {gbp(upper)}
             </p>
