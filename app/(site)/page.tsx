@@ -1,24 +1,22 @@
 import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 
-import DropReveal from "@/app/components/DropReveal";
 import FeaturedCard from "@/app/components/FeaturedCard";
 import HomeChrome from "@/app/components/HomeChrome";
 import InstagramFeed from "@/app/components/InstagramFeed";
 import InstagramStrip from "@/app/components/InstagramStrip";
-import WipeReveal from "@/app/components/WipeReveal";
+import ProcessPath from "@/app/components/ProcessPath";
 import WordReveal from "@/app/components/WordReveal";
-import {
-  site,
-  team as fallbackTeam,
-  teamLead as fallbackTeamLead,
-} from "@/app/lib/site";
+import { processSteps as fallbackProcess, site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
-import { FAMILY_QUERY, HOME_PAGE_QUERY, PROJECTS_QUERY } from "@/sanity/lib/queries";
-import type { Family, HomePage, ProjectListItem } from "@/sanity/lib/types";
+import {
+  ABOUT_PAGE_QUERY,
+  HOME_PAGE_QUERY,
+  PROJECTS_QUERY,
+} from "@/sanity/lib/queries";
+import type { AboutPage, HomePage, ProjectListItem } from "@/sanity/lib/types";
 
 export const revalidate = 60;
 
@@ -34,10 +32,10 @@ export const metadata: Metadata = {
 
 
 export default async function HomePage() {
-  const [projects, home, family] = await Promise.all([
+  const [projects, home, about] = await Promise.all([
     client.fetch<ProjectListItem[]>(PROJECTS_QUERY),
     client.fetch<HomePage | null>(HOME_PAGE_QUERY),
-    client.fetch<Family | null>(FAMILY_QUERY),
+    client.fetch<AboutPage | null>(ABOUT_PAGE_QUERY),
   ]);
   // Curated in the CMS (Home Page → Featured projects) when set; otherwise the
   // first three projects.
@@ -62,28 +60,15 @@ export default async function HomePage() {
     home?.homeHeroText ||
     "Family Run Construction Services in London and Surrounding Areas";
 
-  const teamLead = family?.teamLead?.image
-    ? {
-        img: urlFor(family.teamLead.image)
-          .width(1600)
-          .height(900)
-          .fit("crop")
-          .url(),
-        alt: family.teamLead.alt ?? "",
-        people: family.teamLead.people ?? [],
-      }
-    : fallbackTeamLead;
-
-  const team =
-    family?.team && family.team.length > 0
-      ? family.team.map((m) => ({
-          name: m.name ?? "",
-          role: m.role ?? "",
-          img: m.image
-            ? urlFor(m.image).width(800).height(1000).fit("crop").url()
-            : "",
+  // Process steps (moved here from the about page; swapped with the team).
+  const steps =
+    about?.processSteps && about.processSteps.length > 0
+      ? about.processSteps.map((s, i) => ({
+          n: String(i + 1).padStart(2, "0"),
+          title: s.title ?? "",
+          text: s.text ?? "",
         }))
-      : fallbackTeam;
+      : fallbackProcess;
 
   // Instagram strip — square, cropped, native colour (the tile desaturates in CSS).
   const instaPosts = (home?.instagramPosts ?? [])
@@ -203,82 +188,24 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* ---------------- People ---------------- */}
+        {/* ---------------- Our process ---------------- */}
         {/* Opaque paper background that slides up over the pinned slogan. When
             the Instagram band is present it already covers the slogan, so this
-            uses normal top spacing; otherwise it takes the cover role itself. */}
+            uses normal top spacing; otherwise it takes the cover role itself.
+            (Swapped in from the about page, in place of the team.) */}
         <section
           className={`${PAD} relative z-10 bg-background pb-24 sm:pb-32 ${
             instaPosts.length > 0 ? "pt-12 sm:pt-20" : "pt-56 sm:pt-[28rem]"
           }`}
         >
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-          {/* left third: sticky title that stays put as the cards scroll */}
-          <div className="lg:col-span-1">
-            <h2 className="label sticky top-24 !text-ink">Team</h2>
-          </div>
-
-          {/* right two-thirds: people cards in rows of two */}
-          <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:col-span-2">
-            {/* the two directors, one wide headshot spanning both columns */}
-            <div className="sm:col-span-2">
-              <WipeReveal>
-                <div className="relative aspect-[16/9] overflow-hidden bg-background">
-                  <Image
-                    src={teamLead.img}
-                    alt={teamLead.alt}
-                    fill
-                    loading="eager"
-                    sizes="(max-width: 1024px) 100vw, 66vw"
-                    className="object-cover grayscale"
-                  />
-                </div>
-              </WipeReveal>
-              <div className="mt-4 grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6">
-                {teamLead.people.map((pp, idx) => (
-                  <div key={pp.name}>
-                    <DropReveal delay={250 + idx * 120}>
-                      <p className="text-base font-medium">{pp.name}</p>
-                    </DropReveal>
-                    <DropReveal delay={250 + idx * 120 + 130}>
-                      <p className="text-sm text-muted">{pp.role}</p>
-                    </DropReveal>
-                  </div>
-                ))}
-              </div>
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+            <div className="lg:col-span-1">
+              <h2 className="label sticky top-24 !text-ink">Our process</h2>
             </div>
-
-            {team.map((m, i) => {
-              // a lone last item (odd count) sits in the RIGHT column, left empty
-              const lastAlone = i === team.length - 1 && team.length % 2 === 1;
-              const isRight = lastAlone || i % 2 === 1;
-              return (
-                <div key={m.name} className={lastAlone ? "sm:col-start-2" : ""}>
-                  {/* right column reveals first; the left only begins once the
-                      right has finished its sweep */}
-                  <WipeReveal delay={isRight ? 0 : 0.3}>
-                    <div className="relative aspect-[4/5] overflow-hidden bg-background">
-                      <Image
-                        src={m.img}
-                        alt={m.name}
-                        fill
-                        loading="eager"
-                        sizes="(max-width: 1024px) 100vw, 33vw"
-                        className="object-cover grayscale"
-                      />
-                    </div>
-                  </WipeReveal>
-                  <DropReveal delay={isRight ? 120 : 520} wrapClassName="mt-4">
-                    <p className="text-base font-medium">{m.name}</p>
-                  </DropReveal>
-                  <DropReveal delay={(isRight ? 120 : 520) + 130}>
-                    <p className="text-sm text-muted">{m.role}</p>
-                  </DropReveal>
-                </div>
-              );
-            })}
+            <div className="lg:col-span-2">
+              <ProcessPath steps={steps} />
+            </div>
           </div>
-        </div>
         </section>
       </div>
     </>

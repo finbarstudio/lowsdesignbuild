@@ -3,20 +3,32 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import AreaPills from "@/app/components/AreaPills";
-import ProcessPath from "@/app/components/ProcessPath";
 import ScrollNudge from "@/app/components/ScrollNudge";
+import TeamGrid from "@/app/components/TeamGrid";
 import WordReveal from "@/app/components/WordReveal";
 import Reveal from "@/app/components/Reveal";
 import ServiceSlideshow from "@/app/components/ServiceSlideshow";
-import { areas, processSteps, services, site } from "@/app/lib/site";
+import {
+  areas,
+  services,
+  site,
+  team as fallbackTeam,
+  teamLead as fallbackTeamLead,
+} from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import {
   ABOUT_PAGE_QUERY,
   CONTACT_QUERY,
+  FAMILY_QUERY,
   SERVICES_QUERY,
 } from "@/sanity/lib/queries";
-import type { AboutPage, Contact, ServiceItem } from "@/sanity/lib/types";
+import type {
+  AboutPage,
+  Contact,
+  Family,
+  ServiceItem,
+} from "@/sanity/lib/types";
 
 const FALLBACK_ABOUT_HERO =
   "A family-run design & build company in Greater London";
@@ -39,10 +51,11 @@ export const revalidate = 60;
 export default async function AboutPage() {
   // Services come from Sanity so the client can edit them. Until any are added
   // there, fall back to the built-in copy so the section is never empty.
-  const [cms, about, contact] = await Promise.all([
+  const [cms, about, contact, family] = await Promise.all([
     client.fetch<ServiceItem[]>(SERVICES_QUERY),
     client.fetch<AboutPage | null>(ABOUT_PAGE_QUERY),
     client.fetch<Contact | null>(CONTACT_QUERY),
+    client.fetch<Family | null>(FAMILY_QUERY),
   ]);
 
   const areaList =
@@ -52,14 +65,30 @@ export default async function AboutPage() {
     .split(/\n\s*\n/)
     .map((p) => p.trim())
     .filter(Boolean);
-  const steps =
-    about?.processSteps && about.processSteps.length > 0
-      ? about.processSteps.map((s, i) => ({
-          n: String(i + 1).padStart(2, "0"),
-          title: s.title ?? "",
-          text: s.text ?? "",
+
+  // Team (moved here from the home page).
+  const teamLead = family?.teamLead?.image
+    ? {
+        img: urlFor(family.teamLead.image)
+          .width(1600)
+          .height(900)
+          .fit("crop")
+          .url(),
+        alt: family.teamLead.alt ?? "",
+        people: family.teamLead.people ?? [],
+      }
+    : fallbackTeamLead;
+  const team =
+    family?.team && family.team.length > 0
+      ? family.team.map((m) => ({
+          name: m.name ?? "",
+          role: m.role ?? "",
+          bio: m.bio ?? "",
+          img: m.image
+            ? urlFor(m.image).width(800).height(1000).fit("crop").url()
+            : "",
         }))
-      : processSteps;
+      : fallbackTeam.map((m) => ({ ...m, bio: "" }));
   // Each shot carries a sharp (hi) and a low-res (lo) source — width only, no
   // crop, so native aspect is kept. The slideshow swaps to `lo` once a photo is
   // behind the stack, to save memory.
@@ -127,16 +156,9 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* Process — sticky title (1/3) + pathway (2/3), like "What we do" */}
+      {/* Team (moved here from the home page; swapped with Our process) */}
       <section className={`${PAD} py-24 sm:py-32`}>
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-          <div className="lg:col-span-1">
-            <h2 className="label sticky top-24 !text-ink">Our process</h2>
-          </div>
-          <div className="lg:col-span-2">
-            <ProcessPath steps={steps} />
-          </div>
-        </div>
+        <TeamGrid teamLead={teamLead} team={team} />
       </section>
 
       {/* Areas we cover */}

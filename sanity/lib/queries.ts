@@ -85,7 +85,7 @@ export const ABOUT_PAGE_QUERY = defineQuery(`
 export const FAMILY_QUERY = defineQuery(`
   *[_type == "family"][0]{
     teamLead,
-    team
+    team[]{ name, role, bio, image }
   }
 `);
 

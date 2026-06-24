@@ -76,6 +76,7 @@ export interface Family {
     _key?: string;
     name: string | null;
     role: string | null;
+    bio?: string | null;
     image: SanityImageSource | null;
   }> | null;
 }
