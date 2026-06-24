@@ -1,8 +1,10 @@
 import { defineField, defineType } from "sanity";
 
 // Everything editable on the About page. A single document.
-// ("What we do" services live in their own list; "Where we work" areas live
-//  under Contact, since they're shared with the contact page.)
+// Note: other About-page sections live in their own places —
+//  • 'What we do'    → the "What we do" list
+//  • 'Team'          → the "Team" document
+//  • 'Where we work' → the areas under "Contact"
 export const aboutPageType = defineType({
   name: "aboutPage",
   title: "About Page",
@@ -20,23 +22,7 @@ export const aboutPageType = defineType({
       type: "text",
       rows: 8,
       description:
-        "The feature bio on the About page. Separate paragraphs with a blank line.",
-    }),
-    defineField({
-      name: "processSteps",
-      title: "'Our process' steps",
-      type: "array",
-      description: "The numbered steps in the 'Our process' pathway.",
-      of: [
-        {
-          type: "object",
-          fields: [
-            defineField({ name: "title", title: "Title", type: "string" }),
-            defineField({ name: "text", title: "Description", type: "text", rows: 3 }),
-          ],
-          preview: { select: { title: "title", subtitle: "text" } },
-        },
-      ],
+        "The feature bio on the About page (the text that lights up word-by-word as you scroll). Separate paragraphs with a blank line.",
     }),
   ],
   preview: { prepare: () => ({ title: "About Page" }) },

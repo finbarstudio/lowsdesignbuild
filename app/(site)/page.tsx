@@ -13,12 +13,8 @@ import Wordmark from "@/app/components/Wordmark";
 import { processSteps as fallbackProcess, site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
-import {
-  ABOUT_PAGE_QUERY,
-  HOME_PAGE_QUERY,
-  PROJECTS_QUERY,
-} from "@/sanity/lib/queries";
-import type { AboutPage, HomePage, ProjectListItem } from "@/sanity/lib/types";
+import { HOME_PAGE_QUERY, PROJECTS_QUERY } from "@/sanity/lib/queries";
+import type { HomePage, ProjectListItem } from "@/sanity/lib/types";
 
 export const revalidate = 60;
 
@@ -34,10 +30,9 @@ export const metadata: Metadata = {
 
 
 export default async function HomePage() {
-  const [projects, home, about] = await Promise.all([
+  const [projects, home] = await Promise.all([
     client.fetch<ProjectListItem[]>(PROJECTS_QUERY),
     client.fetch<HomePage | null>(HOME_PAGE_QUERY),
-    client.fetch<AboutPage | null>(ABOUT_PAGE_QUERY),
   ]);
   // Curated in the CMS (Home Page → Featured projects) when set; otherwise the
   // first three projects.
@@ -62,10 +57,10 @@ export default async function HomePage() {
     home?.homeHeroText ||
     "Family Run Construction Services in London and Surrounding Areas";
 
-  // Process steps (moved here from the about page; swapped with the team).
+  // 'Our process' steps (edited under Home Page in the CMS).
   const steps =
-    about?.processSteps && about.processSteps.length > 0
-      ? about.processSteps.map((s, i) => ({
+    home?.processSteps && home.processSteps.length > 0
+      ? home.processSteps.map((s, i) => ({
           n: String(i + 1).padStart(2, "0"),
           title: s.title ?? "",
           text: s.text ?? "",

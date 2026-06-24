@@ -57,8 +57,8 @@ export const HOME_PAGE_QUERY = defineQuery(`
     "heroLqip": heroImage.asset->metadata.lqip,
     "heroDim": heroImage.asset->metadata.dimensions,
     "heroVideoUrl": heroVideo.asset->url,
-    heroTrailImages,
     homeHeroText,
+    processSteps,
     "featuredProjects": featuredProjects[]->{
       _id,
       title,
@@ -74,16 +74,15 @@ export const HOME_PAGE_QUERY = defineQuery(`
   }
 `);
 
-// About page copy + process steps.
+// About page copy.
 export const ABOUT_PAGE_QUERY = defineQuery(`
   *[_type == "aboutPage"][0]{
     aboutHeroText,
-    familyBio,
-    processSteps
+    familyBio
   }
 `);
 
-// The Family section (directors + team).
+// The Team section (directors + team).
 export const FAMILY_QUERY = defineQuery(`
   *[_type == "family"][0]{
     teamLead,

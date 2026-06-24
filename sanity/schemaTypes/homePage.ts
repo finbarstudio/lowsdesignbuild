@@ -11,30 +11,23 @@ export const homePageType = defineType({
       title: "Hero image",
       type: "image",
       options: { hotspot: true },
-      description: "The large image at the top of the home page. Ignored when a Hero video is set.",
+      description:
+        "The full-screen image at the very top of the home page. Ignored if a Hero video is set below.",
     }),
     defineField({
       name: "heroVideo",
-      title: "Hero video",
+      title: "Hero video (optional)",
       type: "file",
       options: { accept: "video/*" },
-      description: "Optional. Upload an MP4/WebM to use a looping video instead of the hero image. Keep under 10 MB for fast loads.",
+      description:
+        "Upload an MP4/WebM to use a silent looping video instead of the hero image. Keep it under ~10 MB so the page stays fast. Leave empty to use the hero image.",
     }),
     defineField({
       name: "homeHeroText",
       title: "Big slogan",
       type: "string",
       description:
-        "The large slogan that scrolls in over the home page (the 'Family run…' line).",
-    }),
-    defineField({
-      name: "heroTrailImages",
-      title: "Slogan trail images",
-      type: "array",
-      of: [{ type: "image", options: { hotspot: true } }],
-      description:
-        "Images that trail the cursor when hovering the big slogan. A handful of project photos.",
-      options: { layout: "grid" },
+        "The large slogan that scrolls up over the home page, e.g. 'Family Run Construction Services in London and Surrounding Areas'.",
     }),
     defineField({
       name: "featuredProjects",
@@ -43,21 +36,48 @@ export const homePageType = defineType({
       of: [{ type: "reference", to: [{ type: "project" }] }],
       validation: (rule) => rule.max(3),
       description:
-        "The (up to 3) projects shown as the big image cards on the home page. Leave empty to automatically show the first three projects.",
+        "Up to 3 projects shown as the big image cards on the home page. Leave empty to show the first three projects automatically.",
+    }),
+    defineField({
+      name: "processSteps",
+      title: "'Our process' steps",
+      type: "array",
+      description:
+        "The numbered steps in the 'Our process' section on the HOME page.",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Step title",
+              type: "string",
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: "text",
+              title: "Step description",
+              type: "text",
+              rows: 3,
+            }),
+          ],
+          preview: { select: { title: "title", subtitle: "text" } },
+        },
+      ],
     }),
     defineField({
       name: "instagramFeedId",
       title: "Instagram live feed (Behold ID)",
       type: "string",
       description:
-        "Paste your Behold.so feed ID to show a live, auto-updating Instagram feed. Leave blank to use the image strip below instead.",
+        "Paste your Behold.so feed ID to show a live, auto-updating Instagram feed. Leave blank to use the manual grid below instead.",
     }),
     defineField({
       name: "instagramPosts",
-      title: "Instagram strip (fallback)",
+      title: "Instagram grid (fallback)",
       type: "array",
       description:
-        "The scrolling Instagram band on the home page. Add a square photo for each post and the link to that post.",
+        "The Instagram grid on the home page (a 6×2 grid — up to 12 posts shown). Add a square photo for each post and the link to that post. Only used when no live feed ID is set above.",
       of: [
         {
           type: "object",
@@ -67,6 +87,7 @@ export const homePageType = defineType({
               title: "Post image",
               type: "image",
               options: { hotspot: true },
+              validation: (rule) => rule.required(),
             }),
             defineField({
               name: "url",

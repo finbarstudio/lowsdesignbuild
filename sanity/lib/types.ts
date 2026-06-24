@@ -46,8 +46,12 @@ export interface HomePage {
   heroLqip: string | null;
   heroDim: { width: number; height: number } | null;
   heroVideoUrl: string | null;
-  heroTrailImages: Array<SanityImageSource & { _key?: string }> | null;
   homeHeroText: string | null;
+  processSteps: Array<{
+    _key?: string;
+    title: string | null;
+    text: string | null;
+  }> | null;
   featuredProjects: ProjectListItem[] | null;
   instagramFeedId: string | null;
   instagramPosts: Array<{
@@ -60,11 +64,6 @@ export interface HomePage {
 export interface AboutPage {
   aboutHeroText: string | null;
   familyBio: string | null;
-  processSteps: Array<{
-    _key?: string;
-    title: string | null;
-    text: string | null;
-  }> | null;
 }
 
 export interface Family {
