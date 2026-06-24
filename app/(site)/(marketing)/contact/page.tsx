@@ -59,7 +59,7 @@ export default async function ContactPage() {
               areas={areas}
               align="center"
               animate={false}
-              sizeClass="text-sm sm:text-base"
+              sizeClass="text-lg sm:text-base"
             />
           </div>
           <div className="lg:col-span-2">

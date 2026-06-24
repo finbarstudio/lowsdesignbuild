@@ -651,18 +651,18 @@ export default function EstimateCalculator({
             <form onSubmit={handleLead} className="mt-10 max-w-3xl space-y-9">
               <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
                 <Field label="First name">
-                  <input name="firstName" required placeholder="Jane" className={inputClass} />
+                  <input name="firstName" required placeholder="John" className={inputClass} />
                 </Field>
                 <Field label="Last name">
-                  <input name="lastName" required placeholder="Low" className={inputClass} />
+                  <input name="lastName" required placeholder="Smith" className={inputClass} />
                 </Field>
               </div>
               <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
                 <Field label="Email">
-                  <input name="email" type="email" required placeholder="jane@email.com" className={inputClass} />
+                  <input name="email" type="email" required placeholder="john@email.com" className={inputClass} />
                 </Field>
                 <Field label="Phone">
-                  <input name="phone" required placeholder="07…" className={inputClass} />
+                  <input name="phone" placeholder="Optional" className={inputClass} />
                 </Field>
               </div>
               <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">

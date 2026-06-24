@@ -112,14 +112,11 @@ export const processSteps = [
 ];
 
 export const areas = [
-  "Beckenham",
-  "Bromley",
-  "Chislehurst",
-  "Dulwich",
-  "West Wickham",
-  "Orpington",
-  "Streatham",
-  "Sidcup",
-  "Lewisham",
-  "Sevenoaks",
+  "South London",
+  "North London",
+  "East London",
+  "West London",
+  "Greater London",
+  "Kent",
+  "Essex",
 ];

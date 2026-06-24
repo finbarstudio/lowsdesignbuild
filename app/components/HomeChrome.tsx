@@ -95,9 +95,10 @@ export default function HomeChrome({
           Math.max(0, (window.scrollY - vh * 0.1) / (vh * 0.75)),
         );
         const eq = q * q * (3 - 2 * q); // smoothstep
-        const s = 1.34 + (1.12 - 1.34) * eq;
-        heroImg.style.transform = `translate3d(0, ${(-eq * 48).toFixed(1)}px, 0) scale(${s.toFixed(3)})`;
-        heroImg.style.opacity = `${(1 - 0.35 * eq).toFixed(3)}`;
+        // keep the crop minimal: a constant slight zoom (1.06) just gives the
+        // headroom for the gentle drift-up + fade as the hero leaves.
+        heroImg.style.transform = `translate3d(0, ${(-eq * 20).toFixed(1)}px, 0) scale(1.06)`;
+        heroImg.style.opacity = `${(1 - 0.4 * eq).toFixed(3)}`;
       }
 
       // desktop sliding wordmark — position only; colour comes from `mode`.
@@ -309,15 +310,9 @@ export default function HomeChrome({
       {mode !== "footer" && (
         <Link
           href="/estimate"
-          className="group/cta fixed bottom-5 right-5 z-30 inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-3 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-background shadow-[0_6px_24px_rgba(0,0,0,0.18)] transition-transform duration-300 hover:scale-[1.04] sm:bottom-7 sm:right-7 sm:text-xs"
+          className="fixed bottom-5 right-5 z-30 inline-flex items-center rounded-full bg-foreground px-5 py-3 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-background shadow-[0_6px_24px_rgba(0,0,0,0.18)] transition-transform duration-300 hover:scale-[1.04] sm:bottom-7 sm:right-7 sm:text-xs"
         >
           Get an instant quote
-          <span
-            aria-hidden="true"
-            className="text-tertiary transition-transform duration-300 group-hover/cta:translate-x-0.5"
-          >
-            →
-          </span>
         </Link>
       )}
     </>

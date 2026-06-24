@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import DropReveal from "@/app/components/DropReveal";
+import FeaturedCard from "@/app/components/FeaturedCard";
 import HomeChrome from "@/app/components/HomeChrome";
 import InstagramFeed from "@/app/components/InstagramFeed";
 import InstagramStrip from "@/app/components/InstagramStrip";
@@ -31,53 +32,6 @@ export const metadata: Metadata = {
     "Family-run design & build across South London. Loft conversions, extensions and refurbishments, from the first drawing through to completion.",
 };
 
-
-function ProjectCard({ p }: { p: ProjectListItem }) {
-  const tags = [p.category, p.location, p.year].filter(Boolean).map(String);
-  return (
-    <Link
-      href={`/projects/${p.slug}`}
-      className="group relative block aspect-[16/9] w-full overflow-hidden bg-line transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform hover:z-10 hover:scale-[1.03]"
-    >
-      {/* the whole card scales up on hover (no in-frame zoom) */}
-      {p.mainImage && (
-        <Image
-          src={urlFor(p.mainImage).width(1600).height(900).fit("crop").url()}
-          alt={[p.title, p.category, p.location].filter(Boolean).join(", ")}
-          fill
-          sizes="80vw"
-          className="object-cover"
-        />
-      )}
-      {/* grey gradient — hidden by default (clean image), fades in on hover */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/20 to-transparent opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100" />
-
-      {/* overlay text: title + tags. Hidden by default (and on touch, where
-          there's no hover); on hover they mask in bottom-to-top, staggered. */}
-      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-5 sm:gap-3 sm:p-8">
-        <span className="block overflow-hidden">
-          <h3 className="translate-y-full text-2xl font-bold uppercase leading-[1.05] tracking-tight text-white transition-transform duration-[450ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0 sm:text-3xl lg:text-4xl">
-            {p.title}
-          </h3>
-        </span>
-        {tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {tags.map((t, i) => (
-              <span key={t} className="block overflow-hidden">
-                <span
-                  className="pill translate-y-[140%] text-white backdrop-blur-sm transition-transform duration-[450ms] ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0 text-[0.62rem] [border-width:1px]"
-                  style={{ transitionDelay: `${120 + i * 90}ms` }}
-                >
-                  {t}
-                </span>
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-    </Link>
-  );
-}
 
 export default async function HomePage() {
   const [projects, home, family] = await Promise.all([
@@ -167,8 +121,8 @@ export default async function HomePage() {
             loop
             muted
             playsInline
-            style={{ transform: "scale(1.34)", willChange: "transform, opacity" }}
-            className="absolute left-0 top-0 h-[120vh] w-screen object-cover"
+            style={{ transform: "scale(1.06)", willChange: "transform, opacity" }}
+            className="absolute left-0 top-0 h-full w-full object-cover"
           />
         ) : (
           <Image
@@ -181,8 +135,8 @@ export default async function HomePage() {
             placeholder="blur"
             blurDataURL={hero.blur}
             sizes="100vw"
-            style={{ transform: "scale(1.34)", willChange: "transform, opacity" }}
-            className="absolute left-0 top-0 h-[120vh] w-screen object-cover"
+            style={{ transform: "scale(1.06)", willChange: "transform, opacity" }}
+            className="absolute left-0 top-0 h-full w-full object-cover"
           />
         )}
         {/* same gradient as the project hero, so the wordmark stays legible */}
@@ -219,7 +173,7 @@ export default async function HomePage() {
           <section className="relative z-20 px-[10%] pt-24 sm:pt-32">
             <div className="space-y-16 sm:space-y-56 lg:space-y-[22rem]">
               {featured.map((p) => (
-                <ProjectCard key={p._id} p={p} />
+                <FeaturedCard key={p._id} p={p} />
               ))}
             </div>
           </section>
