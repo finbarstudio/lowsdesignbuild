@@ -167,7 +167,7 @@ export default async function HomePage() {
             "cover" role, so the People section below it uses normal spacing.
             Live Behold feed if its ID is set, otherwise the curated strip. */}
         {hasInsta && (
-          <section className="relative z-10 bg-background pb-32 pt-56 sm:pb-48 sm:pt-[30rem]">
+          <section className="relative z-10 bg-background pb-32 pt-28 sm:pb-48 sm:pt-44">
             <div className="mb-6 px-4 sm:mb-14 sm:px-6">
               <a
                 href={site.instagram}
@@ -193,7 +193,7 @@ export default async function HomePage() {
             (Swapped in from the about page, in place of the team.) */}
         <section
           className={`${PAD} relative z-10 bg-background pb-24 sm:pb-32 ${
-            instaPosts.length > 0 ? "pt-12 sm:pt-20" : "pt-56 sm:pt-[28rem]"
+            instaPosts.length > 0 ? "pt-12 sm:pt-20" : "pt-28 sm:pt-44"
           }`}
         >
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">

@@ -1,3 +1,4 @@
+import CustomCursor from "@/app/components/CustomCursor";
 import Footer from "@/app/components/Footer";
 import Preloader from "@/app/components/Preloader";
 import SmoothScroll from "@/app/components/SmoothScroll";
@@ -46,6 +47,7 @@ export default function SiteLayout({
       />
       <Preloader />
       <SmoothScroll />
+      <CustomCursor />
       {children}
       <Footer />
     </>
