@@ -675,7 +675,7 @@ export default function EstimateCalculator({
             mobile so the range is seen first) ---- */}
         <div
           ref={formRef}
-          className="order-3 mt-16 border-t border-line pt-12 sm:mt-20 lg:mt-0 lg:col-start-1 lg:row-start-2"
+          className="order-3 mt-24 border-t border-line pt-12 sm:mt-32 lg:mt-16 lg:pt-16 lg:col-start-1 lg:row-start-2"
         >
             <p className="label !text-ink">Get your detailed estimate</p>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">
