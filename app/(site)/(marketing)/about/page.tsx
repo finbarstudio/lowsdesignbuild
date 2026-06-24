@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import AreaPills from "@/app/components/AreaPills";
 import ScrollNudge from "@/app/components/ScrollNudge";
+import ScrollText from "@/app/components/ScrollText";
 import TeamGrid from "@/app/components/TeamGrid";
 import WordReveal from "@/app/components/WordReveal";
 import Reveal from "@/app/components/Reveal";
@@ -128,16 +129,12 @@ export default async function AboutPage() {
           <div className="lg:col-span-1">
             <h2 className="label sticky top-24 !text-ink">A family company</h2>
           </div>
-          <Reveal className="lg:col-span-2">
-            {bioParas.map((para, i) => (
-              <p
-                key={i}
-                className={`text-2xl leading-snug sm:text-3xl ${i > 0 ? "mt-8" : ""}`}
-              >
-                {para}
-              </p>
-            ))}
-          </Reveal>
+          <div className="lg:col-span-2">
+            <ScrollText
+              paragraphs={bioParas}
+              className="text-2xl leading-snug sm:text-3xl"
+            />
+          </div>
         </div>
       </section>
 
