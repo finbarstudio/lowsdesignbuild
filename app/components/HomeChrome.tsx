@@ -116,12 +116,11 @@ export default function HomeChrome({
         const y1 = (BAR - targetH) / 2; // centred in the bar
         const y = y0 + (y1 - y0) * p;
 
-        // Lockup: once the wordmark has fully docked (p≈1) wait a beat, then the
-        // wordmark slides right and the house mark fades in on its left. Driven
-        // by lockProgRef (0→1), animated on a timer rather than by scroll.
+        // Dock: once the wordmark has fully docked (p≈1) wait a beat, then the
+        // wordmark crossfades into the house mark (nav shows the mark only).
+        // Driven by lockProgRef (0→1), animated on a timer rather than by scroll.
         const markH = targetH;
         const markW = markH * MARK_RATIO;
-        const gap = 12;
         if (p >= 0.99) {
           if (lockPhaseRef.current === "out") {
             lockPhaseRef.current = "pending";
@@ -142,19 +141,19 @@ export default function HomeChrome({
         }
 
         const lp = lockProgRef.current;
-        const xShift = (markW + gap) * lp;
-        wrap.style.transform = `translate(${edge + xShift}px, ${y}px) scale(${s})`;
+        // wordmark holds its docked spot and fades out as the mark fades in
+        wrap.style.transform = `translate(${edge}px, ${y}px) scale(${s})`;
+        wrap.style.opacity = `${(1 - lp).toFixed(3)}`;
 
         const mark = markRef.current;
         if (mark) {
           mark.style.width = `${markW}px`;
           mark.style.height = `${markH}px`;
           mark.style.transform = `translate(${edge}px, ${y1}px)`;
+          mark.style.opacity = `${lp.toFixed(3)}`;
         }
-        // the mark slides in out of its own clip (mask reveal), and slides back
-        // out when scrolling to the top
         const inner = markInnerRef.current;
-        if (inner) inner.style.transform = `translateX(${(lp - 1) * 100}%)`;
+        if (inner) inner.style.transform = "translateX(0)";
       }
     };
 
@@ -223,7 +222,7 @@ export default function HomeChrome({
             }}
             className={`logo-mask flex items-center transition-colors duration-300 sm:hidden ${barColor}`}
           >
-            <Wordmark className="h-[26px] w-[57px]" />
+            <Logomark className="h-[26px] w-[37px]" />
           </Link>
 
           {/* desktop nav, top right */}
@@ -272,11 +271,12 @@ export default function HomeChrome({
         <Wordmark className="aspect-[121.71/55.33] w-full" />
       </Link>
 
-      {/* desktop: the house mark that masks-in beside the docked wordmark. The
-          outer span clips; the inner slides in/out of it. */}
+      {/* desktop: the house mark that the docked wordmark crossfades into.
+          Starts hidden (opacity 0) — JS fades it in once the wordmark docks. */}
       <span
         ref={markRef}
         aria-hidden="true"
+        style={{ opacity: 0 }}
         className={`pointer-events-none fixed left-0 top-0 z-50 hidden overflow-hidden will-change-transform sm:block ${textColor}`}
       >
         <span ref={markInnerRef} className="block h-full w-full">

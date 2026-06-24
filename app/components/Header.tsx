@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import LogoLockup from "@/app/components/LogoLockup";
+import Logomark from "@/app/components/Logomark";
 import { nav, site } from "@/app/lib/site";
 import { smoothScrollTop } from "@/app/lib/scrollTop";
 
@@ -57,13 +57,13 @@ export default function Header({ projectCount }: { projectCount?: number }) {
       }`}
     >
       <div className="relative mx-auto flex h-full w-full max-w-[1900px] items-center px-4 sm:px-6">
-        {/* logo left — full lockup */}
+        {/* logo left — just the house mark */}
         <Link
           href="/"
           aria-label={`${site.name}, home`}
           className={`flex items-center transition-colors duration-300 ${barColor}`}
         >
-          <LogoLockup />
+          <Logomark className="h-[26px] w-[37px]" />
         </Link>
 
         {/* nav right */}

@@ -207,14 +207,25 @@ function Field({
   );
 }
 
-// An info icon that reveals an explanation on hover (and on tap/focus for touch).
+// An info icon that reveals an explanation on hover (desktop) and on tap
+// (mobile) — tapping toggles it, since touch devices have no hover.
 function InfoTip({ text }: { text?: string }) {
+  const [open, setOpen] = useState(false);
   if (!text) return null;
   return (
-    <span className="group relative ml-1.5 inline-flex align-middle">
+    <span className="relative ml-1.5 inline-flex align-middle">
       <button
         type="button"
         aria-label="More information"
+        aria-expanded={open}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setOpen((v) => !v);
+        }}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        onBlur={() => setOpen(false)}
         className="block text-muted transition-colors hover:text-tertiary"
       >
         <svg
@@ -230,7 +241,11 @@ function InfoTip({ text }: { text?: string }) {
           <circle cx="12" cy="7.75" r="1.05" fill="currentColor" stroke="none" />
         </svg>
       </button>
-      <span className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 w-60 rounded bg-ink px-3 py-2 text-xs font-normal normal-case leading-relaxed text-background opacity-0 shadow-xl transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+      <span
+        className={`absolute bottom-full left-0 z-30 mb-2 w-60 rounded bg-ink px-3 py-2 text-xs font-normal normal-case leading-relaxed text-background shadow-xl transition-opacity duration-200 ${
+          open ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      >
         {text}
       </span>
     </span>
@@ -384,6 +399,24 @@ export default function EstimateCalculator({
   const [showAdv, setShowAdv] = useState(false);
   const [sent, setSent] = useState<"" | "sent" | "mailto">("");
   const formRef = useRef<HTMLDivElement>(null);
+
+  // hide the "Get your estimate" jump-to-form button once the form is reached
+  // (it's redundant by then); show it again when scrolling back up to the calc
+  const [atForm, setAtForm] = useState(false);
+  useEffect(() => {
+    const onScroll = () => {
+      const el = formRef.current;
+      if (!el) return;
+      setAtForm(el.getBoundingClientRect().top < window.innerHeight * 0.6);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
 
   const setE = (k: keyof typeof ext, v: number) =>
     setExt((s) => ({ ...s, [k]: v }));
@@ -591,12 +624,14 @@ export default function EstimateCalculator({
             <button
               type="button"
               onClick={() => setShowAdv((v) => !v)}
-              className="label !text-ink flex items-center gap-2"
+              className="flex items-center gap-2 text-sm font-semibold tracking-tight text-ink"
             >
               Advanced project factors
-              <span className="text-muted">{showAdv ? "–" : "+"}</span>
+              <span className="font-mono text-base leading-none text-tertiary">
+                {showAdv ? "–" : "+"}
+              </span>
             </button>
-            <p className="mt-2 text-xs text-muted">
+            <p className="mt-1 text-xs text-muted">
               Optional — planning, logistics, services and structural extras.
             </p>
 
@@ -725,13 +760,18 @@ export default function EstimateCalculator({
               design development, planning requirements and specification
               choices.
             </p>
-            <button
-              type="button"
-              onClick={scrollToForm}
-              className="link link-underline is-tracked mt-7 block w-fit"
-            >
-              Get your estimate
-            </button>
+            <span className="mt-7 block overflow-hidden">
+              <button
+                type="button"
+                onClick={scrollToForm}
+                aria-hidden={atForm}
+                tabIndex={atForm ? -1 : 0}
+                style={{ transform: atForm ? "translateY(160%)" : "translateY(0)" }}
+                className="link link-underline is-tracked block w-fit transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+              >
+                Get your estimate
+              </button>
+            </span>
           </div>
         </div>
       </div>
