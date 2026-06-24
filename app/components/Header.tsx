@@ -115,34 +115,44 @@ export default function Header({ projectCount }: { projectCount?: number }) {
         </button>
       </div>
 
-      {open && (
-        <nav className="flex flex-col gap-1 border-t border-line bg-background px-4 py-4 font-mono text-sm uppercase tracking-[0.12em] text-ink sm:hidden">
-          {nav.map((item) => {
-            const isCurrent = pathname === item.href;
-            return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={(e) => {
-                setOpen(false);
-                if (isCurrent) {
-                  e.preventDefault();
-                  smoothScrollTop();
-                }
-              }}
-              className="w-fit py-3"
-            >
-              <span className="link-underline">{item.label}</span>
-              {item.href === "/projects" && projectCount ? (
-                <sup className="ml-0.5 text-[0.6em] font-medium">
-                  {projectCount}
-                </sup>
-              ) : null}
-            </Link>
-            );
-          })}
-        </nav>
-      )}
+      {/* mobile menu — the whole panel wipes in top→bottom, items mask down */}
+      <nav
+        aria-hidden={!open}
+        style={{ clipPath: open ? "inset(0 0 0 0)" : "inset(0 0 100% 0)" }}
+        className={`flex flex-col gap-1 border-t border-line bg-background px-4 py-4 font-mono text-sm uppercase tracking-[0.12em] text-ink transition-[clip-path] duration-[500ms] ease-[cubic-bezier(0.76,0,0.24,1)] sm:hidden ${
+          open ? "" : "pointer-events-none"
+        }`}
+      >
+        {nav.map((item, i) => {
+          const isCurrent = pathname === item.href;
+          return (
+            <span key={item.href} className="block overflow-hidden">
+              <Link
+                href={item.href}
+                onClick={(e) => {
+                  setOpen(false);
+                  if (isCurrent) {
+                    e.preventDefault();
+                    smoothScrollTop();
+                  }
+                }}
+                className="block w-fit py-3 transition-transform duration-[450ms] ease-[cubic-bezier(0.76,0,0.24,1)]"
+                style={{
+                  transform: open ? "translateY(0)" : "translateY(-130%)",
+                  transitionDelay: open ? `${120 + i * 70}ms` : "0ms",
+                }}
+              >
+                <span className="link-underline">{item.label}</span>
+                {item.href === "/projects" && projectCount ? (
+                  <sup className="ml-0.5 text-[0.6em] font-medium">
+                    {projectCount}
+                  </sup>
+                ) : null}
+              </Link>
+            </span>
+          );
+        })}
+      </nav>
     </header>
   );
 }

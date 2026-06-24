@@ -284,15 +284,25 @@ export default function HomeChrome({
         </span>
       </span>
 
-      {/* mobile menu panel */}
-      {open && (
-        <nav className="fixed inset-x-0 top-16 z-40 flex flex-col gap-1 border-b border-line bg-background px-4 py-4 font-mono text-sm uppercase tracking-[0.12em] text-ink sm:hidden">
-          {nav.map((item) => (
+      {/* mobile menu panel — the whole panel (bg + items) wipes in top→bottom,
+          and each item masks down in turn, fast. */}
+      <nav
+        aria-hidden={!open}
+        style={{ clipPath: open ? "inset(0 0 0 0)" : "inset(0 0 100% 0)" }}
+        className={`fixed inset-x-0 top-16 z-40 flex flex-col gap-1 border-b border-line bg-background px-4 py-4 font-mono text-sm uppercase tracking-[0.12em] text-ink transition-[clip-path] duration-[500ms] ease-[cubic-bezier(0.76,0,0.24,1)] sm:hidden ${
+          open ? "" : "pointer-events-none"
+        }`}
+      >
+        {nav.map((item, i) => (
+          <span key={item.href} className="block overflow-hidden">
             <Link
-              key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="w-fit py-3"
+              className="block w-fit py-3 transition-transform duration-[450ms] ease-[cubic-bezier(0.76,0,0.24,1)]"
+              style={{
+                transform: open ? "translateY(0)" : "translateY(-130%)",
+                transitionDelay: open ? `${120 + i * 70}ms` : "0ms",
+              }}
             >
               <span className="link-underline">{item.label}</span>
               {item.href === "/projects" && projectCount ? (
@@ -301,9 +311,9 @@ export default function HomeChrome({
                 </sup>
               ) : null}
             </Link>
-          ))}
-        </nav>
-      )}
+          </span>
+        ))}
+      </nav>
 
       {/* "Get an instant quote" — floating CTA to the estimator. Hidden once you
           reach the gold footer so it never clashes with it. */}
