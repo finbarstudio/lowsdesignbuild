@@ -43,7 +43,10 @@ export default function SiteLayout({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        // escape "<" so no value could ever break out of the <script> tag
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
       />
       <Preloader />
       <SmoothScroll />
