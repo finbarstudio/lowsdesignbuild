@@ -279,43 +279,42 @@ html.lenis body {
   transform: none;
 }
 
-/* ---- Path-trace preloader (sharp edges, inverted slate palette) ---- */
+/* ---- Keyhole preloader ----
+   The mark draws itself, then the whole logo becomes a see-through cut at the
+   same line weight and zooms into the rightmost vertical bar — a central slit
+   that widens onto the page beneath. The motion is driven in Preloader.tsx; this
+   just styles the layers (the SVG paints the paper, so its punched hole reveals
+   the real page) and provides a fail-safe: if the JS timeline ever stalls, the
+   curtain still clears so the page is never left covered. */
 .preloader {
   position: fixed;
   inset: 0;
   z-index: 80;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--background);
-  animation: preloader-out 0.7s cubic-bezier(0.76, 0, 0.24, 1) 1.6s forwards;
+  /* transparent — the SVG's paper rect is the curtain, so the hole reveals the page */
+  animation: preloader-failsafe 0.01s linear 4.4s forwards;
 }
-.preloader__logo {
-  width: clamp(96px, 13vw, 160px);
-  height: auto;
-  overflow: visible;
+.preloader__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
-.preloader__path {
+.preloader__paper {
+  fill: var(--background);
+}
+.preloader__draw {
   fill: none;
   stroke: var(--slate);
   stroke-width: 4px;
   stroke-linecap: square; /* sharp, extruded */
   stroke-linejoin: miter;
   stroke-miterlimit: 10;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: preloader-draw 1.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
-@keyframes preloader-draw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-@keyframes preloader-out {
+@keyframes preloader-failsafe {
   to {
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-12px);
     pointer-events: none;
   }
 }
@@ -330,14 +329,7 @@ html.lenis body {
     transition: none;
   }
   .preloader {
-    animation: none;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
-  .preloader__path {
-    animation: none;
-    stroke-dashoffset: 0;
+    display: none;
   }
   html.entrance-armed .hero-reveal,
   html.entrance-go .hero-reveal {

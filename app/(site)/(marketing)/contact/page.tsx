@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import AreaPills from "@/app/components/AreaPills";
 import ContactForm from "@/app/components/ContactForm";
 import ScrollNudge from "@/app/components/ScrollNudge";
+import ViewProjectsButton from "@/app/components/ViewProjectsButton";
 import WordReveal from "@/app/components/WordReveal";
 import { areas as fallbackAreas, site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
@@ -61,6 +62,7 @@ export default async function ContactPage() {
               animate={false}
               sizeClass="text-lg sm:text-base"
             />
+            <ViewProjectsButton className="mt-12 sm:mt-16" />
           </div>
           <div className="lg:col-span-2">
             <p className="label mb-8 !text-ink">Tell us about your project</p>

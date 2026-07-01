@@ -151,7 +151,6 @@ export default async function AboutPage() {
       {/* Team (moved here from the home page; swapped with Our process) */}
       <section className={`${PAD} py-24 sm:py-32`}>
         <TeamGrid teamLead={teamLead} team={team} />
-        <ViewProjectsButton className="mt-20 sm:mt-28" />
       </section>
 
       {/* Areas we cover */}
@@ -163,6 +162,10 @@ export default async function AboutPage() {
         </Reveal>
         <AreaPills areas={areaList} widthClass="max-w-3xl" />
       </section>
+
+      {/* View projects — sits between "where we work" and the guarantee CTA,
+          with equal padding above and below */}
+      <ViewProjectsButton className="py-20 sm:py-24" />
 
       {/* Quality guarantee CTA */}
       <section

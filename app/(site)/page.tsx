@@ -18,11 +18,6 @@ import type { HomePage, ProjectListItem } from "@/sanity/lib/types";
 
 export const revalidate = 60;
 
-// Tiny base64 blur of the bundled hero, used as an instant placeholder when no
-// CMS hero is set (so there is always something on screen immediately).
-const FALLBACK_HERO_BLUR =
-  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAGKADAAQAAAABAAAAEAAAAAD/7QA4UGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAAAA4QklNBCUAAAAAABDUHYzZjwCyBOmACZjs+EJ+/8AAEQgAEAAYAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/bAEMACQkJCQkJEAkJEBYQEBAWHhYWFhYeJh4eHh4eJi4mJiYmJiYuLi4uLi4uLjc3Nzc3N0BAQEBASEhISEhISEhISP/bAEMBCwwMEhESHxERH0szKjNLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS//dAAQAAv/aAAwDAQACEQMRAD8Ap2V7cRRCRSu3oeeh/wD1Vrpq1wFLyAbVzkjvgZ45rEtoZpYm6jf06e3t/StSS1lKhgORn5exyMc8VxyZvFF7U5Slr5x5BGcd+lcr/aC/88z+f/1q6a/lgltfJnUqMfr+Fc59l07+8fzqLy6Cle+h/9k=";
-
 export const metadata: Metadata = {
   description:
     "Family-run design & build across South London. Loft conversions, extensions and refurbishments, from the first drawing through to completion.",
@@ -35,16 +30,17 @@ export default async function HomePage() {
     client.fetch<HomePage | null>(HOME_PAGE_QUERY),
   ]);
 
-  // Hero comes from the CMS when set; Sanity supplies a tiny lqip blur as the
-  // instant placeholder. Otherwise fall back to the bundled image + its blur.
+  // Hero from the CMS when set. A low-res of the same image loads instantly as a
+  // sharp base; the full-res (priority) silently swaps in on top once loaded —
+  // usually before the preloader even lifts, given it has ~3s to fetch.
   const hero = home?.heroImage
     ? {
         src: urlFor(home.heroImage).width(3200).quality(80).url(),
-        blur: home.heroLqip ?? FALLBACK_HERO_BLUR,
+        low: urlFor(home.heroImage).width(768).quality(45).url(),
         w: home.heroDim?.width ?? 3200,
         h: home.heroDim?.height ?? 2133,
       }
-    : { src: "/hero-main.jpg", blur: FALLBACK_HERO_BLUR, w: 3200, h: 2133 };
+    : { src: "/hero-main.jpg", low: "/hero-main.jpg", w: 3200, h: 2133 };
 
   // Editable copy + people, with the built-in content as a graceful fallback.
   const heroText =
@@ -78,9 +74,14 @@ export default async function HomePage() {
   const igFeedId = home?.instagramFeedId?.trim() || "";
   const hasInsta = igFeedId !== "" || instaPosts.length > 0;
 
+  // A live project hero for the "Get an instant quote" spotlight button.
+  const quotePhoto = projects[0]?.mainImage
+    ? urlFor(projects[0].mainImage).width(480).height(160).fit("crop").url()
+    : undefined;
+
   return (
     <>
-      <HomeChrome projectCount={projects.length} />
+      <HomeChrome projectCount={projects.length} quotePhoto={quotePhoto} />
 
       {/* ---------------- Hero ---------------- */}
       <section
@@ -101,19 +102,26 @@ export default async function HomePage() {
             className="absolute left-0 top-0 h-full w-full object-cover"
           />
         ) : (
-          <Image
+          /* Low-res base loads instantly as a sharp background; the full-res
+             image (priority) silently covers it once loaded. */
+          <div
             id="home-hero-img"
-            src={hero.src}
-            alt="A Lows Design & Build living room"
-            width={hero.w}
-            height={hero.h}
-            priority
-            placeholder="blur"
-            blurDataURL={hero.blur}
-            sizes="100vw"
-            style={{ transform: "scale(1.06)", willChange: "transform, opacity" }}
-            className="absolute left-0 top-0 h-full w-full object-cover"
-          />
+            className="absolute left-0 top-0 h-full w-full bg-cover bg-center"
+            style={{
+              backgroundImage: `url("${hero.low}")`,
+              transform: "scale(1.06)",
+              willChange: "transform, opacity",
+            }}
+          >
+            <Image
+              src={hero.src}
+              alt="A Lows Design & Build living room"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>
         )}
         {/* same gradient as the project hero, so the wordmark stays legible */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/15" />

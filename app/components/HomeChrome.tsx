@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import InstantQuoteButton from "@/app/components/InstantQuoteButton";
 import Logomark from "@/app/components/Logomark";
+import MobileMenu from "@/app/components/MobileMenu";
 import Wordmark from "@/app/components/Wordmark";
 import { nav, site } from "@/app/lib/site";
 import { smoothScrollTop } from "@/app/lib/scrollTop";
@@ -32,8 +34,10 @@ type Mode = "hero" | "ink" | "footer";
  */
 export default function HomeChrome({
   projectCount,
+  quotePhoto,
 }: {
   projectCount?: number;
+  quotePhoto?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>("hero");
@@ -57,13 +61,14 @@ export default function HomeChrome({
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     html.classList.add("entrance-armed");
     const go = () => html.classList.add("entrance-go");
-    // On a fresh load wait for the preloader to fully lift (it fades 1.6s →
-    // 2.3s) so the hero + logo reveal is seen after it, not under it. On a
-    // client-side return there's no preloader, so reveal almost immediately.
+    // On a fresh load fire early so the hero + wordmark settle UNDER the paper
+    // curtain — the keyhole preloader then opens its slit onto a finished page,
+    // not one still animating in (its slit starts ~1.8s; the hero wipe finishes
+    // ~1.4s). On a client-side return there's no preloader, so reveal at once.
     const fresh = homeFullLoad;
     homeFullLoad = false;
-    const t1 = window.setTimeout(go, fresh ? 2300 : 80);
-    const t2 = window.setTimeout(go, fresh ? 4200 : 1500); // safety net
+    const t1 = window.setTimeout(go, fresh ? 250 : 80);
+    const t2 = window.setTimeout(go, fresh ? 1600 : 1500); // safety net
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
@@ -284,46 +289,15 @@ export default function HomeChrome({
         </span>
       </span>
 
-      {/* mobile menu panel — the whole panel (bg + items) wipes in top→bottom,
-          and each item masks down in turn, fast. */}
-      <nav
-        aria-hidden={!open}
-        style={{ clipPath: open ? "inset(0 0 0 0)" : "inset(0 0 100% 0)" }}
-        className={`fixed inset-x-0 top-16 z-40 flex flex-col gap-1 bg-background px-4 py-4 font-mono text-sm uppercase tracking-[0.12em] text-ink transition-[clip-path] duration-[500ms] ease-[cubic-bezier(0.76,0,0.24,1)] sm:hidden ${
-          open ? "" : "pointer-events-none"
-        }`}
-      >
-        {nav.map((item, i) => (
-          <span key={item.href} className="block overflow-hidden">
-            <Link
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="block w-fit py-3 transition-transform duration-[450ms] ease-[cubic-bezier(0.76,0,0.24,1)]"
-              style={{
-                transform: open ? "translateY(0)" : "translateY(-130%)",
-                transitionDelay: open ? `${120 + i * 70}ms` : "0ms",
-              }}
-            >
-              <span className="link-underline">{item.label}</span>
-              {item.href === "/projects" && projectCount ? (
-                <sup className="ml-0.5 text-[0.6em] font-medium">
-                  {projectCount}
-                </sup>
-              ) : null}
-            </Link>
-          </span>
-        ))}
-      </nav>
+      {/* mobile menu — right drawer */}
+      <MobileMenu open={open} onClose={() => setOpen(false)} />
 
-      {/* "Get an instant quote" — floating CTA to the estimator. Hidden once you
-          reach the gold footer so it never clashes with it. */}
+      {/* "Get an instant quote" — floating Spotlight CTA to the estimator. Hidden
+          once you reach the gold footer so it never clashes with it. */}
       {mode !== "footer" && (
-        <Link
-          href="/estimate"
-          className="fixed bottom-5 right-5 z-30 inline-flex items-center rounded-full bg-foreground px-5 py-3 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-background shadow-[0_6px_24px_rgba(0,0,0,0.18)] transition-transform duration-300 hover:scale-[1.04] sm:bottom-7 sm:right-7 sm:text-xs"
-        >
-          Get an instant quote
-        </Link>
+        <div className="fixed bottom-5 right-5 z-30 sm:bottom-7 sm:right-7">
+          <InstantQuoteButton photo={quotePhoto} />
+        </div>
       )}
     </>
   );

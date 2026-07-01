@@ -20,6 +20,18 @@ export const PROJECTS_QUERY = defineQuery(`
   }
 `);
 
+// A few project hero images (mainImage) for the "View projects" button's photo
+// fan — same ordering as the grid, so it features the lead projects and tracks
+// the CMS automatically.
+export const PROJECT_THUMBS_QUERY = defineQuery(`
+  *[_type == "project" && defined(slug.current) && defined(mainImage)]
+  | order(coalesce(order, 999) asc, _createdAt desc) [0...3] {
+    _id,
+    title,
+    mainImage
+  }
+`);
+
 // How many published projects there are — shown as a superscript count.
 export const PROJECT_COUNT_QUERY = defineQuery(`
   count(*[_type == "project" && defined(slug.current)])
