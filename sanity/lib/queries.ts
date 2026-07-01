@@ -59,16 +59,6 @@ export const HOME_PAGE_QUERY = defineQuery(`
     "heroVideoUrl": heroVideo.asset->url,
     homeHeroText,
     processSteps,
-    "featuredProjects": featuredProjects[]->{
-      _id,
-      title,
-      "slug": slug.current,
-      location,
-      category,
-      year,
-      "lqip": mainImage.asset->metadata.lqip,
-      mainImage
-    },
     instagramFeedId,
     instagramPosts[]{ url, image }
   }

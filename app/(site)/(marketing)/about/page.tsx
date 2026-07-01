@@ -6,6 +6,7 @@ import AreaPills from "@/app/components/AreaPills";
 import ScrollNudge from "@/app/components/ScrollNudge";
 import ScrollText from "@/app/components/ScrollText";
 import TeamGrid from "@/app/components/TeamGrid";
+import ViewProjectsButton from "@/app/components/ViewProjectsButton";
 import WordReveal from "@/app/components/WordReveal";
 import Reveal from "@/app/components/Reveal";
 import ServiceGrid from "@/app/components/ServiceGrid";
@@ -150,6 +151,7 @@ export default async function AboutPage() {
       {/* Team (moved here from the home page; swapped with Our process) */}
       <section className={`${PAD} py-24 sm:py-32`}>
         <TeamGrid teamLead={teamLead} team={team} />
+        <ViewProjectsButton className="mt-20 sm:mt-28" />
       </section>
 
       {/* Areas we cover */}

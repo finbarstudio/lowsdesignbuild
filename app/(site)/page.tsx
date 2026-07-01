@@ -2,12 +2,12 @@ import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 import Image from "next/image";
 
-import FeaturedCard from "@/app/components/FeaturedCard";
 import HomeChrome from "@/app/components/HomeChrome";
 import InstagramFeed from "@/app/components/InstagramFeed";
 import InstagramStrip from "@/app/components/InstagramStrip";
 import ProcessPath from "@/app/components/ProcessPath";
 import StickySlogan from "@/app/components/StickySlogan";
+import ViewProjectsButton from "@/app/components/ViewProjectsButton";
 import WordReveal from "@/app/components/WordReveal";
 import Wordmark from "@/app/components/Wordmark";
 import { processSteps as fallbackProcess, site } from "@/app/lib/site";
@@ -34,12 +34,6 @@ export default async function HomePage() {
     client.fetch<ProjectListItem[]>(PROJECTS_QUERY),
     client.fetch<HomePage | null>(HOME_PAGE_QUERY),
   ]);
-  // Curated in the CMS (Home Page → Featured projects) when set; otherwise the
-  // first three projects.
-  const featured =
-    home?.featuredProjects && home.featuredProjects.length > 0
-      ? home.featuredProjects
-      : projects.slice(0, 3);
 
   // Hero comes from the CMS when set; Sanity supplies a tiny lqip blur as the
   // instant placeholder. Otherwise fall back to the bundled image + its blur.
@@ -146,28 +140,28 @@ export default async function HomePage() {
           </StickySlogan>
         </section>
 
-        {/* ---------------- Featured projects (image cards) ------------- */}
-        {/* Transparent: each opaque card wipes over the sticky slogan behind,
-            and the slogan shows in the gaps between them. No bottom padding so
-            the slogan stays hidden behind the last card at the very end. */}
-        {/* z-20 (above the People block) so the last card's hover-scale isn't
-            clipped at the bottom by the opaque paper background that follows */}
-        {featured.length > 0 && (
-          <section className="relative z-20 px-[10%] pt-24 sm:pt-32">
-            <div className="space-y-16 sm:space-y-56 lg:space-y-[22rem]">
-              {featured.map((p, i) => (
-                <FeaturedCard key={p._id} p={p} first={i === 0} />
-              ))}
+        {/* ---------------- Our process ---------------- */}
+        {/* The opaque "cover": it slides up over the pinned slogan (the slogan
+            fades out behind it). Followed by a View projects button. */}
+        <section
+          data-featured-first
+          className={`${PAD} relative z-10 bg-background pb-20 pt-28 sm:pb-28 sm:pt-44`}
+        >
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+            <div className="lg:col-span-1">
+              <h2 className="label sticky top-24 !text-ink">Our process</h2>
             </div>
-          </section>
-        )}
+            <div className="lg:col-span-2">
+              <ProcessPath steps={steps} />
+            </div>
+          </div>
+          <ViewProjectsButton className="mt-16 sm:mt-24" />
+        </section>
 
         {/* ---------------- Instagram ---------------- */}
-        {/* Opaque band that slides up over the pinned slogan — it takes the
-            "cover" role, so the People section below it uses normal spacing.
-            Live Behold feed if its ID is set, otherwise the curated strip. */}
+        {/* Live Behold feed if its ID is set, otherwise the curated strip. */}
         {hasInsta && (
-          <section className="relative z-10 bg-background pb-32 pt-28 sm:pb-48 sm:pt-44">
+          <section className="relative z-10 bg-background pb-32 pt-8 sm:pb-48 sm:pt-16">
             <div className="mb-6 px-4 sm:mb-14 sm:px-6">
               <a
                 href={site.instagram}
@@ -185,26 +179,6 @@ export default async function HomePage() {
             )}
           </section>
         )}
-
-        {/* ---------------- Our process ---------------- */}
-        {/* Opaque paper background that slides up over the pinned slogan. When
-            the Instagram band is present it already covers the slogan, so this
-            uses normal top spacing; otherwise it takes the cover role itself.
-            (Swapped in from the about page, in place of the team.) */}
-        <section
-          className={`${PAD} relative z-10 bg-background pb-24 sm:pb-32 ${
-            instaPosts.length > 0 ? "pt-12 sm:pt-20" : "pt-28 sm:pt-44"
-          }`}
-        >
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-            <div className="lg:col-span-1">
-              <h2 className="label sticky top-24 !text-ink">Our process</h2>
-            </div>
-            <div className="lg:col-span-2">
-              <ProcessPath steps={steps} />
-            </div>
-          </div>
-        </section>
       </div>
     </>
   );

@@ -30,15 +30,6 @@ export const homePageType = defineType({
         "The large slogan that scrolls up over the home page, e.g. 'Family Run Construction Services in London and Surrounding Areas'.",
     }),
     defineField({
-      name: "featuredProjects",
-      title: "Featured projects",
-      type: "array",
-      of: [{ type: "reference", to: [{ type: "project" }] }],
-      validation: (rule) => rule.max(3),
-      description:
-        "Up to 3 projects shown as the big image cards on the home page. Leave empty to show the first three projects automatically.",
-    }),
-    defineField({
       name: "processSteps",
       title: "'Our process' steps",
       type: "array",

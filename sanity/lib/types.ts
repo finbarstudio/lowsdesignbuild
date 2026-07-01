@@ -52,7 +52,6 @@ export interface HomePage {
     title: string | null;
     text: string | null;
   }> | null;
-  featuredProjects: ProjectListItem[] | null;
   instagramFeedId: string | null;
   instagramPosts: Array<{
     _key?: string;
