@@ -62,7 +62,7 @@ export default async function ContactPage() {
               animate={false}
               sizeClass="text-lg sm:text-base"
             />
-            <ViewProjectsButton className="mt-12 sm:mt-16" />
+            <ViewProjectsButton className="mt-12 mb-12 sm:mt-16 lg:mb-0" />
           </div>
           <div className="lg:col-span-2">
             <p className="label mb-8 !text-ink">Tell us about your project</p>

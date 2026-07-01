@@ -127,7 +127,7 @@ export default async function HomePage() {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/15" />
         {/* Mobile: the LOWS wordmark sits on the hero image (desktop has the
             sliding wordmark instead, so this is hidden there). */}
-        <Wordmark className="pointer-events-none absolute bottom-7 left-4 z-10 h-[58px] w-[128px] text-white sm:hidden" />
+        <Wordmark className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[70px] w-[154px] -translate-x-1/2 -translate-y-1/2 text-white sm:hidden" />
       </section>
 
       {/* Sticky statement + featured projects share a wrapper so the pinned

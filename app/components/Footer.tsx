@@ -40,16 +40,16 @@ export default function Footer() {
   return (
     <footer
       id="site-footer"
-      className="flex h-[100svh] min-h-[560px] flex-col overflow-hidden font-mono text-tertiary"
+      className="flex h-[40vh] flex-col overflow-hidden font-mono text-tertiary sm:h-[100svh] sm:min-h-[560px]"
     >
       {/* 1px hairline — sits at the nav-bar height (64px) so the nav items above
           it read as properly padded; draws left→right once the footer appears */}
-      <div className="px-4 pt-16 sm:px-6">
+      <div className="px-4 pt-8 sm:px-6 sm:pt-16">
         <FooterRule />
       </div>
 
       <div className="mt-auto px-4 pb-8 sm:px-6 sm:pb-0">
-        <div className="mb-3 grid grid-cols-1 items-end gap-x-6 gap-y-8 text-xs leading-relaxed sm:mb-4 sm:grid-cols-12">
+        <div className="mb-3 grid grid-cols-1 items-end gap-x-6 gap-y-5 text-xs leading-relaxed sm:mb-4 sm:grid-cols-12 sm:gap-y-8">
           {/* left: location + contact */}
           <div className="flex flex-col items-start sm:col-span-4">
             <p>South London</p>
