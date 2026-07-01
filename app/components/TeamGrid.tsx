@@ -64,17 +64,10 @@ function useInView(): [React.RefObject<HTMLDivElement | null>, boolean] {
  * height, the name + role lift, and the bio reveals so its bottom lands where
  * the role's bottom sat.
  */
-function Member({
-  m,
-  active = false,
-  delay = 0,
-}: {
-  m: TeamMember;
-  active?: boolean;
-  delay?: number;
-}) {
+function Member({ m, delay = 0 }: { m: TeamMember; delay?: number }) {
   const [cardRef, inView] = useInView();
   const [hover, setHover] = useState(false);
+  const [tapped, setTapped] = useState(false); // mobile tap-to-open
   const [bioH, setBioH] = useState(0);
   const bioRef = useRef<HTMLParagraphElement>(null);
 
@@ -85,7 +78,7 @@ function Member({
     return () => window.removeEventListener("resize", measure);
   }, [m.bio]);
 
-  const open = hover || active;
+  const open = hover || tapped;
   const lift = m.bio ? bioH : 0;
 
   return (
@@ -95,6 +88,16 @@ function Member({
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
+      {m.bio ? (
+        <button
+          type="button"
+          onClick={() => setTapped((v) => !v)}
+          aria-label={tapped ? `Hide ${m.name}'s bio` : `Read ${m.name}'s bio`}
+          className="absolute right-3 top-3 z-10 hidden h-9 w-9 items-center justify-center rounded-full bg-background/90 font-mono text-lg leading-none text-ink shadow-sm [@media(hover:none)]:flex"
+        >
+          {tapped ? "–" : "+"}
+        </button>
+      ) : null}
       <div
         className="relative h-[50vh] overflow-hidden bg-background"
         style={{
@@ -154,14 +157,13 @@ function Member({
 function DirectorsPair({
   directors,
   img,
-  active,
 }: {
   directors: TeamMember[];
   img: string;
-  active: boolean;
 }) {
   const [cardRef, inView] = useInView();
   const [hover, setHover] = useState(false);
+  const [tapped, setTapped] = useState(false); // mobile tap-to-open (both halves)
   const bio0 = useRef<HTMLParagraphElement>(null);
   const bio1 = useRef<HTMLParagraphElement>(null);
   const [lift, setLift] = useState(0);
@@ -176,15 +178,26 @@ function DirectorsPair({
     return () => window.removeEventListener("resize", measure);
   }, [directors]);
 
-  const open = hover || active;
+  const open = hover || tapped;
+  const hasBios = directors.some((d) => d.bio);
 
   return (
     <div
       ref={cardRef}
-      className="sm:col-span-2"
+      className="relative sm:col-span-2"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
+      {hasBios ? (
+        <button
+          type="button"
+          onClick={() => setTapped((v) => !v)}
+          aria-label={tapped ? "Hide directors' bios" : "Read directors' bios"}
+          className="absolute right-3 top-3 z-10 hidden h-9 w-9 items-center justify-center rounded-full bg-background/90 font-mono text-lg leading-none text-ink shadow-sm [@media(hover:none)]:flex"
+        >
+          {tapped ? "–" : "+"}
+        </button>
+      ) : null}
       <div className="grid grid-cols-2">
         {directors.map((d, i) => {
           const side = i === 0 ? "left" : "right";
@@ -254,8 +267,6 @@ export default function TeamGrid({
   team: TeamMember[];
   heading?: string;
 }) {
-  const [expanded, setExpanded] = useState(false);
-
   const directors = (teamLead.people ?? []).slice(0, 2).map((p) => ({
     name: p.name ?? "",
     role: p.role ?? "",
@@ -272,11 +283,7 @@ export default function TeamGrid({
       <div className="lg:col-span-2">
         <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2">
           {directors.length > 0 ? (
-            <DirectorsPair
-              directors={directors}
-              img={teamLead.img}
-              active={expanded}
-            />
+            <DirectorsPair directors={directors} img={teamLead.img} />
           ) : null}
 
           {team.map((m, i) => {
@@ -286,20 +293,11 @@ export default function TeamGrid({
                 key={m.name || i}
                 className={lastAlone ? "sm:col-start-2" : ""}
               >
-                <Member m={m} active={expanded} delay={(i % 2) * 120} />
+                <Member m={m} delay={(i % 2) * 120} />
               </div>
             );
           })}
         </div>
-
-        {/* mobile: open every bio (no hover on touch) */}
-        <button
-          type="button"
-          onClick={() => setExpanded((v) => !v)}
-          className="link link-underline is-tracked mt-10 sm:hidden"
-        >
-          {expanded ? "Hide bios" : "Read bios"}
-        </button>
       </div>
     </div>
   );
