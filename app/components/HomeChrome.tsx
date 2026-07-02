@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import InstantQuoteButton from "@/app/components/InstantQuoteButton";
 import Logomark from "@/app/components/Logomark";
@@ -37,8 +37,9 @@ type Mode = "hero" | "ink" | "footer";
  *   fires `preloader:done`; we stage the chrome in with explicit, budgeted delays
  *   — logomark → nav → CTA — so the whole thing finishes well under 4s. Fail-open
  *   throughout (a safety timer always fires the reveal).
- * - The CTA docks into the footer: instead of hiding at the footer it flies to a
- *   measured slot in the footer and hands off to the static footer button.
+ * - The CTA hands off to the footer: at the footer the fixed CTA fades + drops
+ *   away and the footer's own static InstantQuoteButton takes over — a pure
+ *   crossfade, no rect-measuring, so nothing jitters under Lenis.
  */
 export default function HomeChrome({
   projectCount,
@@ -52,11 +53,6 @@ export default function HomeChrome({
   // `entered` gates the staggered chrome reveal. Starts false so the items are
   // parked (translated/faded), flips true when the timeline fires.
   const [entered, setEntered] = useState(false);
-  // `dock` carries the CTA's target transform when it should slide into the
-  // footer slot; null means it floats in its normal bottom-right spot.
-  const [dock, setDock] = useState<string | null>(null);
-
-  const ctaRef = useRef<HTMLDivElement>(null);
 
   // ---- Entrance (Take B: an explicit JS-driven timeline fired when the
   // preloader lifts) -----------------------------------------------------------
@@ -150,23 +146,9 @@ export default function HomeChrome({
         heroImg.style.opacity = `${(1 - 0.4 * eq).toFixed(3)}`;
       }
 
-      // CTA → footer dock. Instead of hiding at the footer, measure the empty
-      // slot the footer reserves for it (#footer-cta-slot) and translate the
-      // fixed CTA so it lands exactly there — a shared-element hand-off. Once
-      // parked over the slot the footer's own (static) button reads identically,
-      // so the fixed CTA can fade out with no visible jump.
-      const cta = ctaRef.current;
-      const slot = document.getElementById("footer-cta-slot");
-      if (cta && slot && atFooter) {
-        const c = cta.getBoundingClientRect();
-        const s = slot.getBoundingClientRect();
-        // Align top-left of the CTA to the slot's top-left (both same size).
-        const dx = s.left - c.left;
-        const dy = s.top - c.top;
-        setDock(`translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0)`);
-      } else {
-        setDock(null);
-      }
+      // The CTA→footer hand-off is a pure crossfade driven by `mode === "footer"`
+      // in the JSX below (fade + drop the fixed CTA, footer's static button takes
+      // over) — no rect-measuring here, so nothing jitters under Lenis.
     };
 
     const onScroll = () => {
@@ -265,25 +247,20 @@ export default function HomeChrome({
       {/* mobile menu — right drawer */}
       <MobileMenu open={open} onClose={() => setOpen(false)} />
 
-      {/* "Get an instant quote" — floating Spotlight CTA to the estimator.
-          Rather than hiding at the footer it DOCKS into the footer's reserved
-          slot (#footer-cta-slot): we translate it there and fade it out as it
-          lands, so the footer's own static button takes over seamlessly.
-          Always rendered so the transform can animate; pointer-events drop while
-          docked so the footer button owns the clicks. */}
+      {/* "Get an instant quote" — floating Spotlight CTA to the estimator. At
+          the footer it fades + drops away (pointer-events off) and the footer's
+          own static InstantQuoteButton (#footer-cta-slot) takes over — a pure
+          crossfade hand-off, no rect-measuring. Also folds into the staggered
+          entrance via `entered`. */}
       <div
-        ref={ctaRef}
-        className={`fixed bottom-5 right-5 z-30 will-change-transform sm:bottom-7 sm:right-7 ${
-          // The dock glide is a slightly longer, gentler ease than the entrance.
-          "transition-[opacity,transform] duration-[600ms] ease-[cubic-bezier(0.22,0.61,0.36,1)]"
-        } ${atFooter ? "pointer-events-none opacity-0" : "opacity-100"} ${
-          // fold the entrance stagger in when we're NOT docked
-          !atFooter && !entered ? "translate-y-3 opacity-0" : ""
+        className={`fixed bottom-5 right-5 z-30 transition-[opacity,transform] duration-[600ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] sm:bottom-7 sm:right-7 ${
+          atFooter
+            ? "pointer-events-none translate-y-3 opacity-0"
+            : entered
+              ? "translate-y-0 opacity-100"
+              : "translate-y-3 opacity-0"
         }`}
-        style={{
-          transform: dock ?? undefined,
-          transitionDelay: !atFooter && !entered ? "0ms" : "280ms",
-        }}
+        style={{ transitionDelay: atFooter ? "0ms" : "280ms" }}
         aria-hidden={atFooter}
       >
         <InstantQuoteButton photo={quotePhoto} />
