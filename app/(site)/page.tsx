@@ -125,6 +125,8 @@ export default async function HomePage() {
         )}
         {/* same gradient as the project hero, so the wordmark stays legible */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/15" />
+        {/* top scrim — keeps the nav / hamburger legible over a light hero */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/45 to-transparent" />
         {/* Mobile: the LOWS wordmark sits on the hero image (desktop has the
             sliding wordmark instead, so this is hidden there). */}
         <Wordmark className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[70px] w-[154px] -translate-x-1/2 -translate-y-1/2 text-white sm:hidden" />
@@ -149,20 +151,18 @@ export default async function HomePage() {
         </section>
 
         {/* ---------------- Our process ---------------- */}
-        {/* The opaque "cover": it slides up over the pinned slogan (the slogan
-            fades out behind it). Followed by a View projects button. */}
+        {/* No background: the pinned slogan behind fades out naturally (via
+            StickySlogan) as this rises, instead of being hidden by an opaque
+            panel. The page body is the same paper colour, so it reads identically
+            once the slogan is gone. Followed by a View projects button. */}
         <section
           data-featured-first
-          className={`${PAD} relative z-10 bg-background pb-20 pt-28 sm:pb-28 sm:pt-44`}
+          className={`${PAD} relative z-10 pb-20 pt-28 sm:pb-28 sm:pt-44`}
         >
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-            <div className="lg:col-span-1">
-              <h2 className="label sticky top-24 !text-ink">Our process</h2>
-            </div>
-            <div className="lg:col-span-2">
-              <ProcessPath steps={steps} />
-            </div>
-          </div>
+          <h2 className="label sticky top-24 z-20 text-center !text-ink">
+            Our process
+          </h2>
+          <ProcessPath steps={steps} />
           <ViewProjectsButton className="mt-16 sm:mt-24" />
         </section>
 

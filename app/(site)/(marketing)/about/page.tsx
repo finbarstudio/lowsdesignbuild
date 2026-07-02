@@ -9,7 +9,7 @@ import TeamGrid from "@/app/components/TeamGrid";
 import ViewProjectsButton from "@/app/components/ViewProjectsButton";
 import WordReveal from "@/app/components/WordReveal";
 import Reveal from "@/app/components/Reveal";
-import ServiceGrid from "@/app/components/ServiceGrid";
+import ServiceMasonry from "@/app/components/ServiceMasonry";
 import {
   areas,
   services,
@@ -91,24 +91,22 @@ export default async function AboutPage() {
             : "",
         }))
       : fallbackTeam.map((m) => ({ ...m, bio: "" }));
-  // Each shot carries a sharp (hi) and a low-res (lo) source — width only, no
-  // crop, so native aspect is kept. The slideshow swaps to `lo` once a photo is
-  // behind the stack, to save memory.
+  // One high-quality photo per service for the masonry (no slideshow). Fall back
+  // to the bundled service photos until a CMS photo is set.
   const serviceCards =
-    cms.length > 0
-      ? cms.map((s) => ({
-          title: s.title ?? "",
-          blurb: s.blurb ?? "",
-          imgs: (s.images ?? [])
-            .filter((img) => (img as { asset?: unknown })?.asset)
-            .map((img) => ({
-              hi: urlFor(img).width(640).quality(80).auto("format").url(),
-              lo: urlFor(img).width(280).quality(45).auto("format").url(),
-            })),
-        }))
+    cms.length > 0 && cms.some((s) => s.image)
+      ? cms
+          .filter((s) => s.image)
+          .map((s) => ({
+            title: s.title ?? "",
+            blurb: s.blurb ?? "",
+            img: urlFor(s.image!).width(1600).quality(88).auto("format").url(),
+            lqip: s.lqip ?? undefined,
+          }))
       : services.map((s) => ({
-          ...s,
-          imgs: s.imgs.map((src) => ({ hi: src, lo: src })),
+          title: s.title,
+          blurb: s.blurb,
+          img: s.imgs[0],
         }));
 
   return (
@@ -124,28 +122,35 @@ export default async function AboutPage() {
         </h1>
       </section>
 
-      {/* Story — sticky title (1/3) + feature bio (2/3), like "What we do" */}
-      <section className={`${PAD} py-24 sm:py-32`}>
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-          <div className="lg:col-span-1">
-            <h2 className="label sticky top-24 !text-ink">A family company</h2>
-          </div>
-          <div className="lg:col-span-2">
+      {/* Story — centred, no title. A gold small-caps lead-in line (studio 07)
+          opens it, then the rest lights up word-by-word as you scroll. */}
+      <section className={`${PAD} py-24 text-center sm:py-32`}>
+        <div className="mx-auto max-w-2xl">
+          {bioParas.length > 0 && (
             <ScrollText
-              paragraphs={bioParas}
-              className="text-2xl leading-snug sm:text-3xl"
+              paragraphs={[bioParas[0]]}
+              tone="gold"
+              className="font-mono text-base leading-relaxed tracking-[0.12em] [font-variant-caps:small-caps] sm:text-lg"
             />
-          </div>
+          )}
+          {bioParas.length > 1 && (
+            <ScrollText
+              paragraphs={bioParas.slice(1)}
+              className="mt-8 text-2xl leading-snug sm:text-3xl"
+            />
+          )}
         </div>
       </section>
 
-      {/* What we do — an always-visible 3-up grid; each card scrolls through its
-          photos on hover (in place). */}
-      <section className={`${PAD} py-24 sm:py-32`}>
-        <h2 className="label mb-10 !text-ink sm:mb-14">What we do</h2>
-        <Reveal>
-          <ServiceGrid services={serviceCards} />
-        </Reveal>
+      {/* What we do — a masonry that fills one screen; one photo per service,
+          title over a bottom gradient, description reveals on hover. */}
+      <section
+        className={`${PAD} flex h-[100svh] min-h-[560px] flex-col py-16 sm:py-20`}
+      >
+        <h2 className="label mb-6 !text-ink sm:mb-8">What we do</h2>
+        <div className="min-h-0 flex-1">
+          <ServiceMasonry services={serviceCards} />
+        </div>
       </section>
 
       {/* Team (moved here from the home page; swapped with Our process) */}

@@ -103,5 +103,6 @@ export interface ServiceItem {
   _id: string;
   title: string | null;
   blurb: string | null;
-  images: Array<SanityImageSource & { _key?: string }> | null;
+  image: SanityImageSource | null;
+  lqip?: string | null;
 }

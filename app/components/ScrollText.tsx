@@ -2,11 +2,12 @@
 
 import { useEffect, useRef } from "react";
 
-// faint → solid ink, driven by each word's position as you scroll. The whole
-// block (all paragraphs) is treated as one continuous run of words so the
-// lighting flows on seamlessly from one paragraph to the next.
+// faint → solid, driven by each word's position as you scroll. The whole block
+// (all paragraphs) is treated as one continuous run of words so the lighting
+// flows on seamlessly from one paragraph to the next. `tone="gold"` lights the
+// words in copper instead of ink — used for the lead-in line.
 const INK = "66, 73, 82"; // --foreground
-const FADED = 0.16;
+const GOLD = "169, 126, 31"; // --tertiary
 
 /**
  * Scroll-linked word reveal: every word lights from faint to solid as it
@@ -16,18 +17,22 @@ const FADED = 0.16;
 export default function ScrollText({
   paragraphs,
   className = "",
+  tone = "ink",
 }: {
   paragraphs: string[];
   className?: string;
+  tone?: "ink" | "gold";
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    const rgb = tone === "gold" ? GOLD : INK;
+    const faded = tone === "gold" ? 0.26 : 0.16;
     const words = Array.from(el.querySelectorAll<HTMLElement>("[data-w]"));
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      words.forEach((w) => (w.style.color = `rgb(${INK})`));
+      words.forEach((w) => (w.style.color = `rgb(${rgb})`));
       return;
     }
     let raf = 0;
@@ -38,8 +43,8 @@ export default function ScrollText({
       for (const w of words) {
         const top = w.getBoundingClientRect().top;
         const p = Math.min(1, Math.max(0, (line - top) / band));
-        const a = (FADED + (1 - FADED) * p).toFixed(3);
-        w.style.color = `rgba(${INK}, ${a})`;
+        const a = (faded + (1 - faded) * p).toFixed(3);
+        w.style.color = `rgba(${rgb}, ${a})`;
       }
     };
     const onScroll = () => {
@@ -54,14 +59,17 @@ export default function ScrollText({
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [paragraphs]);
+  }, [paragraphs, tone]);
+
+  const initial = tone === "gold" ? 0.26 : 0.16;
+  const rgb = tone === "gold" ? GOLD : INK;
 
   return (
     <div ref={ref}>
       {paragraphs.map((para, pi) => (
         <p key={pi} className={`${className} ${pi > 0 ? "mt-8" : ""}`}>
           {para.split(/\s+/).map((word, wi) => (
-            <span key={wi} data-w style={{ color: `rgba(${INK}, ${FADED})` }}>
+            <span key={wi} data-w style={{ color: `rgba(${rgb}, ${initial})` }}>
               {word}{" "}
             </span>
           ))}

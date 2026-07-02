@@ -1,9 +1,8 @@
 import { defineField, defineType } from "sanity";
 
 // A "Service" is one of the things Lows offers (Loft Conversions, Extensions…).
-// It appears in the "What we do" section on the About page. Each service has
-// its copy plus one or more example photos — the first is the thumbnail, and
-// the rest cycle through on hover.
+// It appears in the "What we do" masonry on the About page — one photo per
+// service, filling its card with the title over a dark gradient at the bottom.
 export const serviceType = defineType({
   name: "service",
   title: "What we do",
@@ -25,14 +24,13 @@ export const serviceType = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: "images",
-      title: "Example photos",
-      type: "array",
-      of: [{ type: "image", options: { hotspot: true } }],
+      name: "image",
+      title: "Photo",
+      type: "image",
+      options: { hotspot: true },
       description:
-        "The first photo is the thumbnail. Add more and they cycle on hover. Recommended: upload landscape 4:3 photos — others are centre-cropped to fit the 4:3 grid.",
-      options: { layout: "grid" },
-      validation: (rule) => rule.min(1).error("Add at least one photo."),
+        "One photo for this service. It fills the card; the title sits over a dark gradient along the bottom. Set the hotspot so the important part stays centred when the card is cropped.",
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: "order",
@@ -42,6 +40,6 @@ export const serviceType = defineType({
     }),
   ],
   preview: {
-    select: { title: "title", media: "images.0" },
+    select: { title: "title", media: "image" },
   },
 });

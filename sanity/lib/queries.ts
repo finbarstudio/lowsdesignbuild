@@ -109,12 +109,14 @@ export const CONTACT_QUERY = defineQuery(`
 `);
 
 // The services shown in "What we do" on the About page — ordered manually.
+// One image per service; lqip is a tiny blur placeholder for the card.
 export const SERVICES_QUERY = defineQuery(`
   *[_type == "service"]
   | order(coalesce(order, 999) asc, _createdAt desc) {
     _id,
     title,
     blurb,
-    images
+    image,
+    "lqip": image.asset->metadata.lqip
   }
 `);

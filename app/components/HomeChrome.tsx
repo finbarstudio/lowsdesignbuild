@@ -235,10 +235,10 @@ export default function HomeChrome({
             className={`ml-auto hidden items-center gap-x-7 font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-300 sm:flex sm:text-sm ${textColor}`}
           >
             {nav.map((item) => (
-              <Link key={item.href} href={item.href}>
+              <Link key={item.href} href={item.href} className="group">
                 <span className="link-underline is-tracked">{item.label}</span>
                 {item.href === "/projects" && projectCount ? (
-                  <sup className="ml-0.5 text-[0.6em] font-medium">
+                  <sup className="ml-0.5 inline-block font-mono text-[0.62em] font-bold leading-none tracking-[0.06em] text-copper transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:scale-[1.6]">
                     {projectCount}
                   </sup>
                 ) : null}
