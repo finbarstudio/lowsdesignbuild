@@ -5,7 +5,7 @@ import Image from "next/image";
 import HomeChrome from "@/app/components/HomeChrome";
 import InstagramFeed from "@/app/components/InstagramFeed";
 import InstagramStrip from "@/app/components/InstagramStrip";
-import ProcessPath from "@/app/components/ProcessPath";
+import ProcessFlow from "@/app/components/ProcessFlow";
 import StickySlogan from "@/app/components/StickySlogan";
 import ViewProjectsButton from "@/app/components/ViewProjectsButton";
 import WordReveal from "@/app/components/WordReveal";
@@ -125,11 +125,16 @@ export default async function HomePage() {
         )}
         {/* same gradient as the project hero, so the wordmark stays legible */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/15" />
-        {/* top scrim — keeps the nav / hamburger legible over a light hero */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/45 to-transparent" />
-        {/* Mobile: the LOWS wordmark sits on the hero image (desktop has the
-            sliding wordmark instead, so this is hidden there). */}
-        <Wordmark className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[70px] w-[154px] -translate-x-1/2 -translate-y-1/2 text-white sm:hidden" />
+        {/* top scrim — stronger dark gradient so the nav / logomark read clearly
+            over ANY hero image (light skies etc.). Taller + darker than before. */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-black/85 via-black/45 to-transparent sm:h-72" />
+        {/* The LOWS wordmark sits centred on the hero (all sizes now — there's no
+            longer a desktop sliding wordmark). It rises in during the entrance via
+            the .logo-mask clip; the wrapper owns the centring transform so the
+            inner mask can slide up without fighting it. */}
+        <div className="logo-mask pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
+          <Wordmark className="h-[70px] w-[154px] text-white sm:h-[104px] sm:w-[229px]" />
+        </div>
       </section>
 
       {/* Sticky statement + featured projects share a wrapper so the pinned
@@ -162,8 +167,14 @@ export default async function HomePage() {
           <h2 className="label sticky top-24 z-20 text-center !text-ink">
             Our process
           </h2>
-          <ProcessPath steps={steps} />
-          <ViewProjectsButton className="mt-16 sm:mt-24" />
+          {/* ProcessPath (client) owns the travelling dot and shares a "landed"
+              signal; it renders ProcessFlow, which slots the async
+              ViewProjectsButton so the line reads as flowing into the button
+              when the dot lands. Space below the button is doubled. */}
+          <ProcessFlow
+            steps={steps}
+            button={<ViewProjectsButton className="mt-16 mb-48 sm:mt-24 sm:mb-[22rem]" />}
+          />
         </section>
 
         {/* ---------------- Instagram ---------------- */}

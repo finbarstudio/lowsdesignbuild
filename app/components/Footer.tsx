@@ -1,3 +1,4 @@
+import InstantQuoteButton from "@/app/components/InstantQuoteButton";
 import Wordmark from "@/app/components/Wordmark";
 import { areas, nav, site } from "@/app/lib/site";
 
@@ -5,48 +6,28 @@ const YEAR = 2026;
 
 /**
  * Footer — "Marquee Band" (studio 14), on our tokens + the real LOWS lockup.
- * A scrolling "Let us build something" band, then the wordmark + a CTA, three
- * columns (menu / where we work / contact) and a legal bar. The marquee is a
- * pure-CSS loop (two identical groups translating -50%), so this stays a server
- * component; reduced-motion parks it. Keeps id="site-footer" for the chrome's
- * scroll colour switch.
+ * The wordmark + a CTA slot, three columns (menu / where we work / contact) and
+ * a legal bar. Full-width — no max-width on the inner; content runs edge to edge
+ * with a symmetric gutter. Keeps id="site-footer" for the chrome's scroll colour
+ * switch, and reserves #footer-cta-slot as the landing spot for the floating
+ * "Get an instant quote" CTA, which docks into it as you reach the footer.
  */
 export default function Footer() {
   return (
     <footer id="site-footer" className="c-ft-marquee" role="contentinfo">
       <style>{css}</style>
 
-      {/* scrolling band */}
-      <div className="c-ft-marquee__marquee" aria-hidden="true">
-        <div className="c-ft-marquee__track">
-          {[0, 1].map((g) => (
-            <span className="c-ft-marquee__group" key={g}>
-              {Array.from({ length: 4 }).map((_, i) => (
-                <span className="c-ft-marquee__cell" key={i}>
-                  <span className="c-ft-marquee__word">Let us build something</span>
-                  <span className="c-ft-marquee__sep">◆</span>
-                </span>
-              ))}
-            </span>
-          ))}
-        </div>
-      </div>
-
       <div className="c-ft-marquee__inner">
         <div className="c-ft-marquee__lead">
-          <div className="c-ft-marquee__brand">
-            <Wordmark className="c-ft-marquee__wm aspect-[121.71/55.33] w-[clamp(180px,30vw,380px)] text-ink" />
-            <p className="c-ft-marquee__tag">Design &amp; build — South London</p>
-            <p className="c-ft-marquee__tag c-ft-marquee__tag--sub">
-              Lofts, extensions &amp; full refurbishments
-            </p>
+          <Wordmark className="c-ft-marquee__wm aspect-[121.71/55.33] w-[clamp(190px,32vw,400px)] text-tertiary" />
+
+          {/* Landing slot for the floating "Get an instant quote" CTA. The fixed
+              CTA (HomeChrome) glides in and cross-fades into this static one as
+              you reach the footer; on inner pages (no HomeChrome) this is simply
+              the footer's own CTA. */}
+          <div id="footer-cta-slot" className="c-ft-marquee__cta-slot">
+            <InstantQuoteButton />
           </div>
-          <a className="c-ft-marquee__cta" href="/contact">
-            <span className="c-ft-marquee__cta-label">Start a project</span>
-            <span className="c-ft-marquee__cta-arrow" aria-hidden="true">
-              →
-            </span>
-          </a>
         </div>
 
         <div className="c-ft-marquee__cols">
@@ -164,7 +145,9 @@ const css = `
 }
 
 .c-ft-marquee__inner{
-  max-width:1320px; margin:0 auto;
+  /* Full-width: no max-width cap — the footer content runs edge to edge, held
+     off the viewport edges only by a symmetric gutter. */
+  width:100%; max-width:none; margin:0;
   padding:clamp(44px,6vw,72px) var(--ft-marquee-pad) clamp(26px,4vw,40px);
 }
 .c-ft-marquee__lead{
@@ -174,6 +157,17 @@ const css = `
   border-bottom:1px solid var(--line);
 }
 .c-ft-marquee__wm{ margin:0 0 4px; }
+
+/* Landing slot for the docking "Get an instant quote" CTA. Sizes to the pill it
+   holds and sits at the wordmark's baseline on the right of the lead row. */
+.c-ft-marquee__cta-slot{
+  display:inline-flex; align-items:center;
+  margin:0 0 2px;
+}
+@media (max-width:560px){
+  .c-ft-marquee__cta-slot{ width:100%; }
+  .c-ft-marquee__cta-slot > *{ width:100%; }
+}
 .c-ft-marquee__tag{
   margin:16px 0 0; font-size:13px; line-height:1.5;
   letter-spacing:0.01em; color:var(--ink);

@@ -33,10 +33,11 @@ const CX = 60.715,
   BAR_CX = 119.43,
   BAR_CY = (55.88 + 84.64) / 2;
 
-// timeline (ms): draw → hold → the slit opens
-const DRAW = 1500,
-  HOLD = 300,
-  REVEAL = 1200;
+// timeline (ms): draw → hold → the slit opens. Kept tight (~2.35s total) so the
+// preloader + the staggered chrome entrance that follows it finish under 4s.
+const DRAW = 1050,
+  HOLD = 200,
+  REVEAL = 1050;
 const holdEnd = DRAW + HOLD;
 const endAll = holdEnd + REVEAL + 40;
 
@@ -62,7 +63,17 @@ export default function Preloader() {
     const root = rootRef.current;
     if (!root) return;
 
-    const finish = () => setHidden(true);
+    const finish = () => {
+      setHidden(true);
+      // Tell HomeChrome the curtain has lifted so it can fire the staggered
+      // chrome entrance right as the hero is revealed. The global flag closes
+      // the race where the preloader finishes before HomeChrome's listener
+      // attaches (HomeChrome reads it on mount). Both are idempotent.
+      const w = window as unknown as { __lowsPreloaderLifted?: boolean };
+      if (w.__lowsPreloaderLifted) return;
+      w.__lowsPreloaderLifted = true;
+      window.dispatchEvent(new Event("preloader:done"));
+    };
 
     // Reduced motion: no animation — drop the curtain next tick (CSS already
     // hides it, so there's no flash) and reveal the page.

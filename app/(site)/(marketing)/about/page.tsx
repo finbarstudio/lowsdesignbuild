@@ -102,6 +102,7 @@ export default async function AboutPage() {
             blurb: s.blurb ?? "",
             img: urlFor(s.image!).width(1600).quality(88).auto("format").url(),
             lqip: s.lqip ?? undefined,
+            aspect: s.aspect ?? undefined,
           }))
       : services.map((s) => ({
           title: s.title,

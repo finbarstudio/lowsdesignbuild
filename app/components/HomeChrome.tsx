@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import InstantQuoteButton from "@/app/components/InstantQuoteButton";
 import Logomark from "@/app/components/Logomark";
 import MobileMenu from "@/app/components/MobileMenu";
-import Wordmark from "@/app/components/Wordmark";
 import { nav, site } from "@/app/lib/site";
 import { smoothScrollTop } from "@/app/lib/scrollTop";
 
@@ -15,22 +14,31 @@ import { smoothScrollTop } from "@/app/lib/scrollTop";
 // page session — so we don't wait for a preloader that won't show.
 let homeFullLoad = true;
 
-// Logotype aspect ratio (viewBox 121.71 × 55.33).
-const RATIO = 121.71 / 55.33;
-// House-mark aspect ratio (viewBox 121.43 × 86.64).
-const MARK_RATIO = 121.43 / 86.64;
 const BAR = 64; // bar height (h-16)
+
+// One shared edge inset for the three fixed anchors (nav right, logomark
+// top-left, CTA bottom-right) so they all line up on the same gutter.
+const EDGE = "px-5 sm:px-7";
 
 type Mode = "hero" | "ink" | "footer";
 
 /**
- * Home chrome.
- * - Desktop (sm+): the wordmark starts large near the bottom of the hero and
- *   travels up on scroll to dock top-left in the bar (scroll-linked).
- * - Mobile: a small static wordmark in the bar; the serif tagline carries the
- *   hero instead.
- * Colour by scroll position: white over the hero, ink over content, and the
- * tertiary red once the footer is reached.
+ * Home chrome — deliberately simple.
+ *
+ * - The house LOGOMARK sits top-left in the bar, STATIC, always (matching
+ *   Header.tsx on the other pages). No scroll-linked motion, no docking, no
+ *   wordmark→mark crossfade. The hero wordmark itself lives on the hero in
+ *   page.tsx and never moves on scroll.
+ * - The nav (right), the logomark (left) and the "Get an instant quote" CTA
+ *   (bottom-right) all sit on the SAME viewport edge padding (EDGE).
+ * - Colour still tracks scroll position: white over the hero, ink over the
+ *   content, gold once the footer is reached.
+ * - Entrance: on a fresh load the keyhole preloader reveals the hero first, then
+ *   fires `preloader:done`; we stage the chrome in with explicit, budgeted delays
+ *   — logomark → nav → CTA — so the whole thing finishes well under 4s. Fail-open
+ *   throughout (a safety timer always fires the reveal).
+ * - The CTA docks into the footer: instead of hiding at the footer it flies to a
+ *   measured slot in the footer and hands off to the static footer button.
  */
 export default function HomeChrome({
   projectCount,
@@ -41,43 +49,81 @@ export default function HomeChrome({
 }) {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>("hero");
-  const wrapRef = useRef<HTMLAnchorElement>(null);
-  const markRef = useRef<HTMLSpanElement>(null);
-  const markInnerRef = useRef<HTMLSpanElement>(null);
-  // Lockup (wordmark slides right + mark fades in) progress 0→1, started by a
-  // timer once the wordmark has fully docked — a deliberate beat after it lands.
-  const lockProgRef = useRef(0);
-  const lockPhaseRef = useRef<"out" | "pending" | "in">("out");
-  const lockTimerRef = useRef(0);
-  const lockRafRef = useRef(0);
+  // `entered` gates the staggered chrome reveal. Starts false so the items are
+  // parked (translated/faded), flips true when the timeline fires.
+  const [entered, setEntered] = useState(false);
+  // `dock` carries the CTA's target transform when it should slide into the
+  // footer slot; null means it floats in its normal bottom-right spot.
+  const [dock, setDock] = useState<string | null>(null);
 
-  // Kick the entrance. Arm it (hide the hero + wordmark) on mount, then `go`
-  // (reveal) once the preloader lifts on a fresh load — or almost immediately on
-  // a client-side return. A safety timer guarantees the reveal always fires, so
-  // the hero can never get stuck hidden.
+  const ctaRef = useRef<HTMLDivElement>(null);
+
+  // ---- Entrance (Take B: an explicit JS-driven timeline fired when the
+  // preloader lifts) -----------------------------------------------------------
+  // The chrome items (logomark, nav, CTA) are staged in React via `entered` +
+  // per-item transition-delays below. The mobile HERO WORDMARK lives in page.tsx
+  // (a server component), so we also toggle the CSS `entrance-armed`/`entrance-go`
+  // hooks on <html> to reveal it in the same beat — no props needed there.
   useEffect(() => {
     const html = document.documentElement;
-    if (html.classList.contains("entrance-go")) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    let fired = false;
+    const start = () => {
+      if (fired) return;
+      fired = true;
+      setEntered(true);
+      html.classList.remove("entrance-armed");
+      html.classList.add("entrance-go");
+    };
+
+    // Reduced motion: show everything at once, no stagger, no armed state.
+    if (reduce) {
+      homeFullLoad = false;
+      start();
+      return;
+    }
+
+    // Arm the hero wordmark (parks it) until we fire `go`.
     html.classList.add("entrance-armed");
-    const go = () => html.classList.add("entrance-go");
-    // On a fresh load fire early so the hero + wordmark settle UNDER the paper
-    // curtain — the keyhole preloader then opens its slit onto a finished page,
-    // not one still animating in (its slit starts ~1.8s; the hero wipe finishes
-    // ~1.4s). On a client-side return there's no preloader, so reveal at once.
+
     const fresh = homeFullLoad;
     homeFullLoad = false;
-    const t1 = window.setTimeout(go, fresh ? 250 : 80);
-    const t2 = window.setTimeout(go, fresh ? 1600 : 1500); // safety net
+
+    // Client-side return: no preloader — reveal almost immediately.
+    if (!fresh) {
+      const t = window.setTimeout(start, 60);
+      return () => {
+        window.clearTimeout(t);
+      };
+    }
+
+    // Fresh document load: wait for the preloader to lift, THEN stage the chrome.
+    // If it already lifted before this listener attached, the global flag lets
+    // us catch up immediately (closes that race).
+    if (
+      (window as unknown as { __lowsPreloaderLifted?: boolean })
+        .__lowsPreloaderLifted
+    ) {
+      start();
+    }
+    window.addEventListener("preloader:done", start, { once: true });
+
+    // Fail-open safety net: never let the chrome stay hidden even if the
+    // preloader event never arrives (stalled tab, JS edge cases). Sits just past
+    // the preloader's own end (~2.34s) so it only ever catches a genuine stall.
+    const safety = window.setTimeout(start, 2800);
+
     return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
+      window.removeEventListener("preloader:done", start);
+      window.clearTimeout(safety);
     };
   }, []);
 
+  // ---- Scroll: colour mode, hero depth, and the CTA→footer dock hand-off -----
   useEffect(() => {
-    const wrap = wrapRef.current;
-    if (wrap) wrap.style.transformOrigin = "0 0";
     let raf = 0;
 
     const update = () => {
@@ -90,7 +136,7 @@ export default function HomeChrome({
       const dark = window.scrollY >= heroH - BAR;
       setMode(atFooter ? "footer" : dark ? "ink" : "hero");
 
-      // hero image holds for the first ~10% of scroll, then recedes (scale
+      // Hero image holds for the first ~10% of scroll, then recedes (scale
       // down + drift up + fade) so it falls away with depth as you scroll on.
       const heroImg = document.getElementById("home-hero-img");
       if (heroImg) {
@@ -100,86 +146,28 @@ export default function HomeChrome({
           Math.max(0, (window.scrollY - vh * 0.1) / (vh * 0.75)),
         );
         const eq = q * q * (3 - 2 * q); // smoothstep
-        // keep the crop minimal: a constant slight zoom (1.06) just gives the
-        // headroom for the gentle drift-up + fade as the hero leaves.
         heroImg.style.transform = `translate3d(0, ${(-eq * 20).toFixed(1)}px, 0) scale(1.06)`;
         heroImg.style.opacity = `${(1 - 0.4 * eq).toFixed(3)}`;
       }
 
-      // desktop sliding wordmark — position only; colour comes from `mode`.
-      if (wrap && window.innerWidth >= 640) {
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const edge = 24;
-        const baseW = Math.min(vw * 0.52, 460);
-        const baseH = baseW / RATIO;
-        wrap.style.width = `${baseW}px`;
-        const p = Math.min(1, Math.max(0, window.scrollY / (vh * 0.7)));
-        const targetH = 26;
-        const s = 1 + (targetH / baseH - 1) * p;
-        const y0 = Math.min(vh, heroH) - edge - baseH; // bottom of the hero
-        const y1 = (BAR - targetH) / 2; // centred in the bar
-        const y = y0 + (y1 - y0) * p;
-
-        // Dock: once the wordmark has fully docked (p≈1) wait a beat, then the
-        // wordmark crossfades into the house mark (nav shows the mark only).
-        // Driven by lockProgRef (0→1), animated on a timer rather than by scroll.
-        const markH = targetH;
-        const markW = markH * MARK_RATIO;
-        if (p >= 0.99) {
-          if (lockPhaseRef.current === "out") {
-            lockPhaseRef.current = "pending";
-            lockTimerRef.current = window.setTimeout(() => {
-              lockPhaseRef.current = "in";
-              animateLock(1);
-            }, 450); // delay after docking before the mark arrives
-          }
-        } else if (p < 0.9) {
-          if (lockTimerRef.current) {
-            clearTimeout(lockTimerRef.current);
-            lockTimerRef.current = 0;
-          }
-          if (lockPhaseRef.current !== "out") {
-            lockPhaseRef.current = "out";
-            animateLock(0);
-          }
-        }
-
-        const lp = lockProgRef.current;
-        // wordmark holds its docked spot and fades out as the mark fades in
-        wrap.style.transform = `translate(${edge}px, ${y}px) scale(${s})`;
-        wrap.style.opacity = `${(1 - lp).toFixed(3)}`;
-
-        const mark = markRef.current;
-        if (mark) {
-          mark.style.width = `${markW}px`;
-          mark.style.height = `${markH}px`;
-          mark.style.transform = `translate(${edge}px, ${y1}px)`;
-          mark.style.opacity = `${lp.toFixed(3)}`;
-        }
-        const inner = markInnerRef.current;
-        if (inner) inner.style.transform = "translateX(0)";
+      // CTA → footer dock. Instead of hiding at the footer, measure the empty
+      // slot the footer reserves for it (#footer-cta-slot) and translate the
+      // fixed CTA so it lands exactly there — a shared-element hand-off. Once
+      // parked over the slot the footer's own (static) button reads identically,
+      // so the fixed CTA can fade out with no visible jump.
+      const cta = ctaRef.current;
+      const slot = document.getElementById("footer-cta-slot");
+      if (cta && slot && atFooter) {
+        const c = cta.getBoundingClientRect();
+        const s = slot.getBoundingClientRect();
+        // Align top-left of the CTA to the slot's top-left (both same size).
+        const dx = s.left - c.left;
+        const dy = s.top - c.top;
+        setDock(`translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0)`);
+      } else {
+        setDock(null);
       }
     };
-
-    // Ease the lockup progress toward a target (1 = locked, 0 = retracted),
-    // re-running the layout each frame so the wordmark shift + mark track it.
-    function animateLock(target: number) {
-      cancelAnimationFrame(lockRafRef.current);
-      const step = () => {
-        const cur = lockProgRef.current;
-        const d = target - cur;
-        if (Math.abs(d) < 0.005) {
-          lockProgRef.current = target;
-          update();
-          return;
-        }
-        lockProgRef.current = cur + d * 0.16; // ease toward target
-        update();
-        lockRafRef.current = requestAnimationFrame(step);
-      };
-      step();
-    }
 
     const onScroll = () => {
       cancelAnimationFrame(raf);
@@ -193,8 +181,6 @@ export default function HomeChrome({
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(raf);
-      cancelAnimationFrame(lockRafRef.current);
-      if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
     };
   }, []);
 
@@ -205,9 +191,19 @@ export default function HomeChrome({
         ? "text-white"
         : "text-ink";
 
-  // when the mobile menu is open the bar gets a solid background, so the
-  // logo + button must read ink rather than white-over-hero
+  // When the mobile menu is open the bar gets a solid background, so the logo +
+  // hamburger must read ink rather than white-over-hero.
   const barColor = open ? "text-ink" : textColor;
+
+  // Staggered entrance: each item is parked (opacity 0 + a small offset) until
+  // `entered`, then eased in with its own delay. Total run ~1.2s → comfortably
+  // inside the 4s budget after the ~2.24s preloader.
+  const item = (delay: string) =>
+    `transition-[opacity,transform] duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+      entered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
+    } ${delay}`;
+
+  const atFooter = mode === "footer";
 
   return (
     <>
@@ -216,8 +212,10 @@ export default function HomeChrome({
           open ? "bg-background" : ""
         }`}
       >
-        <div className="relative mx-auto flex h-full w-full max-w-[1900px] items-center px-4 sm:px-6">
-          {/* mobile: static wordmark, docked top-left */}
+        <div
+          className={`relative mx-auto flex h-full w-full max-w-[1900px] items-center ${EDGE}`}
+        >
+          {/* logo left — the static house mark, always (like Header.tsx) */}
           <Link
             href="/"
             aria-label={`${site.name}, home`}
@@ -225,19 +223,21 @@ export default function HomeChrome({
               e.preventDefault();
               smoothScrollTop();
             }}
-            className={`logo-mask flex items-center transition-colors duration-300 sm:hidden ${barColor}`}
+            className={`flex items-center transition-colors duration-300 ${barColor} ${item("[transition-delay:0ms]")}`}
           >
             <Logomark className="h-[26px] w-[37px]" />
           </Link>
 
           {/* desktop nav, top right */}
           <nav
-            className={`ml-auto hidden items-center gap-x-7 font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-300 sm:flex sm:text-sm ${textColor}`}
+            className={`ml-auto hidden items-center gap-x-7 font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-300 sm:flex sm:text-sm ${textColor} ${item("[transition-delay:140ms]")}`}
           >
-            {nav.map((item) => (
-              <Link key={item.href} href={item.href} className="group">
-                <span className="link-underline is-tracked">{item.label}</span>
-                {item.href === "/projects" && projectCount ? (
+            {nav.map((navItem) => (
+              <Link key={navItem.href} href={navItem.href} className="group">
+                <span className="link-underline is-tracked">
+                  {navItem.label}
+                </span>
+                {navItem.href === "/projects" && projectCount ? (
                   <sup className="ml-0.5 inline-block font-mono text-[0.62em] font-bold leading-none tracking-[0.06em] text-copper transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:scale-[1.6]">
                     {projectCount}
                   </sup>
@@ -249,7 +249,7 @@ export default function HomeChrome({
           {/* mobile menu button */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className={`ml-auto flex h-12 w-12 flex-col items-center justify-center transition-colors duration-300 sm:hidden ${barColor}`}
+            className={`ml-auto flex h-12 w-12 flex-col items-center justify-center transition-colors duration-300 sm:hidden ${barColor} ${item("[transition-delay:140ms]")}`}
             aria-label="Toggle menu"
           >
             {[0, 1, 2].map((i) => (
@@ -262,43 +262,32 @@ export default function HomeChrome({
         </div>
       </header>
 
-      {/* desktop: scroll-linked sliding wordmark */}
-      <Link
-        ref={wrapRef}
-        href="/"
-        aria-label={`${site.name}, home`}
-        onClick={(e) => {
-          e.preventDefault();
-          smoothScrollTop();
-        }}
-        className={`logo-mask fixed left-0 top-0 z-50 hidden transition-colors duration-300 will-change-transform sm:block ${textColor}`}
-      >
-        <Wordmark className="aspect-[121.71/55.33] w-full" />
-      </Link>
-
-      {/* desktop: the house mark that the docked wordmark crossfades into.
-          Starts hidden (opacity 0) — JS fades it in once the wordmark docks. */}
-      <span
-        ref={markRef}
-        aria-hidden="true"
-        style={{ opacity: 0 }}
-        className={`pointer-events-none fixed left-0 top-0 z-50 hidden overflow-hidden will-change-transform sm:block ${textColor}`}
-      >
-        <span ref={markInnerRef} className="block h-full w-full">
-          <Logomark className="h-full w-full" />
-        </span>
-      </span>
-
       {/* mobile menu — right drawer */}
       <MobileMenu open={open} onClose={() => setOpen(false)} />
 
-      {/* "Get an instant quote" — floating Spotlight CTA to the estimator. Hidden
-          once you reach the gold footer so it never clashes with it. */}
-      {mode !== "footer" && (
-        <div className="fixed bottom-5 right-5 z-30 sm:bottom-7 sm:right-7">
-          <InstantQuoteButton photo={quotePhoto} />
-        </div>
-      )}
+      {/* "Get an instant quote" — floating Spotlight CTA to the estimator.
+          Rather than hiding at the footer it DOCKS into the footer's reserved
+          slot (#footer-cta-slot): we translate it there and fade it out as it
+          lands, so the footer's own static button takes over seamlessly.
+          Always rendered so the transform can animate; pointer-events drop while
+          docked so the footer button owns the clicks. */}
+      <div
+        ref={ctaRef}
+        className={`fixed bottom-5 right-5 z-30 will-change-transform sm:bottom-7 sm:right-7 ${
+          // The dock glide is a slightly longer, gentler ease than the entrance.
+          "transition-[opacity,transform] duration-[600ms] ease-[cubic-bezier(0.22,0.61,0.36,1)]"
+        } ${atFooter ? "pointer-events-none opacity-0" : "opacity-100"} ${
+          // fold the entrance stagger in when we're NOT docked
+          !atFooter && !entered ? "translate-y-3 opacity-0" : ""
+        }`}
+        style={{
+          transform: dock ?? undefined,
+          transitionDelay: !atFooter && !entered ? "0ms" : "280ms",
+        }}
+        aria-hidden={atFooter}
+      >
+        <InstantQuoteButton photo={quotePhoto} />
+      </div>
     </>
   );
 }

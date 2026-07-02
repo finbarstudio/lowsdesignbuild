@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { SanityImageSource } from "@sanity/image-url";
 
+import VpFlowHighlight from "@/app/components/VpFlowHighlight";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import { PROJECT_THUMBS_QUERY } from "@/sanity/lib/queries";
@@ -53,18 +54,20 @@ export default async function ViewProjectsButton({
   return (
     <div className={`flex justify-center ${className}`}>
       <style>{css}</style>
-      <Link href="/projects" className="vp" aria-label="View projects">
-        <span className="vp__fan" aria-hidden="true">
-          {fan.map((url, i) => (
-            <span
-              key={i}
-              className={`vp__photo vp__photo--${i + 1}`}
-              style={{ backgroundImage: `url("${url}")` }}
-            />
-          ))}
-        </span>
-        <span className="vp__label">View projects</span>
-      </Link>
+      <VpFlowHighlight>
+        <Link href="/projects" className="vp" aria-label="View projects">
+          <span className="vp__fan" aria-hidden="true">
+            {fan.map((url, i) => (
+              <span
+                key={i}
+                className={`vp__photo vp__photo--${i + 1}`}
+                style={{ backgroundImage: `url("${url}")` }}
+              />
+            ))}
+          </span>
+          <span className="vp__label">View projects</span>
+        </Link>
+      </VpFlowHighlight>
     </div>
   );
 }
@@ -206,7 +209,46 @@ const css = `
 
 .vp:active { transform: translateY(0); }
 
+/* ============================================================
+   LANDED — the travelling dot has reached the bottom of the
+   timeline (signalled by ProcessPath via VpFlowHighlight). The
+   pill border + label go gold and it lifts, so the gold line
+   reads as flowing into the button. A gold halo above the pill
+   is the dot arriving. Additive: without a ProcessFlow provider
+   .vp-flow--landed never applies, so the button is unaffected.
+   ============================================================ */
+.vp-flow { position: relative; display: inline-flex; }
+.vp-flow--landed .vp {
+  border-color: var(--tertiary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(169, 126, 31, 0.22),
+              0 0 0 1px var(--tertiary);
+}
+.vp-flow--landed .vp__label { color: var(--copper-deep); }
+/* the gold dot arriving into the pill's top edge */
+.vp-flow::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -0.5rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 999px;
+  background: var(--tertiary);
+  box-shadow: 0 0 10px 2px rgba(169, 126, 31, 0.45);
+  opacity: 0;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.4s ease;
+  pointer-events: none;
+}
+.vp-flow--landed::before {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .vp-flow, .vp-flow::before { transition-duration: 0.001ms; }
   .vp, .vp__label, .vp__photo { transition-duration: 0.001ms; }
   .vp:focus-visible .vp__photo--1,
   .vp:focus-visible .vp__photo--2,

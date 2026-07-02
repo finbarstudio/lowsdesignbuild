@@ -117,6 +117,7 @@ export const SERVICES_QUERY = defineQuery(`
     title,
     blurb,
     image,
-    "lqip": image.asset->metadata.lqip
+    "lqip": image.asset->metadata.lqip,
+    "aspect": image.asset->metadata.dimensions.aspectRatio
   }
 `);

@@ -105,4 +105,5 @@ export interface ServiceItem {
   blurb: string | null;
   image: SanityImageSource | null;
   lqip?: string | null;
+  aspect?: number | null;
 }

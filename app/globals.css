@@ -172,18 +172,17 @@ button:active {
 }
 
 /* ---- Home entrance (on load) ----
-   The hero wipes down to reveal (top edge → bottom), then a beat later the
-   LOWS wordmark rises up out of its own clip ("mask swipe up"). Pure CSS so it
-   plays on every load; on the first session visit it runs under the preloader
-   so the hero is already in place when the curtain lifts. */
-@keyframes hero-drop {
-  from {
-    clip-path: inset(0 0 100% 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
+   The keyhole preloader reveals the hero IMAGE first; once it lifts, HomeChrome
+   fires the chrome in, staggered (that stagger is driven in HomeChrome via React
+   state + per-item transition-delays — see HomeChrome.tsx).
+
+   This CSS handles only the HERO WORDMARK, which lives in page.tsx (a server
+   component) and so is toggled via the `entrance-armed` / `entrance-go` hooks on
+   <html> that HomeChrome sets. The wordmark rises up out of its own clip ("mask
+   swipe up") in the same beat as the chrome.
+
+   Fail-open: by default (no `entrance-armed` — JS off) the wordmark is simply in
+   its resting, fully-visible state, so a JS failure never leaves a blank hero. */
 @keyframes logo-rise {
   from {
     transform: translateY(110%);
@@ -192,28 +191,17 @@ button:active {
     transform: translateY(0);
   }
 }
-/* Entrance reveal — fail-open. By default the hero + wordmark are fully
-   visible (so a JS failure never leaves a blank hero). HomeChrome `arms` the
-   reveal (hides them) on mount, then `go`es once the preloader lifts on a fresh
-   load — or almost immediately on a client-side return — so the entrance is
-   actually seen rather than playing under the preloader. */
 .logo-mask {
   overflow: hidden;
 }
 .logo-mask > * {
   display: block;
 }
-html.entrance-armed .hero-reveal {
-  clip-path: inset(0 0 100% 0);
-}
 html.entrance-armed .logo-mask > * {
   transform: translateY(110%);
 }
-html.entrance-go .hero-reveal {
-  animation: hero-drop 0.95s cubic-bezier(0.76, 0, 0.24, 1) 0.05s forwards;
-}
 html.entrance-go .logo-mask > * {
-  animation: logo-rise 0.85s cubic-bezier(0.76, 0, 0.24, 1) 0.3s forwards;
+  animation: logo-rise 0.8s cubic-bezier(0.76, 0, 0.24, 1) 0.15s forwards;
 }
 
 /* Hide the scrollbar on a horizontally-scrollable strip (the Instagram feed) */
@@ -290,8 +278,10 @@ html.lenis body {
   position: fixed;
   inset: 0;
   z-index: 80;
-  /* transparent — the SVG's paper rect is the curtain, so the hole reveals the page */
-  animation: preloader-failsafe 0.01s linear 4.4s forwards;
+  /* transparent — the SVG's paper rect is the curtain, so the hole reveals the
+     page. Backstop fires just past the JS timeline (~2.34s end + ~0.9s JS
+     failsafe), so a stalled rAF can never leave the curtain up. */
+  animation: preloader-failsafe 0.01s linear 3.3s forwards;
 }
 .preloader__svg {
   position: absolute;
@@ -331,11 +321,8 @@ html.lenis body {
   .preloader {
     display: none;
   }
-  html.entrance-armed .hero-reveal,
-  html.entrance-go .hero-reveal {
-    animation: none;
-    clip-path: none;
-  }
+  /* Hero wordmark: no rise, just resting/visible. (HomeChrome also reveals the
+     chrome instantly under reduced motion — see its entrance effect.) */
   html.entrance-armed .logo-mask > *,
   html.entrance-go .logo-mask > * {
     animation: none;
