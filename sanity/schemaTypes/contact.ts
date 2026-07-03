@@ -8,6 +8,13 @@ export const contactType = defineType({
   type: "document",
   fields: [
     defineField({
+      name: "contactHeroText",
+      title: "Contact page big heading",
+      type: "string",
+      description:
+        "The large heading at the top of the Contact page. Leave blank to use the built-in text.",
+    }),
+    defineField({
       name: "contactEmail",
       title: "Enquiry form recipient email",
       type: "string",

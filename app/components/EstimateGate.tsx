@@ -9,6 +9,7 @@ import { FORM_CARD, FORM_GRID } from "@/app/lib/ui";
 // the UNLOCK is only kept for the tab session, so the estimator re-hides behind
 // the email gate on each fresh visit.
 export const ESTIMATE_EMAIL_KEY = "lows_estimate_email";
+export const ESTIMATE_NAME_KEY = "lows_estimate_name";
 const UNLOCK_KEY = "lows_estimate_unlocked";
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -27,6 +28,7 @@ export default function EstimateGate({
   children: React.ReactNode;
 }) {
   const [unlocked, setUnlocked] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [err, setErr] = useState("");
 
@@ -41,13 +43,20 @@ export default function EstimateGate({
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    const n = name.trim();
     const v = email.trim();
+    if (!n) {
+      setErr("Please enter your name.");
+      return;
+    }
     if (!EMAIL_RE.test(v)) {
       setErr("Please enter a valid email address.");
       return;
     }
     try {
-      localStorage.setItem(ESTIMATE_EMAIL_KEY, v); // persists for the contact form
+      // both persist so the contact form can prefill them later
+      localStorage.setItem(ESTIMATE_NAME_KEY, n);
+      localStorage.setItem(ESTIMATE_EMAIL_KEY, v);
       sessionStorage.setItem(UNLOCK_KEY, "1"); // unlock only for this session
     } catch {
       /* ignore */
@@ -68,13 +77,35 @@ export default function EstimateGate({
       <div className={`flex flex-col ${FORM_CARD}`}>
         <p className="label mb-6 !text-ink">View the estimator</p>
         <p className="max-w-sm text-base leading-relaxed text-muted">
-          Pop in your email and we&apos;ll unlock the instant estimate
-          calculator — we&apos;ll use it to send your figures across.
+          Pop in your name and email and we&apos;ll unlock the instant estimate
+          calculator — we&apos;ll use them to send your figures across.
         </p>
-        <form onSubmit={submit} className="mt-8">
+        <form onSubmit={submit} className="mt-8 space-y-8">
           <label className="group block">
             <span className="mb-3 flex items-center gap-3">
               <span className="font-mono text-xs text-tertiary">01</span>
+              <span className="text-sm font-semibold tracking-tight text-ink">
+                Name
+              </span>
+            </span>
+            <div className="relative">
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setErr("");
+                }}
+                required
+                placeholder="John Smith"
+                className="w-full border-0 border-b border-line bg-transparent pb-2 text-xl outline-none transition-colors placeholder:text-muted/40 sm:text-2xl"
+              />
+              <span className="pointer-events-none absolute -bottom-px left-0 h-[2px] w-full origin-left scale-x-0 bg-tertiary transition-transform duration-500 ease-out group-focus-within:scale-x-100" />
+            </div>
+          </label>
+          <label className="group block">
+            <span className="mb-3 flex items-center gap-3">
+              <span className="font-mono text-xs text-tertiary">02</span>
               <span className="text-sm font-semibold tracking-tight text-ink">
                 Email address
               </span>

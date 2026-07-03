@@ -6,8 +6,8 @@ import ProjectsGrid from "@/app/components/ProjectsGrid";
 import ScrollNudge from "@/app/components/ScrollNudge";
 import WordReveal from "@/app/components/WordReveal";
 import { client } from "@/sanity/lib/client";
-import { PROJECTS_QUERY } from "@/sanity/lib/queries";
-import type { ProjectListItem } from "@/sanity/lib/types";
+import { PROJECTS_PAGE_QUERY, PROJECTS_QUERY } from "@/sanity/lib/queries";
+import type { ProjectListItem, ProjectsPage } from "@/sanity/lib/types";
 
 export const revalidate = 60;
 
@@ -20,7 +20,10 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  const projects = await client.fetch<ProjectListItem[]>(PROJECTS_QUERY);
+  const [projects, page] = await Promise.all([
+    client.fetch<ProjectListItem[]>(PROJECTS_QUERY),
+    client.fetch<ProjectsPage | null>(PROJECTS_PAGE_QUERY),
+  ]);
 
   return (
     <main>
@@ -31,11 +34,11 @@ export default async function ProjectsPage() {
         className={`${PAD} flex min-h-[100svh] flex-col items-center justify-center text-center`}
       >
         <h1 className="mx-auto max-w-6xl font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
-          <WordReveal text="Our pride is in our projects" />
+          <WordReveal text={page?.heroText || "Our pride is in our projects"} />
         </h1>
         <p className="mt-10 max-w-xl text-base leading-relaxed text-muted sm:mt-14 sm:text-lg">
-          A selection of recent loft conversions, extensions and full
-          refurbishments across London and surrounding areas.
+          {page?.heroIntro ||
+            "A selection of recent loft conversions, extensions and full refurbishments across London and surrounding areas."}
         </p>
       </section>
 

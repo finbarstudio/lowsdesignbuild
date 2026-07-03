@@ -10,6 +10,7 @@ import ProjectGallery from "@/app/components/ProjectGallery";
 import ProjectHeroTitle from "@/app/components/ProjectHeroTitle";
 import Reveal from "@/app/components/Reveal";
 import { deriveColours } from "@/app/lib/colours";
+import { projectCats } from "@/app/lib/projectCats";
 import { client } from "@/sanity/lib/client";
 import { urlFor, urlForOriginal } from "@/sanity/lib/image";
 import { PROJECT_QUERY, PROJECT_SLUGS_QUERY } from "@/sanity/lib/queries";
@@ -37,7 +38,7 @@ export async function generateMetadata({
   if (!project) return { title: "Project" };
   const description = project.description
     ? project.description.slice(0, 155).replace(/\s+\S*$/, "")
-    : `${project.category ?? "Building"} project in ${project.location ?? "South London"}.`;
+    : `${projectCats(project)[0] ?? "Building"} project in ${project.location ?? "South London"}.`;
   const ogImage = project.mainImage
     ? urlFor(project.mainImage).width(1200).height(630).fit("crop").url()
     : undefined;
@@ -64,7 +65,7 @@ export default async function ProjectPage({
   if (!project) notFound();
 
   // Descriptive, non-empty alt for SEO + screen readers.
-  const heroAlt = [project.title, project.category, project.location]
+  const heroAlt = [project.title, ...projectCats(project), project.location]
     .filter(Boolean)
     .join(", ");
 
@@ -110,7 +111,7 @@ export default async function ProjectPage({
             {/* left rail: tags + colour tiles, both mask-revealing */}
             <div className="lg:col-span-4">
               <ProjectAside
-                tags={[project.category, project.location, project.year]
+                tags={[...projectCats(project), project.location, project.year]
                   .filter(Boolean)
                   .map(String)}
                 colours={deriveColours(project.palette, project.heroPalette)}

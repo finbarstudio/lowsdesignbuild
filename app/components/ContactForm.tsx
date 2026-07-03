@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { site } from "@/app/lib/site";
 import { submitEnquiry } from "@/app/lib/submitEnquiry";
 
-// Same key EstimateGate saves the visitor's email under, so we can prefill it.
+// Same keys EstimateGate saves the visitor's details under, so we can prefill.
 const ESTIMATE_EMAIL_KEY = "lows_estimate_email";
+const ESTIMATE_NAME_KEY = "lows_estimate_name";
 
 /**
  * An editorial, less-traditional contact form: no boxes — each field is an
@@ -77,14 +78,22 @@ export default function ContactForm({
   const [sent, setSent] = useState<"" | "sent" | "mailto">("");
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Prefill the email from the estimator gate (if they unlocked it earlier).
+  // Prefill the email + name from the estimator gate (if they unlocked it).
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(ESTIMATE_EMAIL_KEY);
-      const input = formRef.current?.querySelector<HTMLInputElement>(
-        'input[name="email"]',
-      );
-      if (saved && input && !input.value) input.value = saved;
+      const form = formRef.current;
+      if (!form) return;
+      const fill = (sel: string, value: string | null) => {
+        const input = form.querySelector<HTMLInputElement>(sel);
+        if (value && input && !input.value) input.value = value;
+      };
+      fill('input[name="email"]', localStorage.getItem(ESTIMATE_EMAIL_KEY));
+      const name = localStorage.getItem(ESTIMATE_NAME_KEY)?.trim();
+      if (name) {
+        const [first, ...rest] = name.split(/\s+/);
+        fill('input[name="firstName"]', first);
+        fill('input[name="lastName"]', rest.join(" ") || null);
+      }
     } catch {
       /* storage disabled — nothing to prefill */
     }

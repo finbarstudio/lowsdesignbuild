@@ -12,6 +12,7 @@ export const PROJECTS_QUERY = defineQuery(`
     "slug": slug.current,
     location,
     category,
+    categories,
     year,
     palette,
     "heroPalette": mainImage.asset->metadata.palette,
@@ -51,6 +52,7 @@ export const PROJECT_QUERY = defineQuery(`
     "slug": slug.current,
     location,
     category,
+    categories,
     year,
     description,
     palette,
@@ -80,7 +82,9 @@ export const HOME_PAGE_QUERY = defineQuery(`
 export const ABOUT_PAGE_QUERY = defineQuery(`
   *[_type == "aboutPage"][0]{
     aboutHeroText,
-    familyBio
+    familyBio,
+    qualityTitle,
+    qualityText
   }
 `);
 
@@ -95,6 +99,8 @@ export const FAMILY_QUERY = defineQuery(`
 // Estimate page — the editable info-tooltip copy for the calculator.
 export const ESTIMATE_PAGE_QUERY = defineQuery(`
   *[_type == "estimatePage"][0]{
+    heroText,
+    heroIntro,
     infoTips[]{ key, text }
   }
 `);
@@ -102,6 +108,7 @@ export const ESTIMATE_PAGE_QUERY = defineQuery(`
 // Contact details — form recipient + the areas pill list (shared with About).
 export const CONTACT_QUERY = defineQuery(`
   *[_type == "contact"][0]{
+    contactHeroText,
     contactEmail,
     formAccessKey,
     calendlyUrl,
@@ -120,5 +127,13 @@ export const SERVICES_QUERY = defineQuery(`
     image,
     "lqip": image.asset->metadata.lqip,
     "aspect": image.asset->metadata.dimensions.aspectRatio
+  }
+`);
+
+// Projects listing page copy — heading + intro (grid comes from the projects).
+export const PROJECTS_PAGE_QUERY = defineQuery(`
+  *[_type == "projectsPage"][0]{
+    heroText,
+    heroIntro
   }
 `);

@@ -9,6 +9,7 @@ export interface ProjectListItem {
   slug: string | null;
   location: string | null;
   category: string | null;
+  categories?: string[] | null;
   year: number | null;
   palette?: Array<{ color: string | null; name: string | null }> | null;
   heroPalette?: SanityPalette | null;
@@ -63,6 +64,8 @@ export interface HomePage {
 export interface AboutPage {
   aboutHeroText: string | null;
   familyBio: string | null;
+  qualityTitle: string | null;
+  qualityText: string | null;
 }
 
 export interface Family {
@@ -86,6 +89,7 @@ export interface Family {
 }
 
 export interface Contact {
+  contactHeroText: string | null;
   contactEmail: string | null;
   formAccessKey: string | null;
   calendlyUrl: string | null;
@@ -93,6 +97,8 @@ export interface Contact {
 }
 
 export interface EstimatePage {
+  heroText: string | null;
+  heroIntro: string | null;
   infoTips: Array<{
     _key?: string;
     key: string | null;
@@ -107,4 +113,9 @@ export interface ServiceItem {
   image: SanityImageSource | null;
   lqip?: string | null;
   aspect?: number | null;
+}
+
+export interface ProjectsPage {
+  heroText: string | null;
+  heroIntro: string | null;
 }

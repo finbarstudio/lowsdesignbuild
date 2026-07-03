@@ -35,9 +35,29 @@ export const projectType = defineType({
       description: "Area / town, e.g. Beckenham",
     }),
     defineField({
+      name: "categories",
+      title: "Types",
+      type: "array",
+      of: [{ type: "string" }],
+      description:
+        "What kind of work this project involved — pick up to two (e.g. Loft Conversion + Extension). Shown as pills and used by the projects-page filter.",
+      options: {
+        list: [
+          { title: "Loft Conversion", value: "Loft Conversion" },
+          { title: "Extension", value: "Extension" },
+          { title: "Refurbishment", value: "Refurbishment" },
+          { title: "Roofing", value: "Roofing" },
+        ],
+        layout: "grid",
+      },
+      validation: (rule) => rule.max(2).unique(),
+    }),
+    defineField({
       name: "category",
-      title: "Category",
+      title: "Category (legacy)",
       type: "string",
+      description:
+        "The old single-type field — still shown on the site if 'Types' above is empty. Prefer picking Types above; you can clear this once done.",
       options: {
         list: [
           { title: "Loft Conversion", value: "Loft Conversion" },

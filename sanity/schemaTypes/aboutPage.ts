@@ -24,6 +24,21 @@ export const aboutPageType = defineType({
       description:
         "The feature bio on the About page (the text that lights up word-by-word as you scroll). Separate paragraphs with a blank line.",
     }),
+    defineField({
+      name: "qualityTitle",
+      title: "'Quality guarantee' small heading",
+      type: "string",
+      description:
+        "The small gold heading of the closing section. Leave blank to use the built-in text.",
+    }),
+    defineField({
+      name: "qualityText",
+      title: "'Quality guarantee' statement",
+      type: "text",
+      rows: 5,
+      description:
+        "The large closing statement on the About page. Leave blank to use the built-in text.",
+    }),
   ],
   preview: { prepare: () => ({ title: "About Page" }) },
 });

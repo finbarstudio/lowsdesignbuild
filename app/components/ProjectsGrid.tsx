@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 
+import { projectCats } from "@/app/lib/projectCats";
 import { urlFor } from "@/sanity/lib/image";
 import type { ProjectListItem } from "@/sanity/lib/types";
 
@@ -19,15 +20,17 @@ export default function ProjectsGrid({
 }: {
   projects: ProjectListItem[];
 }) {
-  // unique categories, in the order projects come back (already ordered in GROQ)
+  // unique types, in the order projects come back (already ordered in GROQ).
+  // A project can carry up to two types (categories[], legacy category string).
   const types = useMemo(() => {
     const seen = new Set<string>();
     const out: string[] = [];
     for (const p of projects) {
-      const c = p.category?.trim();
-      if (c && !seen.has(c)) {
-        seen.add(c);
-        out.push(c);
+      for (const c of projectCats(p)) {
+        if (!seen.has(c)) {
+          seen.add(c);
+          out.push(c);
+        }
       }
     }
     return out;
@@ -38,7 +41,7 @@ export default function ProjectsGrid({
   const shown =
     active === "all"
       ? projects
-      : projects.filter((p) => p.category?.trim() === active);
+      : projects.filter((p) => projectCats(p).includes(active));
 
   return (
     <>
@@ -68,7 +71,7 @@ export default function ProjectsGrid({
 
       <div className="grid w-screen grid-cols-1 gap-[2px] bg-background sm:grid-cols-2 lg:grid-cols-3">
         {shown.map((p) => {
-          const meta = [p.category, p.location, p.year].filter(Boolean);
+          const meta = [...projectCats(p), p.location, p.year].filter(Boolean);
           return (
             <Link
               key={p._id}
@@ -106,7 +109,7 @@ export default function ProjectsGrid({
               {p.mainImage && (
                 <Image
                   src={urlFor(p.mainImage).width(1100).height(1730).fit("crop").url()}
-                  alt={[p.title, p.category, p.location].filter(Boolean).join(", ")}
+                  alt={[p.title, ...projectCats(p), p.location].filter(Boolean).join(", ")}
                   fill
                   sizes="(max-width: 640px) 100vw, 50vw"
                   placeholder={p.lqip ? "blur" : undefined}

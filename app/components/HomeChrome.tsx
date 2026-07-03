@@ -233,7 +233,7 @@ export default function HomeChrome({
                 </span>
                 {navItem.href === "/projects" && projectCount ? (
                   <sup
-                    className={`ml-0.5 inline-block font-mono text-[0.62em] font-bold leading-none tracking-[0.06em] text-copper transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:scale-[1.6] ${
+                    className={`ml-0.5 inline-block font-mono text-[0.62em] font-bold leading-none tracking-[0.06em] text-copper transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.25,0.8,0.25,1)] group-hover:-translate-y-0.5 group-hover:scale-[1.2] ${
                       entered ? "opacity-100" : "opacity-0"
                     }`}
                   >

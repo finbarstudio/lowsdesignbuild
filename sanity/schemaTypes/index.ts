@@ -6,6 +6,7 @@ import { estimatePageType } from "./estimatePage";
 import { familyType } from "./family";
 import { homePageType } from "./homePage";
 import { projectType } from "./project";
+import { projectsPageType } from "./projectsPage";
 import { serviceType } from "./service";
 
 // Every document/object type the Studio knows about. Organised by page/section
@@ -17,6 +18,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     serviceType,
     familyType,
     projectType,
+    projectsPageType,
     estimatePageType,
     contactType,
   ],

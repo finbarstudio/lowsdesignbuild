@@ -31,7 +31,7 @@ export default async function ContactPage() {
         className={`${PAD} flex min-h-[100svh] flex-col items-center justify-center text-center`}
       >
         <h1 className="mx-auto max-w-6xl font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
-          <WordReveal text="Let's discuss your next project" />
+          <WordReveal text={contact?.contactHeroText || "Let's discuss your next project"} />
         </h1>
 
         <div className="mt-12 flex w-full max-w-full flex-col items-center gap-3 sm:mt-16 sm:gap-4">

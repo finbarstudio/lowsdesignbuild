@@ -169,12 +169,10 @@ export default async function AboutPage() {
         className={`${PAD} ${FOOT} pt-[14vh] text-center sm:pt-[16vh]`}
       >
         <Reveal>
-          <p className="label !text-tertiary">Our quality guarantee</p>
+          <p className="label !text-tertiary">{about?.qualityTitle || "Our quality guarantee"}</p>
           <h2 className="serif mx-auto mt-6 max-w-4xl text-2xl leading-[1.3] sm:text-4xl">
-            We are passionate about our quality of work. We always aim for the
-            highest standard of work that we and our clients can always be happy
-            with. All our work comes with guarantees, so you can be at peace of
-            mind that our services are always up to the required specification.
+            {about?.qualityText ||
+              "We are passionate about our quality of work. We always aim for the highest standard of work that we and our clients can always be happy with. All our work comes with guarantees, so you can be at peace of mind that our services are always up to the required specification."}
           </h2>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
             <Link href="/contact" className="link link-underline is-tracked">

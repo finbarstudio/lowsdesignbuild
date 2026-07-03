@@ -12,6 +12,21 @@ export const estimatePageType = defineType({
   type: "document",
   fields: [
     defineField({
+      name: "heroText",
+      title: "Big heading",
+      type: "string",
+      description:
+        "The large heading at the top of the Estimate page. Leave blank to use the built-in text.",
+    }),
+    defineField({
+      name: "heroIntro",
+      title: "Intro paragraph",
+      type: "text",
+      rows: 3,
+      description:
+        "The short paragraph under the heading. Leave blank to use the built-in text.",
+    }),
+    defineField({
       name: "infoTips",
       title: "Calculator info tooltips",
       type: "array",
