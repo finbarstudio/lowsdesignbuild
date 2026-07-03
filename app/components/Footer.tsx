@@ -106,12 +106,6 @@ export default function Footer() {
           >
             Site by finbar.studio
           </a>
-          <a className="c-ft-marquee__top" href="#top">
-            <span>Back to top</span>
-            <span className="c-ft-marquee__top-arrow" aria-hidden="true">
-              ↑
-            </span>
-          </a>
         </div>
       </div>
     </footer>
@@ -257,19 +251,6 @@ const css = `
 .c-ft-marquee__legal{margin:0; font-size:12px; letter-spacing:0.01em; color:var(--muted);}
 .c-ft-marquee__credit{ text-decoration:none; }
 .c-ft-marquee__credit:hover{ color:var(--copper-deep); }
-.c-ft-marquee__top{
-  margin-left:auto; display:inline-flex; align-items:center; gap:8px;
-  text-decoration:none; color:var(--ink); font-size:12px;
-  letter-spacing:0.08em; text-transform:uppercase;
-}
-.c-ft-marquee__top-arrow{
-  display:inline-flex; align-items:center; justify-content:center;
-  width:26px; height:26px; border:1px solid var(--line); border-radius:50%;
-  transition:transform .4s cubic-bezier(.2,.7,.2,1), border-color .3s ease, background .3s ease;
-}
-.c-ft-marquee__top:hover .c-ft-marquee__top-arrow{
-  transform:translateY(-3px); border-color:var(--copper); background:var(--background);
-}
 
 .c-ft-marquee a:focus-visible{ outline:2px solid var(--slate-blue); outline-offset:4px; border-radius:1px; }
 
@@ -280,9 +261,10 @@ const css = `
 @media (max-width:560px){
   .c-ft-marquee__lead{align-items:flex-start;}
   .c-ft-marquee__cta{width:100%; justify-content:space-between;}
-  .c-ft-marquee__cols{grid-template-columns:1fr;}
+  /* menu + where-we-work sit side by side; contact spans the full width below */
+  .c-ft-marquee__cols{grid-template-columns:repeat(2,minmax(0,1fr)); gap:36px 20px;}
+  .c-ft-marquee__col--contact{grid-column:1 / -1;}
   .c-ft-marquee__bar{gap:14px;}
-  .c-ft-marquee__top{margin-left:0;}
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -291,7 +273,6 @@ const css = `
   .c-ft-marquee__cta-arrow,
   .c-ft-marquee__list a,
   .c-ft-marquee__contact,
-  .c-ft-marquee__social a,
-  .c-ft-marquee__top-arrow{transition:none;}
+  .c-ft-marquee__social a{transition:none;}
 }
 `;

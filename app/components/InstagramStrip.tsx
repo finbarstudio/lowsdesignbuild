@@ -20,8 +20,9 @@ export default function InstagramStrip({
 
   return (
     <div className="px-4 sm:px-6">
+      {/* mobile: a 2×2 grid (first four posts); desktop: the full 6-up rows */}
       <div
-        className="grid grid-cols-3 sm:grid-cols-6"
+        className="grid grid-cols-2 sm:grid-cols-6"
         style={{ gap: "5px" }}
       >
         {tiles.map((p, i) => (
@@ -31,7 +32,9 @@ export default function InstagramStrip({
             target="_blank"
             rel="noopener noreferrer"
             aria-label="View on Instagram"
-            className="group/tile relative block aspect-square overflow-hidden bg-line"
+            className={`group/tile relative block aspect-square overflow-hidden bg-line ${
+              i >= 4 ? "max-sm:hidden" : ""
+            }`}
           >
             <img
               src={p.img}

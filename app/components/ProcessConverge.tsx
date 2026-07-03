@@ -68,6 +68,30 @@ export default function ProcessConverge({
       const sr = stage.getBoundingClientRect();
       // ENTER: 0 with the stage a viewport away → 1 once pinned at the top.
       const q = clamp(1 - sr.top / vh, 0, 1);
+
+      // MOBILE: no converge stack, no pin, no grow, no fade — the button is a
+      // plain in-flow element between the process line and Instagram. Just fire
+      // the gold trace once it's well into view, and make sure it's visible.
+      if (mobile) {
+        if (btnRef.current) {
+          btnRef.current.style.opacity = "1";
+          btnRef.current.style.transform = "none";
+        }
+        copies.forEach((c, i) => {
+          if (c.style.transform) {
+            c.style.transform = "";
+            c.style.opacity = "";
+            c.style.transition = "";
+            applied.current[i] = { x: 0, y: 0 };
+          }
+        });
+        const isL = q >= 0.5;
+        if (isL !== curLanded) {
+          curLanded = isL;
+          setLanded(isL);
+        }
+        return;
+      }
       // HOLD: 0 at the pin → 1 once the spacer has scrolled through.
       const sp = spacer.getBoundingClientRect();
       const p = clamp((vh - sp.top) / Math.max(1, sp.height), 0, 1);
@@ -90,12 +114,12 @@ export default function ProcessConverge({
           ? "none"
           : `translateY(${(-g * 5).toFixed(2)}vh)`;
 
-      // ---- The pull ---------------------------------------------------------
+      // ---- The pull (desktop only) ------------------------------------------
       copies.forEach((c, i) => {
         const slot = anchorRefs.current[i];
         if (!slot) return;
 
-        if (mobile || reduce) {
+        if (reduce) {
           // no FLIP: release the originals entirely
           if (c.style.transform) {
             c.style.transform = "";
@@ -130,22 +154,6 @@ export default function ProcessConverge({
         c.style.willChange = "transform";
         c.style.transform = `translate(${dx.toFixed(2)}px, ${dy.toFixed(2)}px)`;
         c.style.opacity = fade < 1 ? fade.toFixed(3) : "";
-      });
-
-      // Mobile: the anchors themselves are the visible 2×2/stack — fade them in
-      // as the stage assembles (the wide originals just scroll off).
-      anchorRefs.current.forEach((el, i) => {
-        if (!el) return;
-        if (!mobile || reduce) {
-          el.style.opacity = mobile && reduce ? "1" : "0";
-          if (reduce && mobile) el.style.transform = "none";
-          return;
-        }
-        const t = smooth(
-          clamp((q - i * 0.05) / Math.max(0.01, 0.9 - i * 0.05), 0, 1),
-        );
-        el.style.opacity = (t * fade).toFixed(3);
-        el.style.transform = `translateY(${((1 - t) * -8).toFixed(2)}vh)`;
       });
 
       // Button: grows in as the stage assembles, holds, and fades with the rest.
@@ -189,11 +197,12 @@ export default function ProcessConverge({
 
   return (
     <>
-      {/* Pinned stage — transparent; its content fades out before Instagram
-          (z-10, later in the DOM) scrolls past above it. */}
+      {/* Desktop: pinned, transparent stage whose content fades out before
+          Instagram (z-10, later in the DOM) scrolls past above it.
+          Mobile: a plain in-flow block — just the button, no pin/converge. */}
       <div
         ref={stageRef}
-        className="sticky top-0 z-0 flex h-[100svh] flex-col items-center justify-center"
+        className="relative flex flex-col items-center py-10 sm:sticky sm:top-0 sm:z-0 sm:h-[100svh] sm:justify-center sm:py-0"
       >
         {/* Anchor slots: the SAME 86vw/880px container as the timeline, two
             32%-wide columns at the same left/right edges — so the pulled
@@ -202,7 +211,7 @@ export default function ProcessConverge({
             fade in themselves as a compact stack. */}
         <div
           ref={gridRef}
-          className="mx-auto w-[86vw] max-w-[880px] will-change-transform"
+          className="mx-auto hidden w-[86vw] max-w-[880px] will-change-transform sm:block"
         >
           <div className="flex flex-col gap-y-8 sm:gap-y-16">
             {[0, 1].map((row) => (
@@ -243,11 +252,12 @@ export default function ProcessConverge({
           </div>
         </div>
 
-        {/* the button grows in beneath the grid, holds, then fades with it */}
+        {/* the button grows in beneath the grid, holds, then fades with it
+            (desktop) — on mobile it's simply here, full opacity, in flow */}
         <div
           ref={btnRef}
           style={{ opacity: 0 }}
-          className="vp-trace-scope mt-12 origin-center will-change-transform sm:mt-16"
+          className="vp-trace-scope origin-center will-change-transform sm:mt-16"
         >
           <LandedContext.Provider value={landed}>
             {button}
@@ -255,9 +265,10 @@ export default function ProcessConverge({
         </div>
       </div>
 
-      {/* Hold room: how long the assembled stage stays before the fade-out and
-          Instagram's arrival. Kept short — the button shouldn't outstay. */}
-      <div ref={spacerRef} aria-hidden className="h-[55vh] sm:h-[60vh]" />
+      {/* Hold room (desktop only): how long the assembled stage stays before the
+          fade-out and Instagram's arrival. Kept short — the button shouldn't
+          outstay. On mobile there's no pin, so no hold room either. */}
+      <div ref={spacerRef} aria-hidden className="hidden h-[60vh] sm:block" />
     </>
   );
 }

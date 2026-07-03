@@ -58,7 +58,7 @@ export default function MobileMenu({
         </div>
 
         <nav className="mm-nav" aria-label="Primary">
-          {nav.map((item, i) => {
+          {nav.map((item) => {
             const active =
               pathname === item.href || pathname?.startsWith(`${item.href}/`);
             const isCurrent = pathname === item.href;
@@ -75,9 +75,6 @@ export default function MobileMenu({
                   }
                 }}
               >
-                <span className="mm-idx">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
                 <span className="mm-label">{item.label}</span>
                 <span className="mm-arw" aria-hidden="true">
                   ↗
@@ -116,7 +113,7 @@ const css = `
 .mm-close:hover { color: var(--copper); transform: rotate(90deg); }
 .mm-close:focus-visible { outline: 2px solid var(--copper); outline-offset: 2px; border-radius: 2px; }
 
-.mm-nav { flex: 1 1 auto; padding: 6px 0; display: flex; flex-direction: column; overflow-y: auto; }
+.mm-nav { flex: 1 1 auto; padding: 6px 0; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
 .mm-link { position: relative; display: flex; align-items: baseline; gap: 14px; padding: 19px 22px; text-decoration: none; color: var(--ink); border-bottom: 1px solid var(--line); overflow: hidden; opacity: 0; transform: translateX(16px); transition: opacity .5s ease, transform .5s cubic-bezier(.62,.03,.16,1), background-color .35s ease; }
 .mm-link::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--copper); transform: scaleY(0); transform-origin: top; transition: transform .4s cubic-bezier(.7,0,.2,1); }
 .mm-root[data-open="true"] .mm-link { opacity: 1; transform: translateX(0); }
@@ -129,7 +126,6 @@ const css = `
 .mm-link:hover { background: rgba(169,126,31,.055); }
 .mm-link:hover::before, .mm-link:focus-visible::before, .mm-link.is-active::before { transform: scaleY(1); }
 .mm-link:focus-visible { outline: none; background: rgba(169,126,31,.06); }
-.mm-idx { font-size: 10px; letter-spacing: .14em; color: var(--copper); font-weight: 700; min-width: 16px; font-variant-numeric: tabular-nums; }
 .mm-label { font-size: 22px; letter-spacing: .005em; line-height: 1; flex: 1 1 auto; }
 .mm-arw { font-size: 14px; color: var(--muted); opacity: 0; transform: translate(-4px,2px); transition: opacity .35s ease, transform .35s cubic-bezier(.7,0,.2,1); }
 .mm-link:hover .mm-arw, .mm-link:focus-visible .mm-arw { opacity: 1; transform: translate(0,0); color: var(--copper); }

@@ -1,4 +1,4 @@
-import { FOOT, PAD } from "@/app/lib/ui";
+import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 import Image from "next/image";
 
@@ -95,14 +95,18 @@ export default async function HomePage() {
             muted
             playsInline
             style={{ transform: "scale(1.06)", willChange: "transform, opacity" }}
-            className="absolute left-0 top-0 h-full w-full object-cover"
+            // bleeds 1px past every edge so sub-pixel rounding can never leave a
+            // hairline gap at the viewport edge (seen on some mobile Chrome)
+            className="absolute -left-px -top-px h-[calc(100%+2px)] w-[calc(100%+2px)] object-cover"
           />
         ) : (
           /* Low-res base loads instantly as a sharp background; the full-res
-             image (priority) silently covers it once loaded. */
+             image (priority) silently covers it once loaded. -inset-px bleeds
+             1px past every edge so sub-pixel rounding can never leave a
+             hairline gap at the viewport edge (seen on some mobile Chrome). */
           <div
             id="home-hero-img"
-            className="absolute left-0 top-0 h-full w-full bg-cover bg-center"
+            className="absolute -inset-px bg-cover bg-center"
             style={{
               backgroundImage: `url("${hero.low}")`,
               transform: "scale(1.06)",
@@ -175,7 +179,8 @@ export default async function HomePage() {
         {hasInsta && (
           <section
             data-ig-section
-            className={`relative z-10 pt-8 sm:pt-16 ${FOOT}`}
+            // extra breathing room before the footer on mobile
+            className="relative z-10 pb-[26vh] pt-8 sm:pb-[18vh] sm:pt-16"
           >
             <div className="mb-6 px-4 sm:mb-14 sm:px-6">
               <a

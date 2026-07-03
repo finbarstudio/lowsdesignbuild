@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export type TeamMember = {
   name: string;
@@ -168,6 +168,28 @@ function DirectorsPair({
   const bio0 = useRef<HTMLParagraphElement>(null);
   const bio1 = useRef<HTMLParagraphElement>(null);
   const [bioH, setBioH] = useState(0);
+  // Mobile expand: the SECOND director's name/role block GLIDES from its spot
+  // beside the first name down into the bio stack (landing on a reserved spacer
+  // above his bio) — one instance of each name, moved, never duplicated.
+  const nameRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const spacerRef = useRef<HTMLDivElement>(null);
+  const [glide, setGlide] = useState<{ x: number; y: number } | null>(null);
+
+  useLayoutEffect(() => {
+    if (!tapped || !window.matchMedia("(max-width: 639px)").matches) {
+      setGlide(null);
+      return;
+    }
+    const nm = nameRefs.current[1];
+    const spacer = spacerRef.current;
+    if (!nm || !spacer) return;
+    // reserve the landing slot at the name block's size, then measure the FLIP
+    // delta (both rects in the same frame, so it's scroll-independent)
+    spacer.style.height = `${nm.offsetHeight}px`;
+    const s = spacer.getBoundingClientRect();
+    const n = nm.getBoundingClientRect();
+    setGlide({ x: s.left - n.left, y: s.top - n.top });
+  }, [tapped]);
 
   useEffect(() => {
     const measure = () =>
@@ -215,8 +237,9 @@ function DirectorsPair({
           const side = i === 0 ? "left" : "right";
           return (
             <div key={d.name || i} className="relative overflow-hidden">
+              {/* shorter on mobile so more of the wide photo's WIDTH reads */}
               <div
-                className="relative h-[50vh] overflow-hidden bg-background"
+                className="relative h-[34vh] overflow-hidden bg-background sm:h-[50vh]"
                 style={{
                   clipPath: open ? `inset(0 0 ${lift}px 0)` : "inset(0 0 0 0)",
                   transition: `clip-path 0.6s ${EASE}`,
@@ -239,11 +262,21 @@ function DirectorsPair({
 
               {/* text is inset by half the team grid's gap (gap-x-6 → 12px) so the
                   two names/bios line up with the team's two columns below, while
-                  the photo above stays a full joined 2-up. */}
+                  the photo above stays a full joined 2-up. On mobile expand, the
+                  SECOND name/role block glides down into the bio stack (measured
+                  FLIP) so nothing is duplicated. */}
               <div
+                ref={(el) => {
+                  nameRefs.current[i] = el;
+                }}
                 className={i === 0 ? "sm:pr-3" : "sm:pl-3"}
                 style={{
-                  transform: open ? `translateY(-${lift}px)` : "translateY(0)",
+                  transform:
+                    i === 1 && glide
+                      ? `translate(${glide.x.toFixed(1)}px, ${glide.y.toFixed(1)}px)`
+                      : open
+                        ? `translateY(-${lift}px)`
+                        : "translateY(0)",
                   opacity: inView ? 1 : 0,
                   transition: `transform 0.6s ${EASE}, opacity 0.6s ease 120ms`,
                 }}
@@ -277,20 +310,26 @@ function DirectorsPair({
       </div>
 
       {/* mobile: the images stay a joined 2-up above; the bios stack
-          single-column below, revealed when expanded. */}
+          single-column below when expanded. NO names here — the first bio sits
+          directly under the first name (which stays put), and the SECOND name
+          glides down onto the reserved spacer above its bio. */}
       <div
         className={`grid grid-cols-1 gap-6 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:hidden ${
           open ? "mt-6 max-h-[1200px] opacity-100" : "mt-0 max-h-0 opacity-0"
         }`}
       >
-        {directors.map((d, i) =>
-          d.bio ? (
-            <div key={d.name || i}>
-              <p className="text-sm font-medium">{d.name}</p>
-              <p className="mt-1 text-sm leading-relaxed text-muted">{d.bio}</p>
-            </div>
-          ) : null,
-        )}
+        {directors[0]?.bio ? (
+          <p className="text-sm leading-relaxed text-muted">
+            {directors[0].bio}
+          </p>
+        ) : null}
+        {/* landing slot for the second director's gliding name/role */}
+        <div ref={spacerRef} aria-hidden />
+        {directors[1]?.bio ? (
+          <p className="text-sm leading-relaxed text-muted">
+            {directors[1].bio}
+          </p>
+        ) : null}
       </div>
     </div>
   );
