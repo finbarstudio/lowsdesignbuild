@@ -14,9 +14,11 @@ type CalendlyApi = {
 const getCalendly = () =>
   (window as unknown as { Calendly?: CalendlyApi }).Calendly;
 
-// Brand the scheduler to the site palette (paper / gold / slate).
+// Brand the scheduler to the site palette (paper / gold / slate) and strip the
+// chrome we already provide ourselves: the event-details header (our card copy
+// says 30 min / video call), the landing-page details and the GDPR banner.
 const themed = (url: string) =>
-  `${url}${url.includes("?") ? "&" : "?"}hide_gdpr_banner=1&background_color=f4f1ea&primary_color=a97e1f&text_color=424952`;
+  `${url}${url.includes("?") ? "&" : "?"}hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=f4f1ea&primary_color=a97e1f&text_color=424952`;
 
 /**
  * "Book a call" — opens the Calendly scheduler in a popup overlay. Falls back to
@@ -148,14 +150,29 @@ export function CalendlyInline({ url }: { url: string }) {
   }, [url]);
 
   return (
-    <>
+    // relative wrapper: Calendly's own .calendly-spinner is position:FIXED, so
+    // while the iframe loads it centres on the VIEWPORT — floating over the
+    // hero before you've even scrolled to it. We kill it and show our own
+    // branded loading line behind the iframe instead (the iframe paints over
+    // it once ready).
+    <div className="relative w-full overflow-hidden rounded-sm">
+      <style>{`
+        .cal-embed .calendly-spinner { display: none !important; }
+        .cal-embed .calendly-inline-widget { height: 100% !important; }
+      `}</style>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 flex items-center justify-center font-mono text-xs uppercase tracking-[0.18em] text-muted"
+      >
+        Loading calendar…
+      </span>
       <link rel="stylesheet" href={CAL_CSS} />
       <div
         ref={ref}
-        className="w-full overflow-hidden rounded-sm"
+        className="cal-embed relative h-full w-full"
         style={{ minWidth: 320, height: 700 }}
       />
       <Script src={CAL_JS} strategy="lazyOnload" />
-    </>
+    </div>
   );
 }
