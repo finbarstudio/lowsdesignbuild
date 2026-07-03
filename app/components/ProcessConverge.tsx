@@ -202,7 +202,10 @@ export default function ProcessConverge({
           Mobile: a plain in-flow block — just the button, no pin/converge. */}
       <div
         ref={stageRef}
-        className="relative flex flex-col items-center py-10 sm:sticky sm:top-0 sm:z-0 sm:h-[100svh] sm:justify-center sm:py-0"
+        // mobile pb matches the visual gap ABOVE the button (last process step →
+        // button ≈ row leftover + paddings), so the button sits evenly between
+        // the final step and the Instagram grid
+        className="relative flex flex-col items-center pb-[94px] pt-10 sm:sticky sm:top-0 sm:z-0 sm:h-[100svh] sm:justify-center sm:py-0"
       >
         {/* Anchor slots: the SAME 86vw/880px container as the timeline, two
             32%-wide columns at the same left/right edges — so the pulled
