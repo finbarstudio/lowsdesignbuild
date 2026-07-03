@@ -346,6 +346,70 @@ function NumberField({
   );
 }
 
+// A count that reads like the advanced-factor checkbox rows, but with a small
+// number box sitting where the checkbox would be (e.g. "how many party walls").
+function CountRow({
+  label,
+  price,
+  info,
+  value,
+  onChange,
+  min = 0,
+  max = 99,
+  className = "",
+}: {
+  label: string;
+  price: string;
+  info?: string;
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+  className?: string;
+}) {
+  const [raw, setRaw] = useState(String(value));
+  useEffect(() => {
+    setRaw((r) => (Number(r) === value ? r : String(value)));
+  }, [value]);
+
+  return (
+    <div className={`flex items-start gap-3 text-sm ${className}`}>
+      <input
+        type="number"
+        inputMode="numeric"
+        min={min}
+        max={max}
+        value={raw}
+        aria-label={label}
+        onChange={(e) => {
+          const v = e.target.value;
+          setRaw(v);
+          if (v === "") return;
+          const n = Number(v);
+          if (!Number.isNaN(n)) onChange(Math.min(max, Math.max(min, n)));
+        }}
+        onBlur={() => {
+          const n = Number(raw);
+          if (raw === "" || Number.isNaN(n)) {
+            setRaw(String(min));
+            onChange(min);
+          } else {
+            const clamped = Math.min(max, Math.max(min, n));
+            setRaw(String(clamped));
+            onChange(clamped);
+          }
+        }}
+        className="h-6 w-9 shrink-0 rounded-sm border border-line bg-transparent text-center text-sm tabular-nums text-ink outline-none transition-colors focus:border-tertiary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+      />
+      <span className="pt-0.5 leading-snug">
+        {label}{" "}
+        <span className="whitespace-nowrap text-muted">({price})</span>
+        <InfoTip text={info ?? ""} />
+      </span>
+    </div>
+  );
+}
+
 // ---- state shapes ---------------------------------------------------------
 
 const EXT0 = {
@@ -640,41 +704,39 @@ export default function EstimateCalculator({
             </p>
 
             {showAdv && (
-              <div className="mt-7 space-y-8">
-                {/* two columns (was three — cells were too narrow, so both the
-                    title and the price wrapped). Checkbox aligns to the first
-                    line; the price is kept whole (never breaks across lines). */}
-                <div className="grid grid-cols-1 gap-x-10 gap-y-4 sm:grid-cols-2">
-                  {ADVANCED.map((a) => (
-                    <label key={a.key} className="flex cursor-pointer items-start gap-3 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(toggles[a.key])}
-                        onChange={(e) =>
-                          setToggles((s) => ({ ...s, [a.key]: e.target.checked }))
-                        }
-                        className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--tertiary)]"
-                      />
-                      <span className="leading-snug">
-                        {a.label}{" "}
-                        <span className="whitespace-nowrap text-muted">
-                          (+{gbp(a.add)})
-                        </span>
-                        <InfoTip text={info(a.key)} />
+              // two columns (was three — cells were too narrow, so both the
+              // title and the price wrapped). Party wall sits inline as one more
+              // row — same style, but with a count box where the checkbox would
+              // be; the price is kept whole (never breaks across lines).
+              <div className="mt-7 grid grid-cols-1 gap-x-10 gap-y-4 sm:grid-cols-2">
+                {ADVANCED.map((a) => (
+                  <label key={a.key} className="flex cursor-pointer items-start gap-3 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(toggles[a.key])}
+                      onChange={(e) =>
+                        setToggles((s) => ({ ...s, [a.key]: e.target.checked }))
+                      }
+                      className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--tertiary)]"
+                    />
+                    <span className="leading-snug">
+                      {a.label}{" "}
+                      <span className="whitespace-nowrap text-muted">
+                        (+{gbp(a.add)})
                       </span>
-                    </label>
-                  ))}
-                </div>
-                <div className="grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2">
-                  <NumberField
-                    label="Party wall — adjoining neighbours"
-                    hint="£3,000 per neighbour"
-                    info={info("partyWall")}
-                    value={partyWall}
-                    onChange={setPartyWall}
-                    max={10}
-                  />
-                </div>
+                      <InfoTip text={info(a.key)} />
+                    </span>
+                  </label>
+                ))}
+                <CountRow
+                  label="Party wall — adjoining neighbours"
+                  price="£3,000 each"
+                  info={info("partyWall")}
+                  value={partyWall}
+                  onChange={setPartyWall}
+                  max={10}
+                  className="sm:col-span-2"
+                />
               </div>
             )}
           </div>
