@@ -247,8 +247,11 @@ export default function ProcessPath({
                   }`}
                 />
                 {/* copy — beside the rail (mobile) or outboard of the band (sm+),
-                    dimmed until the dot reaches this stage. */}
+                    dimmed until the dot reaches this stage. Tagged so the end
+                    sequence (ProcessConverge) can PULL these exact elements down
+                    into the 2×2 grid — no duplicates. */}
                 <div
+                  data-pp-copy={i}
                   className={`ml-[16%] w-[78%] text-left transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:ml-0 sm:w-[32%] ${
                     right
                       ? "sm:ml-auto sm:pl-10 sm:text-left"

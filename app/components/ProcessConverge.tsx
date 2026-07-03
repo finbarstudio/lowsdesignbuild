@@ -11,22 +11,23 @@ const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x));
 const smooth = (t: number) => t * t * (3 - 2 * t);
 
 /**
- * The process END SEQUENCE. After the winding timeline completes, this stage
- * scrolls in: the four process items come DOWN together (staggered) and combine
- * into a compact 2×2 grid — no line — pinned to the viewport. Continued scroll
- * nudges the grid up a little while the View projects button grows in beneath it
- * (its gold outline tracing on). The button then STAYS; the Instagram section
- * (opaque, later in the DOM, higher z) scrolls up OVER the pinned stage — the
- * same overlap pattern as the process section covering the hero slogan.
+ * The process END SEQUENCE. As this pinned stage scrolls in after the winding
+ * timeline, the ACTUAL four step elements from the timeline (tagged
+ * [data-pp-copy] in ProcessPath — no duplicates) are PULLED down, FLIP-style,
+ * onto invisible anchor slots arranged as a compact 2×2 grid in the stage. The
+ * anchors mirror the timeline copies' exact width/markup (same 86vw/880px
+ * container, same 32% columns at the same left/right edges), so the pull is a
+ * pure vertical glide with zero reflow. The View projects button grows in
+ * beneath, then EVERYTHING fades to transparent just before the Instagram
+ * section arrives — no opaque wipe edge.
  *
- * IMPORTANT: this must be a DIRECT child of the home page's big `relative z-10`
- * wrapper (a sibling of the process + Instagram sections). That makes the big
- * wrapper the sticky containing block, so the stage stays pinned while Instagram
- * slides over it, instead of un-pinning when its own section ends.
+ * On mobile the FLIP is skipped (the stacked timeline copies are far wider than
+ * 2×2 cells): the originals scroll off naturally and the anchors themselves
+ * fade in as a compact stack.
  *
- * Scroll drivers (all rAF, no per-frame React):
- *   enter q — 0 → 1 as the stage rises into view (drives the converge-down).
- *   hold  p — 0 → 1 across the spacer below (drives grid nudge + button grow).
+ * Must be a DIRECT child of the home page's big `relative z-10` wrapper (a
+ * sibling of the process + Instagram sections) so the stage stays pinned while
+ * Instagram scrolls past above it.
  */
 export default function ProcessConverge({
   steps = fallbackSteps,
@@ -39,7 +40,10 @@ export default function ProcessConverge({
   const spacerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const anchorRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // the translate currently applied to each timeline copy (so we can recover
+  // its natural, untransformed position without a reset-and-reflow each frame)
+  const applied = useRef<{ x: number; y: number }[]>([]);
   const [landed, setLanded] = useState(false);
 
   useEffect(() => {
@@ -49,51 +53,111 @@ export default function ProcessConverge({
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    const mobileMq = window.matchMedia("(max-width: 639px)");
+    const copies = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-pp-copy]"),
+    );
+    applied.current = copies.map(() => ({ x: 0, y: 0 }));
 
     let raf = 0;
     let curLanded = false;
 
     const update = () => {
       const vh = window.innerHeight;
+      const mobile = mobileMq.matches;
       const sr = stage.getBoundingClientRect();
-      // ENTER: 0 when the stage top is at the viewport bottom → 1 once pinned.
+      // ENTER: 0 with the stage a viewport away → 1 once pinned at the top.
       const q = clamp(1 - sr.top / vh, 0, 1);
-      // HOLD: 0 at the pin → 1 once the spacer has scrolled through (just as
-      // the Instagram section reaches the viewport bottom and starts covering).
+      // HOLD: 0 at the pin → 1 once the spacer has scrolled through.
       const sp = spacer.getBoundingClientRect();
       const p = clamp((vh - sp.top) / Math.max(1, sp.height), 0, 1);
+      // FADE: everything goes transparent just BEFORE Instagram enters the
+      // viewport (its top reaching ~1.02vh) — no hard wipe edge.
+      const ig = document.querySelector("[data-ig-section]");
+      const fade = ig
+        ? clamp(
+            (ig.getBoundingClientRect().top - vh * 1.02) / (vh * 0.3),
+            0,
+            1,
+          )
+        : 1;
 
-      // The four items converge DOWN into the 2×2, slightly staggered.
-      itemRefs.current.forEach((el, i) => {
-        if (!el) return;
-        if (reduce) {
-          el.style.transform = "none";
-          el.style.opacity = "1";
-          return;
-        }
-        const d0 = i * 0.07; // stagger
-        const t = smooth(clamp((q - d0) / Math.max(0.01, 0.88 - d0), 0, 1));
-        el.style.transform = `translateY(${((1 - t) * -(20 + i * 7)).toFixed(2)}vh)`;
-        el.style.opacity = t.toFixed(3);
-      });
-
-      // Continued scroll: the grid nudges up a touch, the button grows in and
-      // HOLDS — no fade-out; Instagram simply covers the stage.
+      // Grid nudges up a touch across the hold; the anchors (and therefore the
+      // pulled originals, which track them) ride along.
       const g = smooth(p);
       if (gridRef.current)
         gridRef.current.style.transform = reduce
           ? "none"
-          : `translateY(${(-g * 6).toFixed(2)}vh)`;
+          : `translateY(${(-g * 5).toFixed(2)}vh)`;
+
+      // ---- The pull ---------------------------------------------------------
+      copies.forEach((c, i) => {
+        const slot = anchorRefs.current[i];
+        if (!slot) return;
+
+        if (mobile || reduce) {
+          // no FLIP: release the originals entirely
+          if (c.style.transform) {
+            c.style.transform = "";
+            c.style.opacity = "";
+            c.style.transition = "";
+            applied.current[i] = { x: 0, y: 0 };
+          }
+          return;
+        }
+
+        const t = smooth(
+          clamp((q - i * 0.04) / Math.max(0.01, 0.92 - i * 0.04), 0, 1),
+        );
+        if (t <= 0) {
+          // back on the timeline: hand control back to its own classes
+          if (c.style.transform) {
+            c.style.transform = "";
+            c.style.opacity = "";
+            c.style.transition = "";
+            applied.current[i] = { x: 0, y: 0 };
+          }
+          return;
+        }
+        const r = c.getBoundingClientRect();
+        const natX = r.left - applied.current[i].x;
+        const natY = r.top - applied.current[i].y;
+        const s = slot.getBoundingClientRect();
+        const dx = (s.left - natX) * t;
+        const dy = (s.top - natY) * t;
+        applied.current[i] = { x: dx, y: dy };
+        c.style.transition = "none"; // we drive it per-frame — no easing lag
+        c.style.willChange = "transform";
+        c.style.transform = `translate(${dx.toFixed(2)}px, ${dy.toFixed(2)}px)`;
+        c.style.opacity = fade < 1 ? fade.toFixed(3) : "";
+      });
+
+      // Mobile: the anchors themselves are the visible 2×2/stack — fade them in
+      // as the stage assembles (the wide originals just scroll off).
+      anchorRefs.current.forEach((el, i) => {
+        if (!el) return;
+        if (!mobile || reduce) {
+          el.style.opacity = mobile && reduce ? "1" : "0";
+          if (reduce && mobile) el.style.transform = "none";
+          return;
+        }
+        const t = smooth(
+          clamp((q - i * 0.05) / Math.max(0.01, 0.9 - i * 0.05), 0, 1),
+        );
+        el.style.opacity = (t * fade).toFixed(3);
+        el.style.transform = `translateY(${((1 - t) * -8).toFixed(2)}vh)`;
+      });
+
+      // Button: grows in as the stage assembles, holds, and fades with the rest.
       if (btnRef.current) {
         btnRef.current.style.opacity = reduce
           ? "1"
-          : clamp((q - 0.75) / 0.2, 0, 1).toFixed(3);
+          : (clamp((q - 0.7) / 0.22, 0, 1) * fade).toFixed(3);
         btnRef.current.style.transform = reduce
           ? "none"
-          : `translateY(${(-g * 3).toFixed(2)}vh) scale(${(0.92 + g * 0.4).toFixed(3)})`;
+          : `scale(${(0.92 + g * 0.35).toFixed(3)})`;
       }
 
-      // Assembled → fire the button's gold outline trace.
       const isLanded = q >= 0.96;
       if (isLanded !== curLanded) {
         curLanded = isLanded;
@@ -113,44 +177,73 @@ export default function ProcessConverge({
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(raf);
+      // hand the timeline copies back untouched
+      copies.forEach((c) => {
+        c.style.transform = "";
+        c.style.opacity = "";
+        c.style.transition = "";
+        c.style.willChange = "";
+      });
     };
-  }, []);
+  }, [steps]);
 
   return (
     <>
-      {/* Pinned stage — z-0 so the Instagram section (z-10, opaque) paints over
-          it as it scrolls up. Stays pinned for the rest of the wrapper. */}
+      {/* Pinned stage — transparent; its content fades out before Instagram
+          (z-10, later in the DOM) scrolls past above it. */}
       <div
         ref={stageRef}
         className="sticky top-0 z-0 flex h-[100svh] flex-col items-center justify-center"
       >
+        {/* Anchor slots: the SAME 86vw/880px container as the timeline, two
+            32%-wide columns at the same left/right edges — so the pulled
+            originals glide straight down onto them with zero reflow. Invisible
+            on desktop (the originals are the visible items); on mobile these
+            fade in themselves as a compact stack. */}
         <div
           ref={gridRef}
-          className="mx-auto grid w-[86vw] max-w-3xl grid-cols-2 gap-x-10 gap-y-10 will-change-transform sm:gap-x-16 sm:gap-y-14"
+          className="mx-auto w-[86vw] max-w-[880px] will-change-transform"
         >
-          {steps.map((s, i) => (
-            <div
-              key={s.n}
-              ref={(el) => {
-                itemRefs.current[i] = el;
-              }}
-              style={{ opacity: 0 }}
-              className="will-change-transform"
-            >
-              <span className="font-mono text-sm font-semibold tracking-[0.14em] text-tertiary">
-                {s.n}
-              </span>
-              <h3 className="mt-2 text-lg font-semibold tracking-tight sm:text-2xl">
-                {s.title}
-              </h3>
-              <p className="mt-2 hidden max-w-xs text-sm leading-relaxed text-muted sm:block">
-                {s.text}
-              </p>
-            </div>
-          ))}
+          <div className="flex flex-col gap-y-8 sm:gap-y-16">
+            {[0, 1].map((row) => (
+              <div
+                key={row}
+                className="flex flex-col gap-y-8 sm:flex-row sm:justify-between"
+              >
+                {steps.slice(row * 2, row * 2 + 2).map((s, col) => {
+                  const i = row * 2 + col;
+                  const right = col === 1;
+                  return (
+                    <div
+                      key={s.n}
+                      ref={(el) => {
+                        anchorRefs.current[i] = el;
+                      }}
+                      style={{ opacity: 0 }}
+                      className={`w-full text-left will-change-transform sm:w-[32%] ${
+                        right
+                          ? "sm:pl-10 sm:text-left"
+                          : "sm:pr-10 sm:text-right"
+                      }`}
+                    >
+                      <span className="font-mono text-sm font-semibold tracking-[0.14em] text-tertiary">
+                        {s.n}
+                      </span>
+                      <h3 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
+                        {s.title}
+                      </h3>
+                      <p className="mt-2 hidden text-sm leading-relaxed text-muted sm:block">
+                        {s.text}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* the button grows in beneath the grid and stays until covered */}
+        {/* the button grows in beneath the grid, holds, then fades with it */}
         <div
           ref={btnRef}
           style={{ opacity: 0 }}
@@ -162,10 +255,9 @@ export default function ProcessConverge({
         </div>
       </div>
 
-      {/* Hold room: the scroll distance the assembled stage stays pinned and
-          uncovered (grid nudge + button grow play across it). Instagram starts
-          covering the moment this has scrolled through. */}
-      <div ref={spacerRef} aria-hidden className="h-[85vh] sm:h-[95vh]" />
+      {/* Hold room: how long the assembled stage stays before the fade-out and
+          Instagram's arrival. Kept short — the button shouldn't outstay. */}
+      <div ref={spacerRef} aria-hidden className="h-[55vh] sm:h-[60vh]" />
     </>
   );
 }

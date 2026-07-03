@@ -26,10 +26,10 @@ export default function StickySlogan({
       }
       const vh = window.innerHeight;
       const top = card.getBoundingClientRect().top;
-      // Lingers: stays fully visible until the process section has risen to
-      // ~0.35vh, then fades quickly just before it's covered (~0.12vh) — so the
-      // slogan holds on screen noticeably longer while you scroll.
-      const p = Math.min(1, Math.max(0, (vh * 0.35 - top) / (vh * 0.23)));
+      // Lingers until the process section has risen to ~0.5vh, then fades out
+      // completely by ~0.3vh — long enough to read, but fully gone before the
+      // sticky "Our process" title (which rides at the section top) reaches it.
+      const p = Math.min(1, Math.max(0, (vh * 0.5 - top) / (vh * 0.2)));
       el.style.opacity = `${(1 - p).toFixed(3)}`;
     };
     const onScroll = () => {

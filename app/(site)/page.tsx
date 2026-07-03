@@ -169,9 +169,13 @@ export default async function HomePage() {
 
         {/* ---------------- Instagram ---------------- */}
         {/* Live Behold feed if its ID is set, otherwise the curated strip. */}
+        {/* No background: the pinned process/button stage fades to transparent
+            just before this arrives (see ProcessConverge), so there's no hard
+            wipe edge sliding over the content. */}
         {hasInsta && (
           <section
-            className={`relative z-10 bg-background pt-8 sm:pt-16 ${FOOT}`}
+            data-ig-section
+            className={`relative z-10 pt-8 sm:pt-16 ${FOOT}`}
           >
             <div className="mb-6 px-4 sm:mb-14 sm:px-6">
               <a
