@@ -218,7 +218,12 @@ export default function HomeChrome({
                 href={navItem.href}
                 className="lu-group group"
               >
-                <span className="inline-flex overflow-hidden pb-1 align-bottom">
+                {/* overflow-CLIP (not hidden — hidden moves an inline box's
+                    baseline to its bottom edge, which shifted the whole label
+                    and sup out of line with the other navs). The pb + negative
+                    mb keep the hover underline inside the clip with zero
+                    layout impact, so the geometry is identical to Header.tsx. */}
+                <span className="inline-block overflow-clip pb-[3px] [margin-bottom:-3px]">
                   <span
                     className={`${rise} ${risePos} link-underline is-tracked`}
                     style={{ transitionDelay: `${220 + i * 90}ms` }}
