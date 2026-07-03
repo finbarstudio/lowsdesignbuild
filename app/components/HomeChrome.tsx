@@ -170,9 +170,9 @@ export default function HomeChrome({
         ? "text-white"
         : "text-ink";
 
-  // When the mobile menu is open the bar gets a solid background, so the logo +
-  // hamburger must read ink rather than white-over-hero.
-  const barColor = open ? "text-ink" : textColor;
+  // The bar stays native (transparent) even when the mobile menu is open — the
+  // logo + hamburger just take the scroll-tracked colour.
+  const barColor = textColor;
 
   // Staggered entrance: each item is parked (opacity 0 + a small offset) until
   // `entered`, then eased in with its own delay. Total run ~1.2s → comfortably
@@ -184,11 +184,7 @@ export default function HomeChrome({
 
   return (
     <>
-      <header
-        className={`fixed inset-x-0 top-0 z-40 h-16 transition-colors duration-300 ${
-          open ? "bg-background" : ""
-        }`}
-      >
+      <header className="fixed inset-x-0 top-0 z-40 h-16 transition-colors duration-300">
         <div
           className={`relative mx-auto flex h-full w-full max-w-[1900px] items-center ${EDGE}`}
         >

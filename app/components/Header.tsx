@@ -48,16 +48,12 @@ export default function Header({ projectCount }: { projectCount?: number }) {
     : overHero
       ? "text-white"
       : "text-ink";
-  // when the mobile menu is open the bar has a solid bg, so force ink
-  const barColor = open ? "text-ink" : textColor;
+  // The bar stays native (transparent) even when the mobile menu is open.
+  const barColor = textColor;
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-40 h-16 transition-colors duration-300 ${
-        open ? "bg-background" : ""
-      }`}
-    >
-      <div className="relative mx-auto flex h-full w-full max-w-[1900px] items-center px-4 sm:px-6">
+    <header className="fixed inset-x-0 top-0 z-40 h-16 transition-colors duration-300">
+      <div className="relative mx-auto flex h-full w-full max-w-[1900px] items-center px-5 sm:px-7">
         {/* logo left — just the house mark */}
         <Link
           href="/"

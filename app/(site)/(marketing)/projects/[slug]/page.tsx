@@ -133,6 +133,9 @@ export default async function ProjectPage({
           <ProjectGallery
             images={gallery.map((img) => ({
               thumb: urlFor(img).width(1400).height(1400).fit("crop").url(),
+              // a fast low-res of the FULL image (same aspect) shown instantly in
+              // the lightbox while the original loads — so it's never blank.
+              low: urlFor(img).width(640).quality(35).url(),
               // original asset — full native resolution, no crop, no re-encode
               full: urlForOriginal(img).url(),
               lqip: (img as { lqip?: string }).lqip,

@@ -60,11 +60,12 @@ function Tile({ s, delay }: { s: Service; delay: number }) {
       {/* dark gradient along the bottom for the title */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-        <h3 className="text-sm font-semibold uppercase leading-tight tracking-[0.08em] text-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 sm:text-lg">
+        <h3 className="text-base font-semibold uppercase leading-tight tracking-[0.08em] text-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:text-lg sm:group-hover:-translate-y-1">
           {s.title}
         </h3>
-        {/* description masks up from below on hover (0fr → 1fr) */}
-        <div className="grid grid-rows-[0fr] opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:mt-2 group-hover:grid-rows-[1fr] group-hover:opacity-100 motion-reduce:transition-none">
+        {/* description: shown by default on mobile (no hover on touch); on desktop
+            it masks up from below on hover (0fr → 1fr). */}
+        <div className="mt-2 grid grid-rows-[1fr] opacity-100 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none sm:mt-0 sm:grid-rows-[0fr] sm:opacity-0 sm:group-hover:mt-2 sm:group-hover:grid-rows-[1fr] sm:group-hover:opacity-100">
           <p className="overflow-hidden text-xs leading-relaxed text-white/85 sm:text-sm">
             {s.blurb}
           </p>
@@ -82,7 +83,7 @@ function Tile({ s, delay }: { s: Service; delay: number }) {
  */
 export default function ServiceMasonry({ services }: { services: Service[] }) {
   return (
-    <div className="mx-auto grid w-[88vw] grid-cols-2 gap-3 sm:w-[70vw] sm:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 sm:mx-auto sm:w-[70vw] sm:grid-cols-3">
       <style>{`
         .sm-rise{ transform: translateY(101%); transition: transform .85s cubic-bezier(.22,1,.36,1); will-change: transform; }
         .sm-rise.is-in{ transform: none; }

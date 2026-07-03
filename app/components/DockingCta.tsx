@@ -104,27 +104,25 @@ export default function DockingCta() {
       </div>
       <style>{`
         .dock-cta { position: relative; }
-        /* Floating: pinned to the viewport bottom-right on the same edge inset as
-           the nav / footer gutter, so it docks without a horizontal jump. */
+        /* Floating on the same edge inset as the footer gutter so it docks with no
+           sideways jump. MOBILE: bottom-LEFT (matches the left-aligned footer CTA);
+           DESKTOP: bottom-right (matches the right-aligned footer CTA). */
         .dock-cta__btn.is-floating {
           position: fixed;
-          right: 20px;
+          left: 20px;
           bottom: 20px;
           z-index: 30;
         }
-        /* Docked: settles into the slot and scrolls away with the footer.
-           Anchored to the RIGHT edge (= the footer gutter = the floating button's
-           right edge) so the float→dock swap never shifts sideways. */
+        /* Docked: settles into the slot and scrolls away with the footer, anchored
+           to the same edge as the float so the swap never shifts sideways. */
         .dock-cta__btn.is-docked {
           position: absolute;
           top: 0;
-          right: 0;
+          left: 0;
         }
         @media (min-width: 640px) {
-          .dock-cta__btn.is-floating { right: 28px; bottom: 28px; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .dock-cta__btn.is-floating { position: fixed; }
+          .dock-cta__btn.is-floating { left: auto; right: 28px; bottom: 28px; }
+          .dock-cta__btn.is-docked { left: auto; right: 0; }
         }
       `}</style>
     </div>

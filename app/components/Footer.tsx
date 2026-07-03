@@ -186,9 +186,11 @@ const css = `
   display:inline-flex; align-items:center;
   margin:0 0 2px;
 }
+/* On mobile the lead row stacks; keep the CTA its natural width, left-aligned
+   (consistent everywhere — matches the bottom-left floating button that docks
+   into it), rather than stretching full width on some pages. */
 @media (max-width:560px){
-  .c-ft-marquee__cta-slot{ width:100%; }
-  .c-ft-marquee__cta-slot > *{ width:100%; }
+  .c-ft-marquee__cta-slot{ width:100%; justify-content:flex-start; margin-top:22px; }
 }
 .c-ft-marquee__tag{
   margin:16px 0 0; font-size:13px; line-height:1.5;

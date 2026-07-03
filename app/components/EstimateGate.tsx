@@ -4,8 +4,11 @@ import { useEffect, useState } from "react";
 
 import { CalendlyPopupButton } from "@/app/components/Calendly";
 
-// Where we stash the visitor's email so the contact form can prefill it later.
+// The email is stored in localStorage so the contact form can prefill it later;
+// the UNLOCK is only kept for the tab session, so the estimator re-hides behind
+// the email gate on each fresh visit.
 export const ESTIMATE_EMAIL_KEY = "lows_estimate_email";
+const UNLOCK_KEY = "lows_estimate_unlocked";
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 /**
@@ -28,7 +31,8 @@ export default function EstimateGate({
 
   useEffect(() => {
     try {
-      if (localStorage.getItem(ESTIMATE_EMAIL_KEY)) setUnlocked(true);
+      // Only skip the gate within the same session.
+      if (sessionStorage.getItem(UNLOCK_KEY)) setUnlocked(true);
     } catch {
       /* private mode / storage disabled — just show the gate */
     }
@@ -42,7 +46,8 @@ export default function EstimateGate({
       return;
     }
     try {
-      localStorage.setItem(ESTIMATE_EMAIL_KEY, v);
+      localStorage.setItem(ESTIMATE_EMAIL_KEY, v); // persists for the contact form
+      sessionStorage.setItem(UNLOCK_KEY, "1"); // unlock only for this session
     } catch {
       /* ignore */
     }

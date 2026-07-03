@@ -116,7 +116,7 @@ export default async function AboutPage() {
       {/* Intro — a hero like the home slogan: word-by-word reveal, with the
           "design + build" lockup inlined from the logotype */}
       <section
-        className={`${PAD} flex min-h-[88svh] items-center justify-center pt-16`}
+        className={`${PAD} flex min-h-[100svh] items-center justify-center py-16`}
       >
         <h1 className="mx-auto max-w-6xl text-center font-sans text-3xl font-bold uppercase leading-[1.08] sm:text-5xl sm:tracking-tight lg:text-6xl">
           <WordReveal text={aboutHero} />
@@ -163,7 +163,7 @@ export default async function AboutPage() {
 
       {/* Quality guarantee CTA */}
       <section
-        className={`${PAD} flex min-h-0 flex-col justify-center py-20 text-center sm:min-h-[90vh] sm:py-24`}
+        className={`${PAD} flex min-h-0 flex-col justify-center pb-32 pt-20 text-center sm:min-h-[90vh] sm:py-24`}
       >
         <Reveal>
           <p className="label !text-tertiary">Our quality guarantee</p>

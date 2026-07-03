@@ -164,13 +164,14 @@ function DirectorsPair({
   const [cardRef, inView] = useInView();
   const [hover, setHover] = useState(false);
   const [tapped, setTapped] = useState(false); // mobile tap-to-open (both halves)
+  const [isMobile, setIsMobile] = useState(false);
   const bio0 = useRef<HTMLParagraphElement>(null);
   const bio1 = useRef<HTMLParagraphElement>(null);
-  const [lift, setLift] = useState(0);
+  const [bioH, setBioH] = useState(0);
 
   useEffect(() => {
     const measure = () =>
-      setLift(
+      setBioH(
         Math.max(bio0.current?.offsetHeight ?? 0, bio1.current?.offsetHeight ?? 0),
       );
     measure();
@@ -178,8 +179,19 @@ function DirectorsPair({
     return () => window.removeEventListener("resize", measure);
   }, [directors]);
 
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const on = () => setIsMobile(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+
   const open = hover || tapped;
   const hasBios = directors.some((d) => d.bio);
+  // On mobile the images stay a joined 2-up and DON'T clip — the bios stack
+  // single-column below instead (see the mobile block after the grid).
+  const lift = !isMobile && open ? bioH : 0;
 
   return (
     <div
@@ -236,9 +248,10 @@ function DirectorsPair({
                 <p className="text-sm text-muted">{d.role}</p>
               </div>
 
+              {/* desktop: bio reveals in the clipped space under each half */}
               {d.bio ? (
                 <div
-                  className="absolute inset-x-0 bottom-0"
+                  className="absolute inset-x-0 bottom-0 hidden sm:block"
                   style={{
                     opacity: open ? 1 : 0,
                     transition: `opacity 0.45s ease ${open ? "0.12s" : "0s"}`,
@@ -255,6 +268,23 @@ function DirectorsPair({
             </div>
           );
         })}
+      </div>
+
+      {/* mobile: the images stay a joined 2-up above; the bios stack
+          single-column below, revealed when expanded. */}
+      <div
+        className={`grid grid-cols-1 gap-6 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:hidden ${
+          open ? "mt-6 max-h-[1200px] opacity-100" : "mt-0 max-h-0 opacity-0"
+        }`}
+      >
+        {directors.map((d, i) =>
+          d.bio ? (
+            <div key={d.name || i}>
+              <p className="text-sm font-medium">{d.name}</p>
+              <p className="mt-1 text-sm leading-relaxed text-muted">{d.bio}</p>
+            </div>
+          ) : null,
+        )}
       </div>
     </div>
   );
