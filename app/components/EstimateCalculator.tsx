@@ -117,12 +117,12 @@ const ADVANCED: { key: string; label: string; add: number }[] = [
   { key: "rewire", label: "Full house rewire included", add: 10000 },
   { key: "heating", label: "Heating system upgrade", add: 8000 },
   { key: "boiler", label: "Boiler upgrade", add: 4000 },
-  { key: "ashp", label: "ASHP installation interface", add: 10000 },
-  { key: "basement", label: "Basement interface / structural tie-in", add: 15000 },
-  { key: "drainage", label: "Complex drainage diversion", add: 10000 },
+  { key: "ashp", label: "ASHP interface", add: 10000 },
+  { key: "basement", label: "Basement / structural tie-in", add: 15000 },
+  { key: "drainage", label: "Complex drainage", add: 10000 },
   { key: "sewer", label: "Build over public sewer", add: 5000 },
-  { key: "largeSteel", label: "Large structural steel package", add: 10000 },
-  { key: "complexSteel", label: "Complex structural steel package", add: 20000 },
+  { key: "largeSteel", label: "Large steel package", add: 10000 },
+  { key: "complexSteel", label: "Complex steel package", add: 20000 },
 ];
 
 // Built-in tooltip copy for a few fields. The CMS can override any of these and
@@ -641,20 +641,25 @@ export default function EstimateCalculator({
 
             {showAdv && (
               <div className="mt-7 space-y-8">
-                <div className="grid grid-cols-1 gap-x-10 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
+                {/* two columns (was three — cells were too narrow, so both the
+                    title and the price wrapped). Checkbox aligns to the first
+                    line; the price is kept whole (never breaks across lines). */}
+                <div className="grid grid-cols-1 gap-x-10 gap-y-4 sm:grid-cols-2">
                   {ADVANCED.map((a) => (
-                    <label key={a.key} className="flex cursor-pointer items-center gap-3 text-sm">
+                    <label key={a.key} className="flex cursor-pointer items-start gap-3 text-sm">
                       <input
                         type="checkbox"
                         checked={Boolean(toggles[a.key])}
                         onChange={(e) =>
                           setToggles((s) => ({ ...s, [a.key]: e.target.checked }))
                         }
-                        className="h-4 w-4 shrink-0 accent-[var(--tertiary)]"
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--tertiary)]"
                       />
-                      <span className="flex items-center">
-                        {a.label}
-                        <span className="ml-1 text-muted">(+{gbp(a.add)})</span>
+                      <span className="leading-snug">
+                        {a.label}{" "}
+                        <span className="whitespace-nowrap text-muted">
+                          (+{gbp(a.add)})
+                        </span>
                         <InfoTip text={info(a.key)} />
                       </span>
                     </label>
