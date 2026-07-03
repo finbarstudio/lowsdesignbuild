@@ -152,33 +152,14 @@ export default async function HomePage() {
 
         {/* ---------------- Our process ---------------- */}
         {/* No background: the pinned slogan behind fades out naturally (via
-            StickySlogan) as this rises, instead of being hidden by an opaque
-            panel. The page body is the same paper colour, so it reads identically
-            once the slogan is gone. Followed by a View projects button. */}
-        {/* No bottom padding: the Instagram section immediately follows the pin
-            stage, so as the button releases the opaque Instagram panel scrolls
-            straight up over it. */}
+            StickySlogan) as this rises. A centred 80vw zigzag with the four
+            stages in a 2×2 (1,3 left · 2,4 right); the View projects button
+            scrolls up and fills the open centre as the dot lands. */}
         <section
           data-featured-first
-          className={`${PAD} relative z-10 pt-28 sm:pt-44`}
+          className={`${PAD} relative z-10 pb-24 pt-28 sm:pb-32 sm:pt-44`}
         >
-          {/* ProcessPath (client) owns the sticky "Our process" title (fading it
-              out as the timeline ends), the travelling dot, and a shared "landed"
-              signal; ProcessFlow slots the async ViewProjectsButton so the gold
-              traces into the button when the dot lands. */}
-          <ProcessFlow
-            steps={steps}
-            button={
-              // Pin stage: a short, dedicated containing block for the sticky
-              // button. The button pins at 40vh and is held for a short beat while
-              // it grows + the gold outline traces on, then releases as the
-              // Instagram section scrolls up over it. NOTE: never give this stage
-              // overflow/transform — either kills the pin.
-              <div className="vp-pin-stage mt-14 h-[52vh] sm:mt-20 sm:h-[58vh]">
-                <ViewProjectsButton className="sticky top-[40vh]" />
-              </div>
-            }
-          />
+          <ProcessFlow steps={steps} button={<ViewProjectsButton />} />
         </section>
 
         {/* ---------------- Instagram ---------------- */}

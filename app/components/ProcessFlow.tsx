@@ -41,11 +41,15 @@ export default function ProcessFlow({
   const handleLanded = useCallback((v: boolean) => setLanded(v), []);
 
   return (
-    <>
-      {/* ProcessPath owns its own sticky "Our process" title and fades it out as
-          the timeline ends, so it is gone before the button pins below. */}
-      <ProcessPath steps={steps} onLanded={handleLanded} />
-      <LandedContext.Provider value={landed}>{button}</LandedContext.Provider>
-    </>
+    // ProcessPath renders the button in the CENTRE of its 2×2 zigzag; we wrap it
+    // in the landed provider so the button's gold outline traces on when the dot
+    // lands (VpFlowHighlight reads this context).
+    <ProcessPath
+      steps={steps}
+      onLanded={handleLanded}
+      centerButton={
+        <LandedContext.Provider value={landed}>{button}</LandedContext.Provider>
+      }
+    />
   );
 }

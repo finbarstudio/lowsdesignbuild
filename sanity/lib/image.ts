@@ -18,3 +18,10 @@ const builder = createImageUrlBuilder({ projectId, dataset });
 export function urlFor(source: SanityImageSource) {
   return builder.image(source).auto("format").quality(86).sharpen(35);
 }
+
+// The untouched original asset — no resize, format change, quality drop or
+// sharpen. Used by the project gallery lightbox, where we want the full native
+// image at maximum quality (no compression, no crop).
+export function urlForOriginal(source: SanityImageSource) {
+  return builder.image(source);
+}

@@ -5,23 +5,27 @@ import { useEffect, useRef, useState } from "react";
 
 import InstantQuoteButton from "@/app/components/InstantQuoteButton";
 
+// The estimate + contact pages don't get the floating CTA (it would just point
+// back at where you already are) — there it sits statically in the footer.
+const NO_FLOAT = new Set(["/contact", "/estimate"]);
+
 /**
  * The single "Get an instant quote" button. There is only ONE instance: it lives
- * in the footer's CTA slot, and ON THE HOME PAGE it floats bottom-right while you
- * scroll, then docks into its footer slot when you reach the bottom — and from
- * there scrolls away with the footer. No second (floating) copy.
+ * in the footer's CTA slot, and on every page EXCEPT contact/estimate it floats
+ * bottom-right while you scroll, then docks into its footer slot when you reach
+ * the bottom — and from there scrolls away with the footer. No second copy.
  *
  * The dock is seamless because the floating inset (20/28px) and the footer's own
  * gutter (20/28px, matched to the nav edge) put the floating button and the
  * docked slot on the exact same right edge; we simply switch from `fixed` to
  * `absolute` the instant the slot rises to the floating line, so nothing jumps.
  *
- * Off the home page there is no floating behaviour — the button just sits in the
- * footer statically (as before).
+ * On contact / estimate there is no floating behaviour — the button just sits in
+ * the footer statically.
  */
 export default function DockingCta() {
   const pathname = usePathname();
-  const isHome = pathname === "/";
+  const canFloat = !NO_FLOAT.has(pathname ?? "");
 
   const slotRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLDivElement>(null);
@@ -29,7 +33,7 @@ export default function DockingCta() {
   const [size, setSize] = useState<{ w: number; h: number } | null>(null);
 
   useEffect(() => {
-    if (!isHome) return;
+    if (!canFloat) return;
     const slot = slotRef.current;
     const btn = btnRef.current;
     if (!slot || !btn) return;
@@ -77,10 +81,10 @@ export default function DockingCta() {
       window.removeEventListener("resize", onResize);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [isHome]);
+  }, [canFloat]);
 
-  // Off home: a plain static button in the footer slot.
-  if (!isHome) return <InstantQuoteButton />;
+  // Contact / estimate: a plain static button in the footer slot.
+  if (!canFloat) return <InstantQuoteButton />;
 
   return (
     <div

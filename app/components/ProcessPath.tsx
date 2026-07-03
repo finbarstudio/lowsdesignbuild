@@ -1,137 +1,162 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { processSteps as fallbackSteps } from "@/app/lib/site";
 
 type Step = { n: string; title: string; text: string };
+type Pt = { x: number; y: number };
 
 const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x));
 
 /**
- * Our process — a centred vertical timeline drawn as a single SVG so the line,
- * its gold trail and the travelling dot are ONE object (not three stacked divs).
+ * Our process — a centred ZIGZAG timeline (~80vw). The four stages sit in a 2×2
+ * layout: steps 1 & 3 down the LEFT, 2 & 4 down the RIGHT, their copy pushed to
+ * the outer edges and their nodes toward the centre. A single line zigzags
+ * through the four nodes (1→2 across the top, 2→3 diagonally through the middle,
+ * 3→4 across the bottom); a gold trail fills it and a dot rides the leading edge
+ * as you scroll, lighting each stage as it arrives.
  *
- * The line is a faint hairline that fades out near the top (a gradient mask, so
- * it dissolves under the sticky "Our process" title rather than butting into
- * it). A gold "trail" is the same line revealed from the top down via
- * stroke-dashoffset as you scroll, and a gold dot rides its leading edge — the
- * dot is literally the end of the fill, so line + dot read as one moving thing.
+ * The centre is left open: the "View projects" button (passed in as centerButton)
+ * scrolls up and grows to fill it right where the 2→3 diagonal crosses, so the
+ * line reads as flowing into the button. The button's gold outline then traces on
+ * once the dot lands (onLanded → shared context → the button).
  *
- * Everything scroll-driven is written straight to the DOM inside a rAF (no React
- * re-renders per frame). Only two low-frequency signals go to React/parent:
- *   • active step index (state here → lights that step gold), and
- *   • onLanded(true) once the dot reaches the bottom, so the parent can flow the
- *     accent into the "View projects" button.
- * Steps fade in from the bottom and out near the top so they separate from the
- * title, and each sits on a paper block so the line only shows in the gaps.
+ * Path geometry is measured from the real node centres (rebuilt on resize/fonts),
+ * so it always fits the rendered layout.
  */
-
-// SVG canvas geometry. The line lives on a fixed viewBox and stretches to the
-// wrapper's real height via preserveAspectRatio="none", so one path length
-// (LINE_LEN) drives the dash maths no matter how tall the column renders.
-const VB_W = 40;
-const VB_H = 1000;
-const CX = VB_W / 2;
-const Y0 = 0;
-const Y1 = VB_H;
-const LINE_LEN = Y1 - Y0;
-
 export default function ProcessPath({
   steps = fallbackSteps,
   title = "Our process",
+  centerButton,
   onLanded,
 }: {
   steps?: Step[];
   title?: string;
+  centerButton?: ReactNode;
   onLanded?: (landed: boolean) => void;
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const trailRef = useRef<SVGLineElement>(null);
-  const dotRef = useRef<HTMLDivElement>(null);
-  const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const stageRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const baseRef = useRef<SVGPathElement>(null);
+  const trailRef = useRef<SVGPathElement>(null);
+  const dotRef = useRef<SVGGElement>(null);
+  const btnRef = useRef<HTMLDivElement>(null);
+  const nodeLen = useRef<number[]>([]);
+  const totalLen = useRef(0);
+
+  const [d, setD] = useState("");
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  const [pts, setPts] = useState<Pt[]>([]);
   const [active, setActive] = useState(-1);
 
+  // Build the zigzag path + node lengths from the measured node centres.
   useEffect(() => {
-    const wrap = wrapRef.current;
-    if (!wrap) return;
+    const build = () => {
+      const stage = stageRef.current;
+      if (!stage) return;
+      const sr = stage.getBoundingClientRect();
+      const p: Pt[] = nodeRefs.current.filter(Boolean).map((el) => {
+        const r = el!.getBoundingClientRect();
+        return {
+          x: r.left - sr.left + r.width / 2,
+          y: r.top - sr.top + r.height / 2,
+        };
+      });
+      if (p.length < 2) return;
+      let dd = `M ${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`;
+      const lens = [0];
+      for (let i = 1; i < p.length; i++) {
+        dd += ` L ${p[i].x.toFixed(1)} ${p[i].y.toFixed(1)}`;
+        lens[i] = lens[i - 1] + Math.hypot(p[i].x - p[i - 1].x, p[i].y - p[i - 1].y);
+      }
+      nodeLen.current = lens;
+      totalLen.current = lens[lens.length - 1];
+      setD(dd);
+      setPts(p);
+      setSize({ w: sr.width, h: sr.height });
+    };
+    build();
+    window.addEventListener("resize", build);
+    const t = setTimeout(build, 300); // rebuild once the web font settles
+    return () => {
+      window.removeEventListener("resize", build);
+      clearTimeout(t);
+    };
+  }, [steps]);
+
+  // Scroll: dot travel, trail reveal, node colouring, title fade, button reveal.
+  useEffect(() => {
+    const base = baseRef.current;
+    if (!base || !d) return;
+    const total = totalLen.current || base.getTotalLength();
+    if (trailRef.current) {
+      trailRef.current.style.strokeDasharray = `${total}`;
+      trailRef.current.style.strokeDashoffset = `${total}`;
+    }
 
     let raf = 0;
     let curActive = -1;
     let curLanded = false;
 
     const update = () => {
+      const wrap = wrapRef.current;
+      if (!wrap) return;
       const vh = window.innerHeight;
       const r = wrap.getBoundingClientRect();
-
-      // Scroll progress 0..1: where viewport centre sits along the column.
       const progress = clamp((vh * 0.5 - r.top) / r.height, 0, 1);
+      const L = progress * total;
 
-      // Fade the sticky title out as the timeline ends, so it is fully gone before
-      // the View projects button pins below (rather than lingering at the top).
-      if (titleRef.current) {
+      if (dotRef.current) {
+        const pt = base.getPointAtLength(L);
+        dotRef.current.setAttribute("transform", `translate(${pt.x} ${pt.y})`);
+        dotRef.current.style.opacity = (
+          clamp(progress / 0.04, 0, 1) * clamp((1 - progress) / 0.03, 0, 1)
+        ).toFixed(3);
+      }
+      if (trailRef.current)
+        trailRef.current.style.strokeDashoffset = `${total - L}`;
+
+      // Node colouring synced to the dot (each node is a path vertex).
+      let a = -1;
+      for (let i = 0; i < nodeLen.current.length; i++)
+        if (L >= nodeLen.current[i] - 1) a = i;
+      if (a !== curActive) {
+        curActive = a;
+        setActive(a);
+      }
+
+      // Fade the sticky title out as the timeline ends.
+      if (titleRef.current)
         titleRef.current.style.opacity = clamp(
-          1 - (progress - 0.78) / 0.12,
+          1 - (progress - 0.72) / 0.14,
           0,
           1,
         ).toFixed(3);
+
+      // Centre button: scrolls up + grows to FILL the centre as we near the end.
+      // Centring is handled by the stable outer wrapper; this inner element only
+      // carries the reveal (rise + scale), so scaling stays centred on itself.
+      if (btnRef.current) {
+        if (window.innerWidth >= 640) {
+          const rev = clamp((progress - 0.62) / 0.3, 0, 1);
+          const e = rev * rev * (3 - 2 * rev); // smoothstep
+          btnRef.current.style.opacity = e.toFixed(3);
+          btnRef.current.style.transform = `translateY(${(
+            (1 - e) * 34
+          ).toFixed(1)}px) scale(${(0.8 + 0.2 * e).toFixed(3)})`;
+        } else {
+          btnRef.current.style.opacity = "1";
+          btnRef.current.style.transform = "none";
+        }
       }
 
-      // Reveal the gold trail from the top down (full dash hidden at 0 → none at
-      // 1) — the trail lives in the (non-uniformly stretched) SVG.
-      if (trailRef.current) {
-        trailRef.current.style.strokeDashoffset = (
-          LINE_LEN *
-          (1 - progress)
-        ).toFixed(2);
-      }
-      // The dot is an HTML element (NOT an SVG circle) positioned by percentage,
-      // so it stays perfectly round — the SVG uses preserveAspectRatio="none"
-      // which would squash any in-SVG circle into a tall streak. It rides the
-      // leading edge of the trail. Hidden until it clears the fading top; fades
-      // as it parks into the button at the bottom (the button carries on the
-      // accent). translateY(-50%) keeps its centre exactly on the fill's tip.
-      if (dotRef.current) {
-        const dotAlpha =
-          clamp(progress / 0.06, 0, 1) * clamp((1 - progress) / 0.04, 0, 1);
-        dotRef.current.style.top = `${(progress * 100).toFixed(2)}%`;
-        dotRef.current.style.opacity = dotAlpha.toFixed(3);
-      }
-
-      // Landed once the fill has essentially reached the bottom.
       const landed = progress > 0.985;
       if (landed !== curLanded) {
         curLanded = landed;
         onLanded?.(landed);
-      }
-
-      // Step readability: fade each block in from the bottom and out near the top
-      // so it separates from the sticky title.
-      stepRefs.current.forEach((el) => {
-        if (!el) return;
-        const er = el.getBoundingClientRect();
-        const c = er.top + er.height / 2; // step centre, viewport coords
-        const topFade = clamp((c - vh * 0.15) / (vh * 0.2), 0, 1);
-        const botFade = clamp((vh * 1.02 - c) / (vh * 0.28), 0, 1);
-        el.style.opacity = Math.min(topFade, botFade).toFixed(3);
-      });
-
-      // Node colouring is synced to the DOT, not the viewport: a step node turns
-      // gold the moment the travelling dot (at `progress` along the column)
-      // reaches that node's own position on the line — so the colour tracks the
-      // dot exactly instead of lagging behind it.
-      let a = -1;
-      nodeRefs.current.forEach((el, i) => {
-        if (!el) return;
-        const nr = el.getBoundingClientRect();
-        const frac = (nr.top + nr.height / 2 - r.top) / r.height;
-        if (progress >= frac - 0.003) a = i;
-      });
-      if (a !== curActive) {
-        curActive = a;
-        setActive(a);
       }
     };
 
@@ -148,128 +173,129 @@ export default function ProcessPath({
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(raf);
     };
-    // onLanded is memoised by the parent (useCallback); listed for lint.
-  }, [onLanded]);
+  }, [d, onLanded]);
 
   return (
-    <div ref={wrapRef} className="relative mx-auto max-w-xl">
-      {/* Sticky section title — pinned while you read the steps, then faded out by
-          the rAF as the timeline ends (so it is gone before the button pins). */}
+    <div ref={wrapRef} className="relative mx-auto w-[86vw] max-w-[1100px]">
+      {/* Sticky title, faded out by the rAF as the timeline ends. */}
       <h2
         ref={titleRef}
-        className="label sticky top-24 z-20 text-center !text-ink"
+        className="label sticky top-24 z-30 text-center !text-ink"
       >
         {title}
       </h2>
+      <div aria-hidden className="h-[8vh] sm:h-[10vh]" />
 
-      {/* Lead space so the line begins well below the sticky title, and its top
-          dissolves into that space (see the mask gradient below). */}
-      <div aria-hidden className="h-[16vh] sm:h-[20vh]" />
+      <div ref={stageRef} className="relative">
+        {/* the zigzag line + nodes + travelling dot, one SVG sized to the stage */}
+        <svg
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          viewBox={`0 0 ${size.w || 1} ${size.h || 1}`}
+          preserveAspectRatio="none"
+          fill="none"
+          aria-hidden="true"
+        >
+          {d && (
+            <>
+              <path
+                ref={baseRef}
+                d={d}
+                stroke="rgba(66,73,82,0.20)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+              />
+              <path
+                ref={trailRef}
+                d={d}
+                stroke="var(--tertiary)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+                style={{ transition: "stroke-dashoffset 0.08s linear" }}
+              />
+              {pts.map((p, i) => (
+                <circle
+                  key={i}
+                  cx={p.x}
+                  cy={p.y}
+                  r={active >= i ? 5 : 3.5}
+                  fill={active >= i ? "var(--tertiary)" : "var(--background)"}
+                  stroke={active >= i ? "var(--tertiary)" : "rgba(66,73,82,0.3)"}
+                  strokeWidth="1.5"
+                  style={{ transition: "r 0.3s ease, fill 0.3s ease" }}
+                />
+              ))}
+              <g ref={dotRef} style={{ opacity: 0 }}>
+                <circle r="4.5" fill="var(--tertiary)" />
+              </g>
+            </>
+          )}
+        </svg>
 
-      {/* The line as ONE SVG: faint hairline (top-faded via mask) + gold trail
-          revealed top-down + the travelling dot on the trail's leading edge.
-          Spans the full wrapper height and stretches to fit. */}
-      <svg
-        className="pointer-events-none absolute inset-0 h-full w-full"
-        viewBox={`0 0 ${VB_W} ${VB_H}`}
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        <defs>
-          {/* Top-fade: transparent at the very top → solid by ~14% down. Used as
-              a luminance mask, so the visible part must be WHITE (black hides the
-              line entirely — that was the "no line" bug). */}
-          <linearGradient id="pp-fade" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#fff" stopOpacity="0" />
-            <stop offset="0.14" stopColor="#fff" stopOpacity="1" />
-            <stop offset="1" stopColor="#fff" stopOpacity="1" />
-          </linearGradient>
-          <mask id="pp-mask">
-            <rect x="0" y="0" width={VB_W} height={VB_H} fill="url(#pp-fade)" />
-          </mask>
-        </defs>
+        {/* two rows; each row: a LEFT step (node inner-right) and a RIGHT step
+            (node inner-left), copy pushed to the outer edge. 1,3 left · 2,4 right. */}
+        <div className="relative flex flex-col gap-y-10 sm:gap-y-0">
+          {[0, 1].map((row) => (
+            <div
+              key={row}
+              className="flex flex-col gap-y-10 sm:min-h-[42vh] sm:flex-row sm:items-center sm:justify-between sm:gap-y-0"
+            >
+              {[0, 1].map((col) => {
+                const i = row * 2 + col;
+                const step = steps[i];
+                if (!step) return null;
+                const isLeft = col === 0;
+                return (
+                  <div
+                    key={step.n}
+                    className={`flex items-center gap-4 sm:w-[34%] ${
+                      isLeft
+                        ? "sm:flex-row-reverse sm:text-left"
+                        : "sm:text-right"
+                    }`}
+                  >
+                    <span
+                      ref={(el) => {
+                        nodeRefs.current[i] = el;
+                      }}
+                      aria-hidden
+                      className="block h-3 w-3 shrink-0"
+                    />
+                    <div>
+                      <span
+                        className={`font-mono text-sm font-semibold tracking-[0.14em] transition-colors duration-300 ${
+                          active >= i ? "text-tertiary" : "text-muted"
+                        }`}
+                      >
+                        {step.n}
+                      </span>
+                      <h3 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
+                        {step.title}
+                      </h3>
+                      <p className="mt-2 max-w-xs text-sm leading-relaxed text-muted">
+                        {step.text}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
 
-        <g mask="url(#pp-mask)">
-          {/* faint hairline — the whole track, ahead of the dot. A slate tint (not
-              --line, which is so close to the paper it read as invisible) so the
-              track is clearly there before the gold fills it in. */}
-          <line
-            x1={CX}
-            y1={Y0}
-            x2={CX}
-            y2={Y1}
-            stroke="rgba(66, 73, 82, 0.22)"
-            strokeWidth="1"
-            vectorEffect="non-scaling-stroke"
-          />
-          {/* gold trail — same line, revealed from the top down via dashoffset */}
-          <line
-            ref={trailRef}
-            x1={CX}
-            y1={Y0}
-            x2={CX}
-            y2={Y1}
-            stroke="var(--tertiary)"
-            strokeWidth="1.5"
-            vectorEffect="non-scaling-stroke"
-            strokeLinecap="round"
-            style={{
-              strokeDasharray: LINE_LEN,
-              strokeDashoffset: LINE_LEN,
-              transition: "stroke-dashoffset 0.08s linear",
-            }}
-          />
-        </g>
-      </svg>
-
-      {/* travelling dot — the leading edge of the gold fill, as an HTML element
-          so it stays perfectly round (an in-SVG circle would be squashed by
-          preserveAspectRatio="none"). A clean solid gold dot, no glow. Position
-          is driven per-frame via `top` (see the rAF). */}
-      <div
-        ref={dotRef}
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-0 z-10 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tertiary opacity-0"
-      />
-
-      <div className="flex flex-col">
-        {steps.map((step, i) => (
-          <div
-            key={step.n}
-            ref={(el) => {
-              stepRefs.current[i] = el;
-            }}
-            className="relative flex min-h-[38vh] flex-col items-center justify-center text-center"
-          >
-            {/* node on the line */}
-            <span
-              ref={(el) => {
-                nodeRefs.current[i] = el;
-              }}
-              className={`relative z-10 mb-6 block h-3 w-3 rounded-full border-2 transition-colors duration-300 ${
-                active >= i
-                  ? "border-tertiary bg-tertiary"
-                  : "border-[var(--line)] bg-background"
-              }`}
-            />
-            {/* copy sits on a paper block so the line reads only in the gaps */}
-            <div className="relative z-10 max-w-sm bg-background px-4">
-              <span
-                className={`font-mono text-sm font-semibold tracking-[0.14em] transition-colors duration-500 ${
-                  active >= i ? "text-tertiary" : "text-muted"
-                }`}
-              >
-                {step.n}
-              </span>
-              <h3 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
-                {step.title}
-              </h3>
-              <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-muted sm:text-base">
-                {step.text}
-              </p>
+        {/* the button fills the centre (desktop) / sits below (mobile). The outer
+            wrapper does the centring (stable); the inner carries the scroll
+            reveal (rise + scale), so the scale stays centred. */}
+        {centerButton && (
+          <div className="vp-trace-scope mt-6 flex justify-center sm:absolute sm:left-1/2 sm:top-1/2 sm:z-20 sm:mt-0 sm:block sm:-translate-x-1/2 sm:-translate-y-1/2">
+            <div ref={btnRef} style={{ opacity: 0 }} className="origin-center">
+              {centerButton}
             </div>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

@@ -6,12 +6,12 @@ import { notFound } from "next/navigation";
 
 import HeroDepth from "@/app/components/HeroDepth";
 import ProjectAside from "@/app/components/ProjectAside";
+import ProjectGallery from "@/app/components/ProjectGallery";
 import ProjectHeroTitle from "@/app/components/ProjectHeroTitle";
 import Reveal from "@/app/components/Reveal";
-import WipeReveal from "@/app/components/WipeReveal";
 import { deriveColours } from "@/app/lib/colours";
 import { client } from "@/sanity/lib/client";
-import { urlFor } from "@/sanity/lib/image";
+import { urlFor, urlForOriginal } from "@/sanity/lib/image";
 import { PROJECT_QUERY, PROJECT_SLUGS_QUERY } from "@/sanity/lib/queries";
 import type { Project } from "@/sanity/lib/types";
 
@@ -80,7 +80,7 @@ export default async function ProjectPage({
           it, and the image falls away (recede + fade) as it goes. */}
       <section
         id="project-hero"
-        className="sticky top-0 z-0 h-[100svh] w-full overflow-hidden"
+        className="sticky top-0 z-0 h-[80svh] w-full overflow-hidden"
       >
         {project.mainImage && (
           <Image
@@ -126,21 +126,19 @@ export default async function ProjectPage({
       )}
 
       {/* ---------------- Gallery ---------------- */}
-      {/* Clean, uniform 2-up grid — every image the same aspect so the rows
-          line up cleanly. Left column reveals just after the right. */}
+      {/* Uniform 2-up grid; click any tile for a full-size, click-through
+          lightbox (the original asset, contained to the viewport). */}
       {gallery.length > 0 && (
         <section className={`${PAD} pb-28 sm:pb-40`}>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-            {gallery.map((img, i) => (
-              <GalleryImage
-                key={(img as { _key?: string })._key ?? i}
-                img={img}
-                ratio="aspect-[4/3]"
-                alt={heroAlt}
-                delay={i % 2 === 0 ? 0.3 : 0}
-              />
-            ))}
-          </div>
+          <ProjectGallery
+            images={gallery.map((img) => ({
+              thumb: urlFor(img).width(1400).height(1400).fit("crop").url(),
+              // original asset — full native resolution, no crop, no re-encode
+              full: urlForOriginal(img).url(),
+              lqip: (img as { lqip?: string }).lqip,
+            }))}
+            alt={heroAlt}
+          />
         </section>
       )}
 
@@ -160,32 +158,5 @@ export default async function ProjectPage({
       </section>
       </div>
     </main>
-  );
-}
-
-function GalleryImage({
-  img,
-  ratio,
-  alt,
-  delay = 0,
-}: {
-  img: NonNullable<Project["gallery"]>[number];
-  ratio: string;
-  alt: string;
-  delay?: number;
-}) {
-  const lqip = (img as { lqip?: string }).lqip;
-  return (
-    <WipeReveal delay={delay} className={`relative overflow-hidden bg-line ${ratio}`}>
-      <Image
-        src={urlFor(img).width(1400).height(1400).fit("crop").url()}
-        alt={alt}
-        fill
-        sizes="(max-width: 640px) 100vw, 50vw"
-        placeholder={lqip ? "blur" : undefined}
-        blurDataURL={lqip ?? undefined}
-        className="object-cover"
-      />
-    </WipeReveal>
   );
 }

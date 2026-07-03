@@ -8,6 +8,7 @@ const BAR = 64;
 const EDGE = 10; // tiny side breathing room when filling the width
 const BOTTOM = 22; // bottom padding at rest
 const NAV = 14; // docked size — same as the nav items
+const HERO = 0.8; // hero height as a fraction of the viewport (matches h-[80svh])
 const REF = 100; // reference font-size we measure at
 // WordReveal gives every word a trailing margin-right of 0.28em (incl. the last
 // word), which would inflate the measured width and push the title off-centre.
@@ -42,13 +43,14 @@ export default function ProjectHeroTitle({ title }: { title: string }) {
       // font-size that makes the line exactly fill the viewport width
       const fit = ((vw - 2 * EDGE) * REF) / w0;
       const mobile = vw < 640;
-      const p = mobile ? 0 : Math.min(1, Math.max(0, y / (vh * 0.7)));
+      // Dock over the course of the (80vh) hero.
+      const p = mobile ? 0 : Math.min(1, Math.max(0, y / (vh * HERO * 0.9)));
 
       const f = fit + (NAV - fit) * p; // rest → nav size
       const w = (w0 * f) / REF;
       const h = (h0 * f) / REF;
       const x = (vw - w) / 2; // centred
-      const top0 = vh - BOTTOM - h; // anchored to the hero bottom
+      const top0 = vh * HERO - BOTTOM - h; // anchored to the (80vh) hero bottom
       const top1 = (BAR - h) / 2; // centred in the bar
       const top = mobile ? top0 - y : top0 + (top1 - top0) * p;
 
@@ -57,7 +59,7 @@ export default function ProjectHeroTitle({ title }: { title: string }) {
 
       const footer = document.getElementById("site-footer");
       const atFooter = footer ? y + BAR >= footer.offsetTop : false;
-      const dark = y >= vh - BAR;
+      const dark = y >= vh * HERO - BAR;
       setMode(atFooter ? "footer" : dark ? "ink" : "hero");
     };
 

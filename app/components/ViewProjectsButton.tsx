@@ -217,22 +217,15 @@ const css = `
    is the dot arriving. Additive: without a ProcessFlow provider
    .vp-flow--landed never applies, so the button is unaffected.
    ============================================================ */
-/* position:relative anchors the trace SVG overlay; the scale (driven per-frame
-   via --vp-grow by VpFlowHighlight while the button is pinned) grows the whole
-   pill. The scale lives HERE on the wrapper, while the pin (position:sticky)
-   lives on the button's outer flex row, and the hover lift lives on .vp — three
-   separate transform contexts, so none of them clobber the others. */
+/* position:relative anchors the trace SVG overlay. (The centre-reveal motion —
+   rise + grow to fill the process centre — is driven on the wrapper by
+   ProcessPath, not here.) */
 .vp-flow {
   position: relative;
   display: inline-flex;
-  --vp-grow: 1;
-  transform: scale(var(--vp-grow));
-  transform-origin: center center;
-  transition: transform 0.12s linear;
-  will-change: transform;
 }
-/* Trace variant (home only): the pill carries NO visible outline of its own —
-   the gold SVG trace is the only outline, drawn on when the dot lands. No glow. */
+/* Trace variant (process flow only): the pill carries NO visible outline of its
+   own — the gold SVG trace is the only outline, drawn on when the dot lands. */
 .vp-flow--trace .vp { border-color: transparent; }
 .vp-flow--landed .vp__label { color: var(--copper-deep); }
 
@@ -263,11 +256,7 @@ const css = `
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* No growth animation; the trace snaps on without drawing. */
-  .vp-flow {
-    transform: none;
-    transition: none;
-  }
+  /* The trace snaps on without drawing. */
   .vp-flow--landed .vp-trace__p { transition: none; }
   .vp, .vp__label, .vp__photo { transition-duration: 0.001ms; }
   .vp:focus-visible .vp__photo--1,

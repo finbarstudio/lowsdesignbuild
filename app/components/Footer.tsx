@@ -127,7 +127,6 @@ const css = `
   display:block; width:100%;
   background:var(--background); color:var(--ink);
   font-family:var(--font-mono-stack);
-  border-top:1px solid var(--line);
   box-sizing:border-box;
 }
 .c-ft-marquee *{box-sizing:border-box;}

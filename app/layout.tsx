@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Mono } from "next/font/google";
 import localFont from "next/font/local";
+import Script from "next/script";
 import "./globals.css";
 import { siteUrl } from "@/app/lib/site";
 
@@ -79,13 +80,12 @@ export default function RootLayout({
         {/* Arm the hero wordmark's entrance mask BEFORE first paint, so it never
             flashes in resting state and then jumps to hidden (the "pop-in then
             mask-reveal" glitch). HomeChrome adds `entrance-go` to play the rise.
-            Fail-open: no JS → class never added → wordmark stays visible. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "try{document.documentElement.classList.add('entrance-armed')}catch(e){}",
-          }}
-        />
+            Fail-open: no JS → class never added → wordmark stays visible.
+            Uses next/script (beforeInteractive) rather than a raw <script>, so it
+            isn't hoisted by React and can't disturb hydration of the body. */}
+        <Script id="entrance-arm" strategy="beforeInteractive">
+          {`try{document.documentElement.classList.add('entrance-armed')}catch(e){}`}
+        </Script>
         {children}
       </body>
     </html>
