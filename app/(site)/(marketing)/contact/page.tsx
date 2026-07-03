@@ -1,4 +1,4 @@
-import { FOOT, FORM_CARD, PAD } from "@/app/lib/ui";
+import { FOOT, FORM_CARD, FORM_GRID, PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 
 import { CalendlyInline, CalendlyMock } from "@/app/components/Calendly";
@@ -51,9 +51,9 @@ export default async function ContactPage() {
       {/* Form + book-a-call, side by side. The Calendly booking shows a styled
           mock until a link is set in Sanity. */}
       <section className={`${PAD} ${FOOT} pt-8`}>
-        {/* capped narrower than the page gutter so the two columns don't
-            stretch across the whole viewport */}
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-14 lg:grid-cols-2 lg:gap-16">
+        {/* shared two-column form layout — identical sizing/spacing to the
+            estimate gate */}
+        <div className={FORM_GRID}>
           {/* FORM_CARD: on mobile the form sits in a subtle card so it separates
               cleanly from the booking card below it */}
           <div className={FORM_CARD}>

@@ -57,15 +57,13 @@ export default async function EstimatePage() {
       <section
         className={`${PAD} flex min-h-[70svh] flex-col justify-center pb-[28vh] pt-8`}
       >
-        <div className="sm:px-4 lg:px-10">
-          <EstimateGate calendlyUrl={contact?.calendlyUrl}>
-            <EstimateCalculator
-              email={email}
-              accessKey={contact?.formAccessKey || undefined}
-              infoOverrides={infoOverrides}
-            />
-          </EstimateGate>
-        </div>
+        <EstimateGate calendlyUrl={contact?.calendlyUrl}>
+          <EstimateCalculator
+            email={email}
+            accessKey={contact?.formAccessKey || undefined}
+            infoOverrides={infoOverrides}
+          />
+        </EstimateGate>
       </section>
     </main>
   );

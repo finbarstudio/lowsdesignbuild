@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { CalendlyPopupButton } from "@/app/components/Calendly";
-import { FORM_CARD } from "@/app/lib/ui";
+import { FORM_CARD, FORM_GRID } from "@/app/lib/ui";
 
 // The email is stored in localStorage so the contact form can prefill it later;
 // the UNLOCK is only kept for the tab session, so the estimator re-hides behind
@@ -55,10 +55,14 @@ export default function EstimateGate({
     setUnlocked(true);
   };
 
-  if (unlocked) return <>{children}</>;
+  if (unlocked)
+    return (
+      // the detailed calculator sits in the same card, at the same width
+      <div className={`mx-auto w-full max-w-6xl ${FORM_CARD}`}>{children}</div>
+    );
 
   return (
-    <div className="mx-auto grid max-w-4xl grid-cols-1 gap-14 md:grid-cols-2 md:gap-16">
+    <div className={FORM_GRID}>
       {/* Left — unlock the estimator with your email. On mobile it sits in a
           subtle card so it separates cleanly from the book-a-call column. */}
       <div className={`flex flex-col ${FORM_CARD}`}>
@@ -100,9 +104,9 @@ export default function EstimateGate({
         </form>
       </div>
 
-      {/* Right — skip the calculator and book a call. Same mobile card as the
-          email column, so the two options read as consistent siblings. */}
-      <div className={`flex flex-col md:border-l md:border-line md:pl-16 ${FORM_CARD}`}>
+      {/* Right — skip the calculator and book a call. Same card as the email
+          column, so the two options read as consistent siblings. */}
+      <div className={`flex flex-col ${FORM_CARD}`}>
         <p className="label mb-6 !text-ink">Or already know your scope?</p>
         <p className="max-w-sm text-base leading-relaxed text-muted">
           Skip the calculator and book a call — we&apos;ll talk through your
