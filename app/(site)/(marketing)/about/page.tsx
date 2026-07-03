@@ -1,4 +1,4 @@
-import { PAD } from "@/app/lib/ui";
+import { FOOT, PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -161,9 +161,10 @@ export default async function AboutPage() {
           with equal padding above and below */}
       <ViewProjectsButton className="py-20 sm:py-24" />
 
-      {/* Quality guarantee CTA */}
+      {/* Quality guarantee CTA — FOOT keeps a generous, consistent gap to the
+          footer (the old sm:py-24 was overriding the bottom padding on desktop) */}
       <section
-        className={`${PAD} flex min-h-0 flex-col justify-center pb-32 pt-20 text-center sm:min-h-[90vh] sm:py-24`}
+        className={`${PAD} ${FOOT} flex min-h-0 flex-col justify-center pt-20 text-center sm:min-h-[80vh] sm:pt-24`}
       >
         <Reveal>
           <p className="label !text-tertiary">Our quality guarantee</p>

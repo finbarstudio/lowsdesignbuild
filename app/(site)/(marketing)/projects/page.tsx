@@ -1,4 +1,4 @@
-import { PAD } from "@/app/lib/ui";
+import { FOOT, PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -43,7 +43,7 @@ export default async function ProjectsPage() {
           sits between 9:16 and A4; on hover the image's bottom edge crops up
           (clip-path inset, no scale) to reveal the title + location/type pills
           sitting beneath it. */}
-      <section className="pb-32 pt-16 sm:pb-48 sm:pt-24">
+      <section className={`${FOOT} pt-16 sm:pt-24`}>
         {projects.length === 0 ? (
           <div className={`${PAD}`}>
             <div className="border border-dashed border-line p-12 text-center">

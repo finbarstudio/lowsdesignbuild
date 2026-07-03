@@ -55,7 +55,7 @@ export default async function EstimatePage() {
           comfortable min-height so the (short) gate is centred with real breathing
           room above the footer; once unlocked the calculator fills it. */}
       <section
-        className={`${PAD} flex min-h-[70svh] flex-col justify-center pb-32 pt-8 sm:pb-48`}
+        className={`${PAD} flex min-h-[70svh] flex-col justify-center pb-[28vh] pt-8`}
       >
         <div className="sm:px-4 lg:px-10">
           <EstimateGate calendlyUrl={contact?.calendlyUrl}>

@@ -218,6 +218,13 @@ html.entrance-go .logo-mask > * {
   transform: translateY(0);
   transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1) 0.5s;
 }
+/* Fast path (client-side return to home / no preloader): the wordmark is simply
+   there — no delay, no rise. Must sit AFTER the entrance-go rule to win. */
+html.entrance-fast .logo-mask > * {
+  animation: none;
+  transform: translateY(0);
+  transition: none;
+}
 
 /* Hide the scrollbar on a horizontally-scrollable strip (the Instagram feed) */
 .no-scrollbar {

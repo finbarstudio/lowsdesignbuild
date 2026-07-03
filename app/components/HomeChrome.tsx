@@ -47,9 +47,12 @@ export default function HomeChrome({
 }) {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>("hero");
-  // `entered` gates the staggered chrome reveal. Starts false so the items are
-  // parked (translated/faded), flips true when the timeline fires.
-  const [entered, setEntered] = useState(false);
+  // `entered` gates the staggered chrome reveal. On a FRESH document load it
+  // starts false (items parked) and flips when the preloader lifts. On a
+  // client-side return to home there's no preloader — start true, so the chrome
+  // is simply there, instantly, with no re-entrance. (Server always renders
+  // false; client-side mounts don't hydrate, so there's no mismatch.)
+  const [entered, setEntered] = useState(() => !homeFullLoad);
 
   // ---- Entrance (Take B: an explicit JS-driven timeline fired when the
   // preloader lifts) -----------------------------------------------------------
@@ -68,34 +71,26 @@ export default function HomeChrome({
       if (fired) return;
       fired = true;
       setEntered(true);
-      html.classList.remove("entrance-armed");
       html.classList.add("entrance-go");
     };
-
-    // Reduced motion: show everything at once, no stagger, no armed state.
-    if (reduce) {
-      homeFullLoad = false;
-      start();
-      return;
-    }
-
-    // Arm the hero wordmark (parks it) until we fire `go`.
-    html.classList.add("entrance-armed");
 
     const fresh = homeFullLoad;
     homeFullLoad = false;
 
-    // Client-side return: no preloader — reveal almost immediately.
-    if (!fresh) {
-      const t = window.setTimeout(start, 60);
-      return () => {
-        window.clearTimeout(t);
-      };
+    // INSTANT paths — reduced motion, a client-side return to home, or no
+    // preloader running (e.g. the session started on another page): no waiting,
+    // no stagger. `entrance-fast` zeroes the hero wordmark's transition so it's
+    // simply there.
+    if (reduce || !fresh || !document.querySelector(".preloader")) {
+      html.classList.add("entrance-fast");
+      start();
+      return;
     }
+    html.classList.remove("entrance-fast");
 
-    // Fresh document load: wait for the preloader to lift, THEN stage the chrome.
-    // If it already lifted before this listener attached, the global flag lets
-    // us catch up immediately (closes that race).
+    // Fresh document load with the preloader: wait for it to lift, THEN stage
+    // the chrome. If it already lifted before this listener attached, the global
+    // flag lets us catch up immediately (closes that race).
     if (
       (window as unknown as { __lowsPreloaderLifted?: boolean })
         .__lowsPreloaderLifted
@@ -213,19 +208,28 @@ export default function HomeChrome({
             className={`ml-auto hidden items-center gap-x-7 font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-300 sm:flex sm:text-sm ${textColor}`}
           >
             {nav.map((navItem, i) => (
+              // The clip lives on an INNER span around the label only — never on
+              // the Link — so the superscript count (which sits above the line
+              // box, and lifts further on hover) is never cut off.
               <Link
                 key={navItem.href}
                 href={navItem.href}
-                className="lu-group group relative flex items-start overflow-hidden pb-1"
+                className="lu-group group relative flex items-start"
               >
-                <span
-                  className={`${rise} ${risePos} link-underline is-tracked`}
-                  style={{ transitionDelay: `${220 + i * 90}ms` }}
-                >
-                  {navItem.label}
+                <span className="inline-flex overflow-hidden pb-1">
+                  <span
+                    className={`${rise} ${risePos} link-underline is-tracked`}
+                    style={{ transitionDelay: `${220 + i * 90}ms` }}
+                  >
+                    {navItem.label}
+                  </span>
                 </span>
                 {navItem.href === "/projects" && projectCount ? (
-                  <sup className="ml-0.5 inline-block font-mono text-[0.62em] font-bold leading-none tracking-[0.06em] text-copper transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:scale-[1.6]">
+                  <sup
+                    className={`ml-0.5 inline-block font-mono text-[0.62em] font-bold leading-none tracking-[0.06em] text-copper transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:scale-[1.6] ${
+                      entered ? "opacity-100" : "opacity-0"
+                    }`}
+                  >
                     {projectCount}
                   </sup>
                 ) : null}

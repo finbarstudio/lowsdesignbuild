@@ -1,4 +1,4 @@
-import { PAD } from "@/app/lib/ui";
+import { FOOT, PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -147,7 +147,7 @@ export default async function ProjectPage({
 
       {/* ---------------- CTA ---------------- */}
       <section>
-        <div className={`${PAD} pb-32 pt-24 text-center sm:pb-48 sm:pt-32`}>
+        <div className={`${PAD} ${FOOT} pt-24 text-center sm:pt-32`}>
           <h2 className="serif text-3xl sm:text-5xl">
             Planning something similar?
           </h2>

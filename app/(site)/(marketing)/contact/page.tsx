@@ -1,4 +1,4 @@
-import { PAD } from "@/app/lib/ui";
+import { FOOT, PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 
 import { CalendlyInline, CalendlyMock } from "@/app/components/Calendly";
@@ -50,8 +50,10 @@ export default async function ContactPage() {
 
       {/* Form + book-a-call, side by side. The Calendly booking shows a styled
           mock until a link is set in Sanity. */}
-      <section className={`${PAD} pb-32 pt-8 sm:pb-48`}>
-        <div className="grid grid-cols-1 gap-14 lg:grid-cols-2 lg:gap-16">
+      <section className={`${PAD} ${FOOT} pt-8`}>
+        {/* capped narrower than the page gutter so the two columns don't
+            stretch across the whole viewport */}
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-14 lg:grid-cols-2 lg:gap-16">
           <div>
             <p className="label mb-8 !text-ink">Tell us about your project</p>
             <ContactForm

@@ -1,11 +1,12 @@
-import { PAD } from "@/app/lib/ui";
+import { FOOT, PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 import Image from "next/image";
 
 import HomeChrome from "@/app/components/HomeChrome";
 import InstagramFeed from "@/app/components/InstagramFeed";
 import InstagramStrip from "@/app/components/InstagramStrip";
-import ProcessFlow from "@/app/components/ProcessFlow";
+import ProcessConverge from "@/app/components/ProcessConverge";
+import ProcessPath from "@/app/components/ProcessPath";
 import StickySlogan from "@/app/components/StickySlogan";
 import ViewProjectsButton from "@/app/components/ViewProjectsButton";
 import WordReveal from "@/app/components/WordReveal";
@@ -152,20 +153,26 @@ export default async function HomePage() {
 
         {/* ---------------- Our process ---------------- */}
         {/* No background: the pinned slogan behind fades out naturally (via
-            StickySlogan) as this rises. A centred 80vw zigzag with the four
-            stages in a 2×2 (1,3 left · 2,4 right); the View projects button
-            scrolls up and fills the open centre as the dot lands. */}
+            StickySlogan) as this rises. The winding timeline, then the end
+            sequence: the four items converge into a pinned 2×2 with the View
+            projects button, which the Instagram section scrolls up OVER. */}
         <section
           data-featured-first
-          className={`${PAD} relative z-10 pb-24 pt-28 sm:pb-32 sm:pt-44`}
+          className={`${PAD} relative z-10 pb-6 pt-28 sm:pb-10 sm:pt-44`}
         >
-          <ProcessFlow steps={steps} button={<ViewProjectsButton />} />
+          <ProcessPath steps={steps} />
         </section>
+
+        {/* end sequence — MUST be a direct child of this wrapper (not inside the
+            section above) so its pinned stage stays put while Instagram covers it */}
+        <ProcessConverge steps={steps} button={<ViewProjectsButton />} />
 
         {/* ---------------- Instagram ---------------- */}
         {/* Live Behold feed if its ID is set, otherwise the curated strip. */}
         {hasInsta && (
-          <section className="relative z-10 bg-background pb-32 pt-8 sm:pb-48 sm:pt-16">
+          <section
+            className={`relative z-10 bg-background pt-8 sm:pt-16 ${FOOT}`}
+          >
             <div className="mb-6 px-4 sm:mb-14 sm:px-6">
               <a
                 href={site.instagram}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { processSteps as fallbackSteps } from "@/app/lib/site";
 
@@ -15,8 +15,8 @@ const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x));
  * 2 & 4 to the right) with the copy pushed to the outer edge. A single line
  * winds through the nodes as a smooth S-curve; a gold trail fills it and a dot
  * rides the leading edge as you scroll, revealing each stage ONE AT A TIME as it
- * arrives. The View projects button sits at the foot and its gold outline traces
- * on once the dot lands (the end-of-sequence choreography is still to come).
+ * arrives. The end sequence (the four items converging into a 2×2 grid + the
+ * View projects button) lives in ProcessConverge, which follows this timeline.
  *
  * The path is built from the measured node centres (rebuilt on resize / once the
  * font settles), so it always fits the rendered layout.
@@ -24,12 +24,10 @@ const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x));
 export default function ProcessPath({
   steps = fallbackSteps,
   title = "Our process",
-  centerButton,
   onLanded,
 }: {
   steps?: Step[];
   title?: string;
-  centerButton?: ReactNode;
   onLanded?: (landed: boolean) => void;
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -39,8 +37,6 @@ export default function ProcessPath({
   const baseRef = useRef<SVGPathElement>(null);
   const trailRef = useRef<SVGPathElement>(null);
   const dotRef = useRef<SVGGElement>(null);
-  const btnRef = useRef<HTMLDivElement>(null);
-  const btnStageRef = useRef<HTMLDivElement>(null);
   const nodeLen = useRef<number[]>([]);
 
   const [d, setD] = useState("");
@@ -153,20 +149,6 @@ export default function ProcessPath({
           1,
         ).toFixed(3);
 
-      // Button pin-stage: it sits centred and pinned in its own tall stage after
-      // the line. As you scroll through: it grows in, holds (larger), then fades
-      // out as the Instagram section scrolls up over it.
-      if (btnRef.current && btnStageRef.current) {
-        const br = btnStageRef.current.getBoundingClientRect();
-        // 0 as the stage enters, 1 by the time it has scrolled a screen past.
-        const bp = clamp((vh * 0.5 - br.top) / (br.height - vh), 0, 1);
-        const fadeIn = clamp(bp / 0.14, 0, 1);
-        const fadeOut = clamp((0.9 - bp) / 0.14, 0, 1);
-        btnRef.current.style.opacity = Math.min(fadeIn, fadeOut).toFixed(3);
-        const g = clamp((bp - 0.05) / 0.6, 0, 1);
-        btnRef.current.style.transform = `scale(${(0.82 + g * 0.45).toFixed(3)})`;
-      }
-
       const landed = progress > 0.985;
       if (landed !== curLanded) {
         curLanded = landed;
@@ -190,7 +172,6 @@ export default function ProcessPath({
   }, [d, pts, onLanded]);
 
   return (
-    <>
     <div ref={wrapRef} className="relative mx-auto w-[86vw] max-w-[880px]">
       {/* Sticky title, faded out by the rAF as the timeline ends. */}
       <h2
@@ -295,23 +276,5 @@ export default function ProcessPath({
 
       </div>
     </div>
-
-      {/* Button end-stage: pinned centre of its own tall stage. The button grows
-          in and holds, with lots of room below, then fades as the Instagram
-          section scrolls up over it. (The winding→2×2 morph is a next step.) */}
-      {centerButton && (
-        <div ref={btnStageRef} className="relative h-[130vh] sm:h-[170vh]">
-          <div className="sticky top-0 flex h-[100svh] items-center justify-center">
-            <div
-              ref={btnRef}
-              className="vp-trace-scope origin-center will-change-transform"
-              style={{ opacity: 0 }}
-            >
-              {centerButton}
-            </div>
-          </div>
-        </div>
-      )}
-    </>
   );
 }
