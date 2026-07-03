@@ -69,8 +69,25 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${authentic.variable} ${spaceMono.variable} antialiased`}
+      // The pre-paint entrance script (in <body>) adds `entrance-armed` to <html>
+      // before hydration, so its className legitimately differs from the server
+      // markup — suppress the resulting hydration warning (standard theme-script
+      // pattern). Only affects this one attribute on this element.
+      suppressHydrationWarning
     >
-      <body>{children}</body>
+      <body>
+        {/* Arm the hero wordmark's entrance mask BEFORE first paint, so it never
+            flashes in resting state and then jumps to hidden (the "pop-in then
+            mask-reveal" glitch). HomeChrome adds `entrance-go` to play the rise.
+            Fail-open: no JS → class never added → wordmark stays visible. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{document.documentElement.classList.add('entrance-armed')}catch(e){}",
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }

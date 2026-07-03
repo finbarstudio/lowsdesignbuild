@@ -155,13 +155,15 @@ export default function ProcessPath({
         </defs>
 
         <g mask="url(#pp-mask)">
-          {/* faint hairline — the whole track, ahead of the dot */}
+          {/* faint hairline — the whole track, ahead of the dot. A slate tint (not
+              --line, which is so close to the paper it read as invisible) so the
+              track is clearly there before the gold fills it in. */}
           <line
             x1={CX}
             y1={Y0}
             x2={CX}
             y2={Y1}
-            stroke="var(--line)"
+            stroke="rgba(66, 73, 82, 0.22)"
             strokeWidth="1"
             vectorEffect="non-scaling-stroke"
           />

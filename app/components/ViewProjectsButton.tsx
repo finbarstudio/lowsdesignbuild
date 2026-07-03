@@ -217,7 +217,20 @@ const css = `
    is the dot arriving. Additive: without a ProcessFlow provider
    .vp-flow--landed never applies, so the button is unaffected.
    ============================================================ */
-.vp-flow { position: relative; display: inline-flex; }
+/* position:relative anchors the ::before dot; the scale (driven per-frame via
+   --vp-grow by VpFlowHighlight while the button is pinned) grows the whole pill.
+   The scale lives HERE on the wrapper, while the pin (position:sticky) lives on
+   the button's outer flex row, and the hover lift lives on .vp — three separate
+   transform contexts, so none of them clobber the others. */
+.vp-flow {
+  position: relative;
+  display: inline-flex;
+  --vp-grow: 1;
+  transform: scale(var(--vp-grow));
+  transform-origin: center center;
+  transition: transform 0.12s linear;
+  will-change: transform;
+}
 .vp-flow--landed .vp {
   border-color: var(--tertiary);
   transform: translateY(-2px);
@@ -225,7 +238,11 @@ const css = `
               0 0 0 1px var(--tertiary);
 }
 .vp-flow--landed .vp__label { color: var(--copper-deep); }
-/* the gold dot arriving into the pill's top edge */
+
+/* HIT-AND-GO dot: one shot when vp-flow--landed is added. It drops onto the
+   pill's top edge (HIT — the pill is already going gold), holds for a beat, then
+   continues DOWN through and past the pill and fades (GO). Ends at opacity 0 with
+   animation-fill-mode forwards, so it can never read as parked on the button. */
 .vp-flow::before {
   content: "";
   position: absolute;
@@ -233,22 +250,44 @@ const css = `
   top: -0.5rem;
   width: 0.625rem;
   height: 0.625rem;
-  transform: translate(-50%, -50%) scale(0);
   border-radius: 999px;
   background: var(--tertiary);
   box-shadow: 0 0 10px 2px rgba(169, 126, 31, 0.45);
+  transform: translate(-50%, -50%) scale(0);
   opacity: 0;
-  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
-              opacity 0.4s ease;
   pointer-events: none;
 }
 .vp-flow--landed::before {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
+  animation: vp-dot-hitgo 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes vp-dot-hitgo {
+  0% {
+    transform: translate(-50%, calc(-50% - 1.5rem)) scale(0);
+    opacity: 0;
+  }
+  26% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  } /* HIT — on the pill's top edge */
+  42% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  } /* brief contact hold — the beat the pill turns gold */
+  100% {
+    transform: translate(-50%, calc(-50% + 2.4rem)) scale(0.35);
+    opacity: 0;
+  } /* GO — departs downward through the pill and fades */
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .vp-flow, .vp-flow::before { transition-duration: 0.001ms; }
+  /* No flying dot, no growth animation — the gold border + label (on .vp /
+     .vp__label) still communicate the arrival statically. (The sticky pin is
+     plain positioning, not animation, so it is left as-is.) */
+  .vp-flow {
+    transform: none;
+    transition: none;
+  }
+  .vp-flow::before { animation: none; opacity: 0; }
   .vp, .vp__label, .vp__photo { transition-duration: 0.001ms; }
   .vp:focus-visible .vp__photo--1,
   .vp:focus-visible .vp__photo--2,

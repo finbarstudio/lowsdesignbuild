@@ -123,35 +123,23 @@ export default async function AboutPage() {
         </h1>
       </section>
 
-      {/* Story — centred, no title. A gold small-caps lead-in line (studio 07)
-          opens it, then the rest lights up word-by-word as you scroll. */}
+      {/* Story — centred, no title. Uniform weight throughout (no lead-in / big
+          first letter); lights up word-by-word as you scroll. */}
       <section className={`${PAD} py-24 text-center sm:py-32`}>
         <div className="mx-auto max-w-2xl">
-          {bioParas.length > 0 && (
-            <ScrollText
-              paragraphs={[bioParas[0]]}
-              tone="gold"
-              className="font-mono text-base leading-relaxed tracking-[0.12em] [font-variant-caps:small-caps] sm:text-lg"
-            />
-          )}
-          {bioParas.length > 1 && (
-            <ScrollText
-              paragraphs={bioParas.slice(1)}
-              className="mt-8 text-2xl leading-snug sm:text-3xl"
-            />
-          )}
+          <ScrollText
+            paragraphs={bioParas}
+            className="text-2xl leading-snug sm:text-3xl"
+          />
         </div>
       </section>
 
-      {/* What we do — a masonry that fills one screen; one photo per service,
-          title over a bottom gradient, description reveals on hover. */}
-      <section
-        className={`${PAD} flex h-[100svh] min-h-[560px] flex-col py-16 sm:py-20`}
-      >
-        <h2 className="label mb-6 !text-ink sm:mb-8">What we do</h2>
-        <div className="min-h-0 flex-1">
-          <ServiceMasonry services={serviceCards} />
-        </div>
+      {/* What we do — a 3-column grid (~70vw), centred heading above. */}
+      <section className={`${PAD} py-24 sm:py-32`}>
+        <h2 className="label mb-10 text-center !text-ink sm:mb-14">
+          What we do
+        </h2>
+        <ServiceMasonry services={serviceCards} />
       </section>
 
       {/* Team (moved here from the home page; swapped with Our process) */}

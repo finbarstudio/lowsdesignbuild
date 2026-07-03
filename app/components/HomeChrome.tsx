@@ -43,10 +43,8 @@ type Mode = "hero" | "ink" | "footer";
  */
 export default function HomeChrome({
   projectCount,
-  quotePhoto,
 }: {
   projectCount?: number;
-  quotePhoto?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>("hero");
@@ -263,7 +261,7 @@ export default function HomeChrome({
         style={{ transitionDelay: atFooter ? "0ms" : "280ms" }}
         aria-hidden={atFooter}
       >
-        <InstantQuoteButton photo={quotePhoto} />
+        <InstantQuoteButton />
       </div>
     </>
   );

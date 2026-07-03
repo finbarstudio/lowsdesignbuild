@@ -104,7 +104,9 @@ export default function Footer() {
 const css = `
 .c-ft-marquee{
   --ft-marquee-dur: 34s;
-  --ft-marquee-pad: clamp(28px, 6vw, 80px);
+  /* Match HomeChrome/Header EDGE (px-5 sm:px-7 = 20px / 28px) so the footer's
+     left/right gutter lines up exactly with the nav items above. */
+  --ft-marquee-pad: 20px;
   display:block; width:100%;
   background:var(--background); color:var(--ink);
   font-family:var(--font-mono-stack);
@@ -145,10 +147,14 @@ const css = `
 }
 
 .c-ft-marquee__inner{
-  /* Full-width: no max-width cap — the footer content runs edge to edge, held
-     off the viewport edges only by a symmetric gutter. */
-  width:100%; max-width:none; margin:0;
+  /* Capped to the same 1900px content box as the nav (HomeChrome), centred, with
+     the matching EDGE gutter — so the footer's left/right edges align exactly
+     with the nav items above on every viewport. */
+  width:100%; max-width:1900px; margin:0 auto;
   padding:clamp(44px,6vw,72px) var(--ft-marquee-pad) clamp(26px,4vw,40px);
+}
+@media (min-width:640px){
+  .c-ft-marquee{ --ft-marquee-pad: 28px; }
 }
 .c-ft-marquee__lead{
   display:flex; flex-wrap:wrap; align-items:flex-end;

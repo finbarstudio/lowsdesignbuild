@@ -74,14 +74,9 @@ export default async function HomePage() {
   const igFeedId = home?.instagramFeedId?.trim() || "";
   const hasInsta = igFeedId !== "" || instaPosts.length > 0;
 
-  // A live project hero for the "Get an instant quote" spotlight button.
-  const quotePhoto = projects[0]?.mainImage
-    ? urlFor(projects[0].mainImage).width(480).height(160).fit("crop").url()
-    : undefined;
-
   return (
     <>
-      <HomeChrome projectCount={projects.length} quotePhoto={quotePhoto} />
+      <HomeChrome projectCount={projects.length} />
 
       {/* ---------------- Hero ---------------- */}
       <section
@@ -133,7 +128,7 @@ export default async function HomePage() {
             the .logo-mask clip; the wrapper owns the centring transform so the
             inner mask can slide up without fighting it. */}
         <div className="logo-mask pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
-          <Wordmark className="h-[70px] w-[154px] text-white sm:h-[104px] sm:w-[229px]" />
+          <Wordmark className="h-[96px] w-[211px] text-white sm:h-[150px] sm:w-[330px] lg:h-[184px] lg:w-[405px]" />
         </div>
       </section>
 
@@ -173,7 +168,17 @@ export default async function HomePage() {
               when the dot lands. Space below the button is doubled. */}
           <ProcessFlow
             steps={steps}
-            button={<ViewProjectsButton className="mt-16 mb-48 sm:mt-24 sm:mb-[22rem]" />}
+            button={
+              // Pin stage: a short, dedicated containing block for the sticky
+              // button. The button pins at 40vh and is held for ~one viewport of
+              // scroll (the stage height) while it grows, then releases as the
+              // Instagram section rises up. The stage height replaces the old big
+              // bottom margin, so total scroll length is about the same. NOTE:
+              // never give this stage overflow/transform — either kills the pin.
+              <div className="vp-pin-stage mt-16 h-[80vh] sm:mt-24 sm:h-[95vh]">
+                <ViewProjectsButton className="sticky top-[40vh]" />
+              </div>
+            }
           />
         </section>
 
