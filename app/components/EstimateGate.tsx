@@ -100,8 +100,9 @@ export default function EstimateGate({
         </form>
       </div>
 
-      {/* Right — skip the calculator and book a call */}
-      <div className="flex flex-col md:border-l md:border-line md:pl-16">
+      {/* Right — skip the calculator and book a call. Same mobile card as the
+          email column, so the two options read as consistent siblings. */}
+      <div className={`flex flex-col md:border-l md:border-line md:pl-16 ${FORM_CARD}`}>
         <p className="label mb-6 !text-ink">Or already know your scope?</p>
         <p className="max-w-sm text-base leading-relaxed text-muted">
           Skip the calculator and book a call — we&apos;ll talk through your

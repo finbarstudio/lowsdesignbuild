@@ -63,7 +63,10 @@ export default async function ContactPage() {
               accessKey={contact?.formAccessKey || undefined}
             />
           </div>
-          <div>
+          {/* same card treatment as the form column — label inside the card,
+              one "book a call" heading only (the mock carries no heading of
+              its own and goes borderless inside this card on mobile) */}
+          <div className={FORM_CARD}>
             <p className="label mb-8 !text-ink">Or book a call</p>
             {contact?.calendlyUrl ? (
               <CalendlyInline url={contact.calendlyUrl} />
