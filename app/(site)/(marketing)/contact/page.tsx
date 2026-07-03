@@ -2,7 +2,7 @@ import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 
 import AreaPills from "@/app/components/AreaPills";
-import { CalendlyInline } from "@/app/components/Calendly";
+import { CalendlyInline, CalendlyMock } from "@/app/components/Calendly";
 import ContactForm from "@/app/components/ContactForm";
 import ScrollNudge from "@/app/components/ScrollNudge";
 import ViewProjectsButton from "@/app/components/ViewProjectsButton";
@@ -75,17 +75,18 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      {/* Book a call — a Calendly scheduler embedded inline (Sanity-configured). */}
-      {contact?.calendlyUrl && (
-        <section className={`${PAD} pb-24 sm:pb-32`}>
-          <p className="label mb-8 text-center !text-ink">
-            Or book a call
-          </p>
-          <div className="mx-auto max-w-3xl">
+      {/* Book a call — a Calendly scheduler embedded inline (Sanity-configured).
+          Shows a styled mock until a booking link is set. */}
+      <section className={`${PAD} pb-32 pt-8 sm:pb-48`}>
+        <p className="label mb-8 text-center !text-ink">Or book a call</p>
+        <div className="mx-auto max-w-3xl">
+          {contact?.calendlyUrl ? (
             <CalendlyInline url={contact.calendlyUrl} />
-          </div>
-        </section>
-      )}
+          ) : (
+            <CalendlyMock />
+          )}
+        </div>
+      </section>
     </main>
   );
 }

@@ -10,20 +10,16 @@ type Pt = { x: number; y: number };
 const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x));
 
 /**
- * Our process — a centred ZIGZAG timeline (~80vw). The four stages sit in a 2×2
- * layout: steps 1 & 3 down the LEFT, 2 & 4 down the RIGHT, their copy pushed to
- * the outer edges and their nodes toward the centre. A single line zigzags
- * through the four nodes (1→2 across the top, 2→3 diagonally through the middle,
- * 3→4 across the bottom); a gold trail fills it and a dot rides the leading edge
- * as you scroll, lighting each stage as it arrives.
+ * Our process — a centred WINDING timeline (~80vw). The four stages stack down
+ * the page, their nodes alternating around the centre line (1 & 3 to the left,
+ * 2 & 4 to the right) with the copy pushed to the outer edge. A single line
+ * winds through the nodes as a smooth S-curve; a gold trail fills it and a dot
+ * rides the leading edge as you scroll, revealing each stage ONE AT A TIME as it
+ * arrives. The View projects button sits at the foot and its gold outline traces
+ * on once the dot lands (the end-of-sequence choreography is still to come).
  *
- * The centre is left open: the "View projects" button (passed in as centerButton)
- * scrolls up and grows to fill it right where the 2→3 diagonal crosses, so the
- * line reads as flowing into the button. The button's gold outline then traces on
- * once the dot lands (onLanded → shared context → the button).
- *
- * Path geometry is measured from the real node centres (rebuilt on resize/fonts),
- * so it always fits the rendered layout.
+ * The path is built from the measured node centres (rebuilt on resize / once the
+ * font settles), so it always fits the rendered layout.
  */
 export default function ProcessPath({
   steps = fallbackSteps,
@@ -45,14 +41,13 @@ export default function ProcessPath({
   const dotRef = useRef<SVGGElement>(null);
   const btnRef = useRef<HTMLDivElement>(null);
   const nodeLen = useRef<number[]>([]);
-  const totalLen = useRef(0);
 
   const [d, setD] = useState("");
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [pts, setPts] = useState<Pt[]>([]);
   const [active, setActive] = useState(-1);
 
-  // Build the zigzag path + node lengths from the measured node centres.
+  // Build the winding S-path through the measured node centres.
   useEffect(() => {
     const build = () => {
       const stage = stageRef.current;
@@ -66,14 +61,13 @@ export default function ProcessPath({
         };
       });
       if (p.length < 2) return;
+      // Cubic beziers with control points at the mid-height between nodes, so the
+      // line leaves each node vertically and eases across — a smooth S, not a Z.
       let dd = `M ${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`;
-      const lens = [0];
       for (let i = 1; i < p.length; i++) {
-        dd += ` L ${p[i].x.toFixed(1)} ${p[i].y.toFixed(1)}`;
-        lens[i] = lens[i - 1] + Math.hypot(p[i].x - p[i - 1].x, p[i].y - p[i - 1].y);
+        const my = (p[i - 1].y + p[i].y) / 2;
+        dd += ` C ${p[i - 1].x.toFixed(1)} ${my.toFixed(1)}, ${p[i].x.toFixed(1)} ${my.toFixed(1)}, ${p[i].x.toFixed(1)} ${p[i].y.toFixed(1)}`;
       }
-      nodeLen.current = lens;
-      totalLen.current = lens[lens.length - 1];
       setD(dd);
       setPts(p);
       setSize({ w: sr.width, h: sr.height });
@@ -87,11 +81,33 @@ export default function ProcessPath({
     };
   }, [steps]);
 
-  // Scroll: dot travel, trail reveal, node colouring, title fade, button reveal.
+  // Measure where each node sits along the path, then drive scroll.
   useEffect(() => {
     const base = baseRef.current;
-    if (!base || !d) return;
-    const total = totalLen.current || base.getTotalLength();
+    if (!base || !d || pts.length === 0) return;
+
+    const total = base.getTotalLength();
+    // sample the path to find the length at which each node sits
+    const N = 300;
+    const samples: { x: number; y: number; l: number }[] = [];
+    for (let i = 0; i <= N; i++) {
+      const l = (i / N) * total;
+      const pt = base.getPointAtLength(l);
+      samples.push({ x: pt.x, y: pt.y, l });
+    }
+    nodeLen.current = pts.map((p) => {
+      let best = 0;
+      let bd = Infinity;
+      for (const s of samples) {
+        const dd = (s.x - p.x) ** 2 + (s.y - p.y) ** 2;
+        if (dd < bd) {
+          bd = dd;
+          best = s.l;
+        }
+      }
+      return best;
+    });
+
     if (trailRef.current) {
       trailRef.current.style.strokeDasharray = `${total}`;
       trailRef.current.style.strokeDashoffset = `${total}`;
@@ -119,7 +135,7 @@ export default function ProcessPath({
       if (trailRef.current)
         trailRef.current.style.strokeDashoffset = `${total - L}`;
 
-      // Node colouring synced to the dot (each node is a path vertex).
+      // Which stage the dot has reached → light it (one at a time).
       let a = -1;
       for (let i = 0; i < nodeLen.current.length; i++)
         if (L >= nodeLen.current[i] - 1) a = i;
@@ -131,27 +147,18 @@ export default function ProcessPath({
       // Fade the sticky title out as the timeline ends.
       if (titleRef.current)
         titleRef.current.style.opacity = clamp(
-          1 - (progress - 0.72) / 0.14,
+          1 - (progress - 0.82) / 0.12,
           0,
           1,
         ).toFixed(3);
 
-      // Centre button: scrolls up + grows to FILL the centre as we near the end.
-      // Centring is handled by the stable outer wrapper; this inner element only
-      // carries the reveal (rise + scale), so scaling stays centred on itself.
-      if (btnRef.current) {
-        if (window.innerWidth >= 640) {
-          const rev = clamp((progress - 0.62) / 0.3, 0, 1);
-          const e = rev * rev * (3 - 2 * rev); // smoothstep
-          btnRef.current.style.opacity = e.toFixed(3);
-          btnRef.current.style.transform = `translateY(${(
-            (1 - e) * 34
-          ).toFixed(1)}px) scale(${(0.8 + 0.2 * e).toFixed(3)})`;
-        } else {
-          btnRef.current.style.opacity = "1";
-          btnRef.current.style.transform = "none";
-        }
-      }
+      // Reveal the button near the end.
+      if (btnRef.current)
+        btnRef.current.style.opacity = clamp(
+          (progress - 0.9) / 0.08,
+          0,
+          1,
+        ).toFixed(3);
 
       const landed = progress > 0.985;
       if (landed !== curLanded) {
@@ -173,10 +180,10 @@ export default function ProcessPath({
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [d, onLanded]);
+  }, [d, pts, onLanded]);
 
   return (
-    <div ref={wrapRef} className="relative mx-auto w-[86vw] max-w-[1100px]">
+    <div ref={wrapRef} className="relative mx-auto w-[86vw] max-w-[880px]">
       {/* Sticky title, faded out by the rAF as the timeline ends. */}
       <h2
         ref={titleRef}
@@ -187,24 +194,22 @@ export default function ProcessPath({
       <div aria-hidden className="h-[8vh] sm:h-[10vh]" />
 
       <div ref={stageRef} className="relative">
-        {/* the zigzag line + nodes + travelling dot, one SVG sized to the stage */}
+        {/* the winding line + nodes + travelling dot */}
         <svg
           className="pointer-events-none absolute inset-0 h-full w-full"
           viewBox={`0 0 ${size.w || 1} ${size.h || 1}`}
-          preserveAspectRatio="none"
           fill="none"
           aria-hidden="true"
         >
           {d && (
             <>
+              <path d={d} stroke="rgba(66,73,82,0.18)" strokeWidth="1.5" strokeLinecap="round" />
               <path
                 ref={baseRef}
                 d={d}
-                stroke="rgba(66,73,82,0.20)"
+                stroke="transparent"
                 strokeWidth="1.5"
                 strokeLinecap="round"
-                strokeLinejoin="round"
-                vectorEffect="non-scaling-stroke"
               />
               <path
                 ref={trailRef}
@@ -212,8 +217,6 @@ export default function ProcessPath({
                 stroke="var(--tertiary)"
                 strokeWidth="2"
                 strokeLinecap="round"
-                strokeLinejoin="round"
-                vectorEffect="non-scaling-stroke"
                 style={{ transition: "stroke-dashoffset 0.08s linear" }}
               />
               {pts.map((p, i) => (
@@ -235,65 +238,62 @@ export default function ProcessPath({
           )}
         </svg>
 
-        {/* two rows; each row: a LEFT step (node inner-right) and a RIGHT step
-            (node inner-left), copy pushed to the outer edge. 1,3 left · 2,4 right. */}
-        <div className="relative flex flex-col gap-y-10 sm:gap-y-0">
-          {[0, 1].map((row) => (
-            <div
-              key={row}
-              className="flex flex-col gap-y-10 sm:min-h-[42vh] sm:flex-row sm:items-center sm:justify-between sm:gap-y-0"
-            >
-              {[0, 1].map((col) => {
-                const i = row * 2 + col;
-                const step = steps[i];
-                if (!step) return null;
-                const isLeft = col === 0;
-                return (
-                  <div
-                    key={step.n}
-                    className={`flex items-center gap-4 sm:w-[34%] ${
-                      isLeft
-                        ? "sm:flex-row-reverse sm:text-left"
-                        : "sm:text-right"
+        {/* stages stacked; nodes wind around the centre (1,3 left · 2,4 right),
+            copy to the outer edge. Each lights ONE AT A TIME as the dot arrives. */}
+        <div className="flex flex-col">
+          {steps.map((step, i) => {
+            const right = i % 2 === 1;
+            return (
+              <div
+                key={step.n}
+                className="relative flex min-h-[34vh] items-center sm:min-h-[40vh]"
+              >
+                {/* node — on a left rail (mobile) or the winding band (sm+) */}
+                <span
+                  ref={(el) => {
+                    nodeRefs.current[i] = el;
+                  }}
+                  aria-hidden
+                  className={`absolute top-1/2 z-10 block h-3 w-3 -translate-x-1/2 -translate-y-1/2 left-[6%] ${
+                    right ? "sm:left-[66%]" : "sm:left-[34%]"
+                  }`}
+                />
+                {/* copy — beside the rail (mobile) or outboard of the band (sm+),
+                    dimmed until the dot reaches this stage. */}
+                <div
+                  className={`ml-[16%] w-[78%] text-left transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:ml-0 sm:w-[32%] ${
+                    right
+                      ? "sm:ml-auto sm:pl-10 sm:text-left"
+                      : "sm:pr-10 sm:text-right"
+                  } ${active >= i ? "opacity-100" : "translate-y-2 opacity-30"}`}
+                >
+                  <span
+                    className={`font-mono text-sm font-semibold tracking-[0.14em] transition-colors duration-300 ${
+                      active >= i ? "text-tertiary" : "text-muted"
                     }`}
                   >
-                    <span
-                      ref={(el) => {
-                        nodeRefs.current[i] = el;
-                      }}
-                      aria-hidden
-                      className="block h-3 w-3 shrink-0"
-                    />
-                    <div>
-                      <span
-                        className={`font-mono text-sm font-semibold tracking-[0.14em] transition-colors duration-300 ${
-                          active >= i ? "text-tertiary" : "text-muted"
-                        }`}
-                      >
-                        {step.n}
-                      </span>
-                      <h3 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
-                        {step.title}
-                      </h3>
-                      <p className="mt-2 max-w-xs text-sm leading-relaxed text-muted">
-                        {step.text}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+                    {step.n}
+                  </span>
+                  <h3 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                    {step.text}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        {/* the button fills the centre (desktop) / sits below (mobile). The outer
-            wrapper does the centring (stable); the inner carries the scroll
-            reveal (rise + scale), so the scale stays centred. */}
+        {/* the View projects button at the foot (end-sequence still to come) */}
         {centerButton && (
-          <div className="vp-trace-scope mt-6 flex justify-center sm:absolute sm:left-1/2 sm:top-1/2 sm:z-20 sm:mt-0 sm:block sm:-translate-x-1/2 sm:-translate-y-1/2">
-            <div ref={btnRef} style={{ opacity: 0 }} className="origin-center">
-              {centerButton}
-            </div>
+          <div
+            ref={btnRef}
+            style={{ opacity: 0 }}
+            className="vp-trace-scope mt-10 flex justify-center sm:mt-14"
+          >
+            {centerButton}
           </div>
         )}
       </div>

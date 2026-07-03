@@ -144,7 +144,7 @@ export default async function ProjectPage({
 
       {/* ---------------- CTA ---------------- */}
       <section>
-        <div className={`${PAD} py-24 text-center sm:py-32`}>
+        <div className={`${PAD} pb-32 pt-24 text-center sm:pb-48 sm:pt-32`}>
           <h2 className="serif text-3xl sm:text-5xl">
             Planning something similar?
           </h2>

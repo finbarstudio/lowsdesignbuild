@@ -200,11 +200,15 @@ button:active {
 .logo-mask {
   overflow: hidden;
 }
+/* Hidden by DEFAULT (parked below its own clip) so it never flashes in on first
+   paint and then jumps to hidden — no pre-paint script required. HomeChrome adds
+   `entrance-go` to play the rise. The default rule also carries a long-delay
+   fail-open reveal: if `entrance-go` never comes (JS off / stalled), the wordmark
+   still rises in after ~3.4s so the hero is never left blank. */
 .logo-mask > * {
   display: block;
-}
-html.entrance-armed .logo-mask > * {
   transform: translateY(110%);
+  animation: logo-rise 0.8s cubic-bezier(0.76, 0, 0.24, 1) 3.4s forwards;
 }
 html.entrance-go .logo-mask > * {
   animation: logo-rise 0.8s cubic-bezier(0.76, 0, 0.24, 1) 0.15s forwards;
@@ -327,9 +331,9 @@ html.lenis body {
   .preloader {
     display: none;
   }
-  /* Hero wordmark: no rise, just resting/visible. (HomeChrome also reveals the
-     chrome instantly under reduced motion — see its entrance effect.) */
-  html.entrance-armed .logo-mask > *,
+  /* Hero wordmark: no rise, just resting/visible (overrides the hidden default +
+     its fallback animation). */
+  .logo-mask > *,
   html.entrance-go .logo-mask > * {
     animation: none;
     transform: none;

@@ -108,11 +108,12 @@ export default function EstimateGate({
             Book a call
           </CalendlyPopupButton>
         ) : (
+          // No link set yet — point at the Contact page's booking section.
           <a
             href="/contact"
             className="link link-underline is-tracked mt-8 block w-fit"
           >
-            Get in touch
+            Book a call
           </a>
         )}
       </div>

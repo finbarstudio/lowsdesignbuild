@@ -131,9 +131,9 @@ export default async function AboutPage() {
         <ServiceMasonry services={serviceCards} />
       </section>
 
-      {/* Story — centred, no title. Sits BELOW What we do. Uniform weight
-          throughout (no lead-in / big first letter); lights up word-by-word. */}
-      <section className={`${PAD} py-24 text-center sm:py-32`}>
+      {/* Story — centred, no title. Sits BELOW What we do, with extra breathing
+          room above it. Uniform weight throughout; lights up word-by-word. */}
+      <section className={`${PAD} pb-24 pt-40 text-center sm:pb-32 sm:pt-56`}>
         <div className="mx-auto max-w-2xl">
           <ScrollText
             paragraphs={bioParas}

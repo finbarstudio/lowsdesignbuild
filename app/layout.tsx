@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Mono } from "next/font/google";
 import localFont from "next/font/local";
-import Script from "next/script";
 import "./globals.css";
 import { siteUrl } from "@/app/lib/site";
 
@@ -70,24 +69,12 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${authentic.variable} ${spaceMono.variable} antialiased`}
-      // The pre-paint entrance script (in <body>) adds `entrance-armed` to <html>
-      // before hydration, so its className legitimately differs from the server
-      // markup — suppress the resulting hydration warning (standard theme-script
-      // pattern). Only affects this one attribute on this element.
-      suppressHydrationWarning
     >
-      <body>
-        {/* Arm the hero wordmark's entrance mask BEFORE first paint, so it never
-            flashes in resting state and then jumps to hidden (the "pop-in then
-            mask-reveal" glitch). HomeChrome adds `entrance-go` to play the rise.
-            Fail-open: no JS → class never added → wordmark stays visible.
-            Uses next/script (beforeInteractive) rather than a raw <script>, so it
-            isn't hoisted by React and can't disturb hydration of the body. */}
-        <Script id="entrance-arm" strategy="beforeInteractive">
-          {`try{document.documentElement.classList.add('entrance-armed')}catch(e){}`}
-        </Script>
-        {children}
-      </body>
+      {/* The hero wordmark is hidden by default in CSS (see .logo-mask) and only
+          revealed when HomeChrome adds `entrance-go`, so it never flashes in and
+          jumps to hidden — no pre-paint script needed. A CSS fallback reveals it
+          if JS never fires (see globals.css). */}
+      <body>{children}</body>
     </html>
   );
 }

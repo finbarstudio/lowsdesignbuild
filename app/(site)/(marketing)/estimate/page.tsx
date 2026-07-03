@@ -51,9 +51,12 @@ export default async function EstimatePage() {
         </p>
       </section>
 
-      {/* Calculator — gated behind an email (or book a call). Once unlocked it
-          renders full width, with a little extra breathing room L/R. */}
-      <section className={`${PAD} pb-24 sm:pb-32`}>
+      {/* Calculator — gated behind an email (or book a call). The section holds a
+          comfortable min-height so the (short) gate is centred with real breathing
+          room above the footer; once unlocked the calculator fills it. */}
+      <section
+        className={`${PAD} flex min-h-[70svh] flex-col justify-center pb-32 pt-8 sm:pb-48`}
+      >
         <div className="sm:px-4 lg:px-10">
           <EstimateGate calendlyUrl={contact?.calendlyUrl}>
             <EstimateCalculator
