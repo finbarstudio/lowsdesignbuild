@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { site } from "@/app/lib/site";
 import { submitEnquiry } from "@/app/lib/submitEnquiry";
+
+// Same key EstimateGate saves the visitor's email under, so we can prefill it.
+const ESTIMATE_EMAIL_KEY = "lows_estimate_email";
 
 /**
  * An editorial, less-traditional contact form: no boxes — each field is an
@@ -72,6 +75,20 @@ export default function ContactForm({
   accessKey?: string;
 }) {
   const [sent, setSent] = useState<"" | "sent" | "mailto">("");
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Prefill the email from the estimator gate (if they unlocked it earlier).
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(ESTIMATE_EMAIL_KEY);
+      const input = formRef.current?.querySelector<HTMLInputElement>(
+        'input[name="email"]',
+      );
+      if (saved && input && !input.value) input.value = saved;
+    } catch {
+      /* storage disabled — nothing to prefill */
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -94,7 +111,7 @@ export default function ContactForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-11">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-11">
       <div className="grid grid-cols-1 gap-11 sm:grid-cols-2">
         <Field n="01" label="First name" name="firstName" required placeholder="John" />
         <Field n="02" label="Last name" name="lastName" required placeholder="Smith" />

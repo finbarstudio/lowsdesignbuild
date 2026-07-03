@@ -2,6 +2,7 @@ import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 
 import AreaPills from "@/app/components/AreaPills";
+import { CalendlyInline } from "@/app/components/Calendly";
 import ContactForm from "@/app/components/ContactForm";
 import ScrollNudge from "@/app/components/ScrollNudge";
 import ViewProjectsButton from "@/app/components/ViewProjectsButton";
@@ -73,6 +74,18 @@ export default async function ContactPage() {
           </div>
         </div>
       </section>
+
+      {/* Book a call — a Calendly scheduler embedded inline (Sanity-configured). */}
+      {contact?.calendlyUrl && (
+        <section className={`${PAD} pb-24 sm:pb-32`}>
+          <p className="label mb-8 text-center !text-ink">
+            Or book a call
+          </p>
+          <div className="mx-auto max-w-3xl">
+            <CalendlyInline url={contact.calendlyUrl} />
+          </div>
+        </section>
+      )}
     </main>
   );
 }

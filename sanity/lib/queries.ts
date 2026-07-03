@@ -104,6 +104,7 @@ export const CONTACT_QUERY = defineQuery(`
   *[_type == "contact"][0]{
     contactEmail,
     formAccessKey,
+    calendlyUrl,
     areas
   }
 `);

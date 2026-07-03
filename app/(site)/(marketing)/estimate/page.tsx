@@ -2,6 +2,7 @@ import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 
 import EstimateCalculator from "@/app/components/EstimateCalculator";
+import EstimateGate from "@/app/components/EstimateGate";
 import ScrollNudge from "@/app/components/ScrollNudge";
 import WordReveal from "@/app/components/WordReveal";
 import { site } from "@/app/lib/site";
@@ -50,14 +51,17 @@ export default async function EstimatePage() {
         </p>
       </section>
 
-      {/* Calculator — full width, with a little extra breathing room L/R */}
+      {/* Calculator — gated behind an email (or book a call). Once unlocked it
+          renders full width, with a little extra breathing room L/R. */}
       <section className={`${PAD} pb-24 sm:pb-32`}>
         <div className="sm:px-4 lg:px-10">
-          <EstimateCalculator
-            email={email}
-            accessKey={contact?.formAccessKey || undefined}
-            infoOverrides={infoOverrides}
-          />
+          <EstimateGate calendlyUrl={contact?.calendlyUrl}>
+            <EstimateCalculator
+              email={email}
+              accessKey={contact?.formAccessKey || undefined}
+              infoOverrides={infoOverrides}
+            />
+          </EstimateGate>
         </div>
       </section>
     </main>

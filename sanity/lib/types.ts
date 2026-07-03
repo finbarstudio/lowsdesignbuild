@@ -88,6 +88,7 @@ export interface Family {
 export interface Contact {
   contactEmail: string | null;
   formAccessKey: string | null;
+  calendlyUrl: string | null;
   areas: string[] | null;
 }
 

@@ -42,7 +42,11 @@ export default function DockingCta() {
 
     const measure = () => {
       const p = pill();
-      if (p) setSize({ w: p.offsetWidth, h: p.offsetHeight });
+      if (!p) return;
+      const r = p.getBoundingClientRect();
+      // ceil so the reserved slot never shrinks the pill below its natural width
+      // (a sub-pixel constraint used to wrap the label onto a second line).
+      setSize({ w: Math.ceil(r.width), h: Math.ceil(r.height) });
     };
 
     let raf = 0;
@@ -108,11 +112,13 @@ export default function DockingCta() {
           bottom: 20px;
           z-index: 30;
         }
-        /* Docked: settles into the slot and scrolls away with the footer. */
+        /* Docked: settles into the slot and scrolls away with the footer.
+           Anchored to the RIGHT edge (= the footer gutter = the floating button's
+           right edge) so the float→dock swap never shifts sideways. */
         .dock-cta__btn.is-docked {
           position: absolute;
           top: 0;
-          left: 0;
+          right: 0;
         }
         @media (min-width: 640px) {
           .dock-cta__btn.is-floating { right: 28px; bottom: 28px; }
