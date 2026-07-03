@@ -72,21 +72,28 @@ export default function EstimateGate({
 
   return (
     <div className={FORM_GRID}>
-      {/* Left — unlock the estimator with your email. On mobile it sits in a
-          subtle card so it separates cleanly from the book-a-call column. */}
-      <div className={`flex flex-col ${FORM_CARD}`}>
-        <p className="label mb-6 !text-ink">View the estimator</p>
+      {/* Left — the ESTIMATOR card: this is the tool we want visitors to see,
+          so it carries a gold accent — a slow, subtle breathing gold border. */}
+      <div className={`estimator-card flex flex-col ${FORM_CARD}`}>
+        <style>{`
+          .estimator-card { animation: est-breathe 3.4s ease-in-out infinite; }
+          @keyframes est-breathe {
+            0%, 100% { border-color: rgba(169,126,31,.4); box-shadow: 0 0 0 0 rgba(169,126,31,0); }
+            50% { border-color: rgba(169,126,31,.85); box-shadow: 0 0 24px -8px rgba(169,126,31,.35); }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .estimator-card { animation: none; border-color: rgba(169,126,31,.6); }
+          }
+        `}</style>
+        <p className="label mb-6 !text-copper-deep">View the estimator</p>
         <p className="max-w-sm text-base leading-relaxed text-muted">
           Pop in your name and email and we&apos;ll unlock the instant estimate
           calculator — we&apos;ll use them to send your figures across.
         </p>
         <form onSubmit={submit} className="mt-8 space-y-8">
           <label className="group block">
-            <span className="mb-3 flex items-center gap-3">
-              <span className="font-mono text-xs text-tertiary">01</span>
-              <span className="text-sm font-semibold tracking-tight text-ink">
-                Name
-              </span>
+            <span className="mb-3 block text-sm font-semibold tracking-tight text-ink">
+              Name
             </span>
             <div className="relative">
               <input
@@ -104,11 +111,8 @@ export default function EstimateGate({
             </div>
           </label>
           <label className="group block">
-            <span className="mb-3 flex items-center gap-3">
-              <span className="font-mono text-xs text-tertiary">02</span>
-              <span className="text-sm font-semibold tracking-tight text-ink">
-                Email address
-              </span>
+            <span className="mb-3 block text-sm font-semibold tracking-tight text-ink">
+              Email address
             </span>
             <div className="relative">
               <input

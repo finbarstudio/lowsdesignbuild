@@ -12,10 +12,9 @@ const ESTIMATE_NAME_KEY = "lows_estimate_name";
 /**
  * An editorial, less-traditional contact form: no boxes — each field is an
  * oversized line of type over a hairline that a gold underline draws across on
- * focus, prefixed with a monospace index. The submit fills gold on hover.
+ * focus. The submit fills gold on hover.
  */
 function Field({
-  n,
   label,
   name,
   type = "text",
@@ -23,7 +22,6 @@ function Field({
   placeholder,
   textarea = false,
 }: {
-  n: string;
   label: string;
   name: string;
   type?: string;
@@ -37,11 +35,8 @@ function Field({
     <label className="group block">
       {/* field title kept a level below section headings: sentence case + small,
           matching the calculator form so the two read consistently */}
-      <span className="mb-3 flex items-center gap-3">
-        <span className="font-mono text-xs text-tertiary">{n}</span>
-        <span className="text-sm font-semibold tracking-tight text-ink">
-          {label}
-        </span>
+      <span className="mb-3 block text-sm font-semibold tracking-tight text-ink">
+        {label}
       </span>
       <div className="relative">
         {textarea ? (
@@ -122,22 +117,20 @@ export default function ContactForm({
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-11">
       <div className="grid grid-cols-1 gap-11 sm:grid-cols-2">
-        <Field n="01" label="First name" name="firstName" required placeholder="John" />
-        <Field n="02" label="Last name" name="lastName" required placeholder="Smith" />
+        <Field label="First name" name="firstName" required placeholder="John" />
+        <Field label="Last name" name="lastName" required placeholder="Smith" />
       </div>
       <div className="grid grid-cols-1 gap-11 sm:grid-cols-2">
         <Field
-          n="03"
           label="Email"
           name="email"
           type="email"
           required
           placeholder="john@email.com"
         />
-        <Field n="04" label="Phone" name="phone" placeholder="Optional" />
+        <Field label="Phone" name="phone" placeholder="Optional" />
       </div>
       <Field
-        n="05"
         label="Your project"
         name="message"
         required

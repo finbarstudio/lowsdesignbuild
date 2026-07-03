@@ -70,15 +70,11 @@ export function CalendlyMock() {
   const days = Array.from({ length: 35 }, (_, i) => i - 2); // pad to a month grid
   const open = new Set([4, 5, 11, 12, 18, 19, 25, 26]); // "available" days
   return (
-    // On mobile this sits INSIDE the page's FORM_CARD (which carries the "Or
-    // book a call" label), so it goes borderless + flush there — the page label
-    // is the single heading; no duplicate title inside.
-    <div className="grid gap-0 overflow-hidden rounded-sm border border-line bg-background max-sm:rounded-none max-sm:border-0 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-      {/* left: host / meeting info */}
-      <div className="flex flex-col gap-4 border-b border-line p-7 max-sm:px-0 max-sm:pt-0 md:border-b-0 md:border-r">
-        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-copper-deep">
-          Lows Design &amp; Build
-        </span>
+    // Sits INSIDE the page's FORM_CARD (which carries the "Or book a call"
+    // label), so it has no border of its own — no double frame.
+    <div className="grid gap-0 bg-background md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+      {/* left: meeting info */}
+      <div className="flex flex-col gap-4 border-b border-line pb-6 md:border-b-0 md:border-r md:pb-0 md:pr-7">
         <ul className="mt-1 space-y-2 text-sm text-muted">
           <li>◷ 30 min</li>
           <li>▢ Video call / phone</li>
@@ -90,7 +86,7 @@ export function CalendlyMock() {
         </p>
       </div>
       {/* right: a month calendar */}
-      <div className="p-7 max-sm:px-0 max-sm:pb-0">
+      <div className="pt-6 md:pl-7 md:pt-0">
         <div className="mb-4 flex items-center justify-between">
           <span className="text-sm font-semibold">Select a day</span>
           <span className="font-mono text-xs text-muted">‹ &nbsp; month &nbsp; ›</span>
