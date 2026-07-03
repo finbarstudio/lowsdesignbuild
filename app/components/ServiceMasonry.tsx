@@ -20,6 +20,8 @@ function useInView(): [React.RefObject<HTMLDivElement | null>, boolean] {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // Desktop reveals a touch earlier in the scroll than mobile.
+    const mobile = window.matchMedia("(max-width: 639px)").matches;
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -29,7 +31,10 @@ function useInView(): [React.RefObject<HTMLDivElement | null>, boolean] {
           }
         });
       },
-      { threshold: 0.25, rootMargin: "0px 0px -22% 0px" },
+      {
+        threshold: mobile ? 0.25 : 0.15,
+        rootMargin: mobile ? "0px 0px -22% 0px" : "0px 0px -8% 0px",
+      },
     );
     io.observe(el);
     return () => io.disconnect();

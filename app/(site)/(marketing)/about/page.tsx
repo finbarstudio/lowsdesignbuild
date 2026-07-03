@@ -1,4 +1,4 @@
-import { FOOT, PAD } from "@/app/lib/ui";
+import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -161,12 +161,11 @@ export default async function AboutPage() {
           with equal padding above and below */}
       <ViewProjectsButton className="py-20 sm:py-24" />
 
-      {/* Quality guarantee CTA — generous, near-symmetric breathing room above
-          and below (FOOT = pb-[18vh] handles the footer side). The old
-          min-h + justify-center setup let the big bottom padding shove the
-          content up, which read as barely any padding at all. */}
+      {/* Quality guarantee CTA — generous breathing room above, and an extra-
+          deep gap below (28vh, like the estimate page) so the footer never
+          crowds the closing statement. */}
       <section
-        className={`${PAD} ${FOOT} pt-[14vh] text-center sm:pt-[16vh]`}
+        className={`${PAD} pb-[28vh] pt-[14vh] text-center sm:pt-[16vh]`}
       >
         <Reveal>
           <p className="label !text-tertiary">{about?.qualityTitle || "Our quality guarantee"}</p>
