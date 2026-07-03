@@ -71,11 +71,17 @@ function Member({ m, delay = 0 }: { m: TeamMember; delay?: number }) {
   const [bioH, setBioH] = useState(0);
   const bioRef = useRef<HTMLParagraphElement>(null);
 
+  // ResizeObserver (not a one-shot measure): the bio's height changes after
+  // mount — web-font swap, column width settling — and a stale height clips
+  // the bio's tail off against the card edge.
   useEffect(() => {
-    const measure = () => setBioH(bioRef.current?.offsetHeight ?? 0);
+    const el = bioRef.current;
+    if (!el) return;
+    const measure = () => setBioH(el.offsetHeight);
     measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
   }, [m.bio]);
 
   const open = hover || tapped;
@@ -126,6 +132,7 @@ function Member({ m, delay = 0 }: { m: TeamMember; delay?: number }) {
       </div>
 
       <div
+        className="relative"
         style={{
           transform: open ? `translateY(-${lift}px)` : "translateY(0)",
           opacity: inView ? 1 : 0,
@@ -134,21 +141,25 @@ function Member({ m, delay = 0 }: { m: TeamMember; delay?: number }) {
       >
         <p className="mt-4 text-base font-medium">{m.name}</p>
         <p className="text-sm text-muted">{m.role}</p>
-      </div>
 
-      {m.bio ? (
-        <div
-          className="absolute inset-x-0 bottom-0"
-          style={{
-            opacity: open ? 1 : 0,
-            transition: `opacity 0.45s ease ${open ? "0.12s" : "0s"}`,
-          }}
-        >
-          <p ref={bioRef} className="pt-2 text-sm leading-relaxed text-muted">
-            {m.bio}
-          </p>
-        </div>
-      ) : null}
+        {/* bio: anchored to the name block (top-full → its top is stuck to the
+            bottom of the name/role, riding up with it), and the text rises up
+            out of a mask at its bottom edge rather than fading in. */}
+        {m.bio ? (
+          <div className="absolute inset-x-0 top-full overflow-hidden">
+            <p
+              ref={bioRef}
+              className="pt-2 text-sm leading-relaxed text-muted"
+              style={{
+                transform: open ? "translateY(0)" : "translateY(103%)",
+                transition: `transform 0.6s ${EASE} ${open ? "0.1s" : "0s"}`,
+              }}
+            >
+              {m.bio}
+            </p>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -175,14 +186,19 @@ function DirectorsPair({
   const bio1 = useRef<HTMLParagraphElement>(null);
   const [bioH, setBioH] = useState(0);
 
+  // ResizeObserver on both bios (see Member) — a stale height clips the taller
+  // bio's tail off against the card edge once fonts/layout settle.
   useEffect(() => {
+    const els = [bio0.current, bio1.current].filter(Boolean) as HTMLElement[];
+    if (!els.length) return;
     const measure = () =>
       setBioH(
         Math.max(bio0.current?.offsetHeight ?? 0, bio1.current?.offsetHeight ?? 0),
       );
     measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    const ro = new ResizeObserver(measure);
+    els.forEach((el) => ro.observe(el));
+    return () => ro.disconnect();
   }, [directors]);
 
   useEffect(() => {
@@ -258,7 +274,7 @@ function DirectorsPair({
                   role + bio move together into the single-column stack below when
                   expanded, so this above-photo name fades out (no duplication). */}
               <div
-                className={i === 0 ? "sm:pr-3" : "sm:pl-3"}
+                className={`relative ${i === 0 ? "sm:pr-3" : "sm:pl-3"}`}
                 style={{
                   transform: !isMobile && open ? `translateY(-${lift}px)` : "translateY(0)",
                   opacity: inView ? (isMobile && open ? 0 : 1) : 0,
@@ -269,27 +285,30 @@ function DirectorsPair({
               >
                 <p className="mt-4 text-base font-medium">{d.name}</p>
                 <p className="text-sm text-muted">{d.role}</p>
-              </div>
 
-              {/* desktop: bio reveals in the clipped space under each half */}
-              {d.bio ? (
-                <div
-                  className={`absolute inset-x-0 bottom-0 hidden sm:block ${
-                    i === 0 ? "sm:pr-3" : "sm:pl-3"
-                  }`}
-                  style={{
-                    opacity: open ? 1 : 0,
-                    transition: `opacity 0.45s ease ${open ? "0.12s" : "0s"}`,
-                  }}
-                >
-                  <p
-                    ref={i === 0 ? bio0 : bio1}
-                    className="pt-6 text-sm leading-relaxed text-muted"
+                {/* desktop: bio anchored under the name/role (top-full — its
+                    top stays stuck to them as they lift), text rising up out of
+                    a mask at its bottom edge. Absolute children ignore the
+                    container's padding, so the column inset is re-applied. */}
+                {d.bio ? (
+                  <div
+                    className={`absolute inset-x-0 top-full hidden overflow-hidden sm:block ${
+                      i === 0 ? "sm:pr-3" : "sm:pl-3"
+                    }`}
                   >
-                    {d.bio}
-                  </p>
-                </div>
-              ) : null}
+                    <p
+                      ref={i === 0 ? bio0 : bio1}
+                      className="pt-6 text-sm leading-relaxed text-muted"
+                      style={{
+                        transform: open ? "translateY(0)" : "translateY(103%)",
+                        transition: `transform 0.6s ${EASE} ${open ? "0.1s" : "0s"}`,
+                      }}
+                    >
+                      {d.bio}
+                    </p>
+                  </div>
+                ) : null}
+              </div>
             </div>
           );
         })}
