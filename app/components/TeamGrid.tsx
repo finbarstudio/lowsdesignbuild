@@ -152,7 +152,7 @@ function Member({ m, delay = 0 }: { m: TeamMember; delay?: number }) {
               className="pt-2 text-sm leading-relaxed text-muted"
               style={{
                 transform: open ? "translateY(0)" : "translateY(103%)",
-                transition: `transform 0.6s ${EASE} ${open ? "0.1s" : "0s"}`,
+                transition: `transform 0.6s ${EASE}`,
               }}
             >
               {m.bio}
@@ -298,10 +298,10 @@ function DirectorsPair({
                   >
                     <p
                       ref={i === 0 ? bio0 : bio1}
-                      className="pt-6 text-sm leading-relaxed text-muted"
+                      className="pt-2 text-sm leading-relaxed text-muted"
                       style={{
                         transform: open ? "translateY(0)" : "translateY(103%)",
-                        transition: `transform 0.6s ${EASE} ${open ? "0.1s" : "0s"}`,
+                        transition: `transform 0.6s ${EASE}`,
                       }}
                     >
                       {d.bio}
