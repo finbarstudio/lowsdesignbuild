@@ -79,7 +79,7 @@ export default function Header({ projectCount }: { projectCount?: number }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className="group"
+                className="lu-group group"
                 onClick={(e) => {
                   if (isCurrent) {
                     e.preventDefault();

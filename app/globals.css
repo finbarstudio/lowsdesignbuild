@@ -100,6 +100,12 @@ h1, h2, h3, .display {
 .link-active::after {
   transform: scaleX(1);
 }
+/* When the underline sits inside a hover group (e.g. a nav link with a
+   superscript count beside the text), draw it on the whole group's hover — so
+   hovering the superscript triggers it too, not just the text span. */
+.lu-group:hover .link-underline::after {
+  transform: scaleX(1);
+}
 
 /* The standard action-link token — Space Mono, uppercase, tracked. Pair with
    .link-underline (and .is-tracked) for the hover underline. Used for every

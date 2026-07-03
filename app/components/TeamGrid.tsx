@@ -218,7 +218,9 @@ function DirectorsPair({
                     width: "200%",
                     [side]: 0,
                     transform: inView ? "translateY(0)" : "translateY(101%)",
-                    transition: `transform 0.9s ${RISE} ${i * 60}ms`,
+                    // No per-half stagger: both halves rise in perfect sync so the
+                    // split photo reads as ONE image lifting in, not two.
+                    transition: `transform 0.9s ${RISE}`,
                   }}
                 />
               </div>
@@ -244,7 +246,7 @@ function DirectorsPair({
                 >
                   <p
                     ref={i === 0 ? bio0 : bio1}
-                    className="pt-2 text-sm leading-relaxed text-muted"
+                    className="pt-6 text-sm leading-relaxed text-muted"
                   >
                     {d.bio}
                   </p>

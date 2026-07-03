@@ -42,6 +42,8 @@ export default function ProcessFlow({
 
   return (
     <>
+      {/* ProcessPath owns its own sticky "Our process" title and fades it out as
+          the timeline ends, so it is gone before the button pins below. */}
       <ProcessPath steps={steps} onLanded={handleLanded} />
       <LandedContext.Provider value={landed}>{button}</LandedContext.Provider>
     </>

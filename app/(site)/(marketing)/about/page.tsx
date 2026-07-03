@@ -123,8 +123,16 @@ export default async function AboutPage() {
         </h1>
       </section>
 
-      {/* Story — centred, no title. Uniform weight throughout (no lead-in / big
-          first letter); lights up word-by-word as you scroll. */}
+      {/* What we do — a 3-column grid (~70vw), centred heading above. */}
+      <section className={`${PAD} py-24 sm:py-32`}>
+        <h2 className="label mb-10 text-center !text-ink sm:mb-14">
+          What we do
+        </h2>
+        <ServiceMasonry services={serviceCards} />
+      </section>
+
+      {/* Story — centred, no title. Sits BELOW What we do. Uniform weight
+          throughout (no lead-in / big first letter); lights up word-by-word. */}
       <section className={`${PAD} py-24 text-center sm:py-32`}>
         <div className="mx-auto max-w-2xl">
           <ScrollText
@@ -132,14 +140,6 @@ export default async function AboutPage() {
             className="text-2xl leading-snug sm:text-3xl"
           />
         </div>
-      </section>
-
-      {/* What we do — a 3-column grid (~70vw), centred heading above. */}
-      <section className={`${PAD} py-24 sm:py-32`}>
-        <h2 className="label mb-10 text-center !text-ink sm:mb-14">
-          What we do
-        </h2>
-        <ServiceMasonry services={serviceCards} />
       </section>
 
       {/* Team (moved here from the home page; swapped with Our process) */}

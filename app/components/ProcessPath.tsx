@@ -39,15 +39,19 @@ const LINE_LEN = Y1 - Y0;
 
 export default function ProcessPath({
   steps = fallbackSteps,
+  title = "Our process",
   onLanded,
 }: {
   steps?: Step[];
+  title?: string;
   onLanded?: (landed: boolean) => void;
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const trailRef = useRef<SVGLineElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const nodeRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const [active, setActive] = useState(-1);
 
   useEffect(() => {
@@ -64,6 +68,16 @@ export default function ProcessPath({
 
       // Scroll progress 0..1: where viewport centre sits along the column.
       const progress = clamp((vh * 0.5 - r.top) / r.height, 0, 1);
+
+      // Fade the sticky title out as the timeline ends, so it is fully gone before
+      // the View projects button pins below (rather than lingering at the top).
+      if (titleRef.current) {
+        titleRef.current.style.opacity = clamp(
+          1 - (progress - 0.78) / 0.12,
+          0,
+          1,
+        ).toFixed(3);
+      }
 
       // Reveal the gold trail from the top down (full dash hidden at 0 → none at
       // 1) — the trail lives in the (non-uniformly stretched) SVG.
@@ -93,16 +107,27 @@ export default function ProcessPath({
         onLanded?.(landed);
       }
 
-      // Per-step opacity + which step is "active" (last one above centre).
-      let a = -1;
-      stepRefs.current.forEach((el, i) => {
+      // Step readability: fade each block in from the bottom and out near the top
+      // so it separates from the sticky title.
+      stepRefs.current.forEach((el) => {
         if (!el) return;
         const er = el.getBoundingClientRect();
         const c = er.top + er.height / 2; // step centre, viewport coords
         const topFade = clamp((c - vh * 0.15) / (vh * 0.2), 0, 1);
         const botFade = clamp((vh * 1.02 - c) / (vh * 0.28), 0, 1);
         el.style.opacity = Math.min(topFade, botFade).toFixed(3);
-        if (c <= vh * 0.5) a = i;
+      });
+
+      // Node colouring is synced to the DOT, not the viewport: a step node turns
+      // gold the moment the travelling dot (at `progress` along the column)
+      // reaches that node's own position on the line — so the colour tracks the
+      // dot exactly instead of lagging behind it.
+      let a = -1;
+      nodeRefs.current.forEach((el, i) => {
+        if (!el) return;
+        const nr = el.getBoundingClientRect();
+        const frac = (nr.top + nr.height / 2 - r.top) / r.height;
+        if (progress >= frac - 0.003) a = i;
       });
       if (a !== curActive) {
         curActive = a;
@@ -128,9 +153,18 @@ export default function ProcessPath({
 
   return (
     <div ref={wrapRef} className="relative mx-auto max-w-xl">
+      {/* Sticky section title — pinned while you read the steps, then faded out by
+          the rAF as the timeline ends (so it is gone before the button pins). */}
+      <h2
+        ref={titleRef}
+        className="label sticky top-24 z-20 text-center !text-ink"
+      >
+        {title}
+      </h2>
+
       {/* Lead space so the line begins well below the sticky title, and its top
           dissolves into that space (see the mask gradient below). */}
-      <div aria-hidden className="h-[22vh] sm:h-[26vh]" />
+      <div aria-hidden className="h-[16vh] sm:h-[20vh]" />
 
       {/* The line as ONE SVG: faint hairline (top-faded via mask) + gold trail
           revealed top-down + the travelling dot on the trail's leading edge.
@@ -143,11 +177,12 @@ export default function ProcessPath({
       >
         <defs>
           {/* Top-fade: transparent at the very top → solid by ~14% down. Used as
-              a mask so BOTH the hairline and the gold dissolve near the title. */}
+              a luminance mask, so the visible part must be WHITE (black hides the
+              line entirely — that was the "no line" bug). */}
           <linearGradient id="pp-fade" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#000" stopOpacity="0" />
-            <stop offset="0.14" stopColor="#000" stopOpacity="1" />
-            <stop offset="1" stopColor="#000" stopOpacity="1" />
+            <stop offset="0" stopColor="#fff" stopOpacity="0" />
+            <stop offset="0.14" stopColor="#fff" stopOpacity="1" />
+            <stop offset="1" stopColor="#fff" stopOpacity="1" />
           </linearGradient>
           <mask id="pp-mask">
             <rect x="0" y="0" width={VB_W} height={VB_H} fill="url(#pp-fade)" />
@@ -189,18 +224,12 @@ export default function ProcessPath({
 
       {/* travelling dot — the leading edge of the gold fill, as an HTML element
           so it stays perfectly round (an in-SVG circle would be squashed by
-          preserveAspectRatio="none"). A soft glow ring reads as light flowing
-          down the line. Position is driven per-frame via `top` (see the rAF). */}
+          preserveAspectRatio="none"). A clean solid gold dot, no glow. Position
+          is driven per-frame via `top` (see the rAF). */}
       <div
         ref={dotRef}
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-0 z-10 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tertiary opacity-0"
-        style={{
-          // gold halo — same gold as --tertiary (#a97e1f), matching the button's
-          // rgba(169,126,31,…) shadows so the accent is consistent.
-          boxShadow:
-            "0 0 0 4px rgba(169, 126, 31, 0.18), 0 0 10px 2px rgba(169, 126, 31, 0.45)",
-        }}
       />
 
       <div className="flex flex-col">
@@ -214,7 +243,10 @@ export default function ProcessPath({
           >
             {/* node on the line */}
             <span
-              className={`relative z-10 mb-6 block h-3 w-3 rounded-full border-2 transition-colors duration-500 ${
+              ref={(el) => {
+                nodeRefs.current[i] = el;
+              }}
+              className={`relative z-10 mb-6 block h-3 w-3 rounded-full border-2 transition-colors duration-300 ${
                 active >= i
                   ? "border-tertiary bg-tertiary"
                   : "border-[var(--line)] bg-background"

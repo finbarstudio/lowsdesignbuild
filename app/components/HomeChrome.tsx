@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import InstantQuoteButton from "@/app/components/InstantQuoteButton";
 import Logomark from "@/app/components/Logomark";
 import MobileMenu from "@/app/components/MobileMenu";
 import { nav, site } from "@/app/lib/site";
@@ -183,8 +182,6 @@ export default function HomeChrome({
       entered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
     } ${delay}`;
 
-  const atFooter = mode === "footer";
-
   return (
     <>
       <header
@@ -213,7 +210,7 @@ export default function HomeChrome({
             className={`ml-auto hidden items-center gap-x-7 font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-300 sm:flex sm:text-sm ${textColor} ${item("[transition-delay:140ms]")}`}
           >
             {nav.map((navItem) => (
-              <Link key={navItem.href} href={navItem.href} className="group">
+              <Link key={navItem.href} href={navItem.href} className="lu-group group">
                 <span className="link-underline is-tracked">
                   {navItem.label}
                 </span>
@@ -245,24 +242,8 @@ export default function HomeChrome({
       {/* mobile menu — right drawer */}
       <MobileMenu open={open} onClose={() => setOpen(false)} />
 
-      {/* "Get an instant quote" — floating Spotlight CTA to the estimator. At
-          the footer it fades + drops away (pointer-events off) and the footer's
-          own static InstantQuoteButton (#footer-cta-slot) takes over — a pure
-          crossfade hand-off, no rect-measuring. Also folds into the staggered
-          entrance via `entered`. */}
-      <div
-        className={`fixed bottom-5 right-5 z-30 transition-[opacity,transform] duration-[600ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] sm:bottom-7 sm:right-7 ${
-          atFooter
-            ? "pointer-events-none translate-y-3 opacity-0"
-            : entered
-              ? "translate-y-0 opacity-100"
-              : "translate-y-3 opacity-0"
-        }`}
-        style={{ transitionDelay: atFooter ? "0ms" : "280ms" }}
-        aria-hidden={atFooter}
-      >
-        <InstantQuoteButton />
-      </div>
+      {/* The "Get an instant quote" CTA is a single instance that lives in the
+          footer and floats/docks itself (see DockingCta) — no copy here. */}
     </>
   );
 }

@@ -155,27 +155,26 @@ export default async function HomePage() {
             StickySlogan) as this rises, instead of being hidden by an opaque
             panel. The page body is the same paper colour, so it reads identically
             once the slogan is gone. Followed by a View projects button. */}
+        {/* No bottom padding: the Instagram section immediately follows the pin
+            stage, so as the button releases the opaque Instagram panel scrolls
+            straight up over it. */}
         <section
           data-featured-first
-          className={`${PAD} relative z-10 pb-20 pt-28 sm:pb-28 sm:pt-44`}
+          className={`${PAD} relative z-10 pt-28 sm:pt-44`}
         >
-          <h2 className="label sticky top-24 z-20 text-center !text-ink">
-            Our process
-          </h2>
-          {/* ProcessPath (client) owns the travelling dot and shares a "landed"
-              signal; it renders ProcessFlow, which slots the async
-              ViewProjectsButton so the line reads as flowing into the button
-              when the dot lands. Space below the button is doubled. */}
+          {/* ProcessPath (client) owns the sticky "Our process" title (fading it
+              out as the timeline ends), the travelling dot, and a shared "landed"
+              signal; ProcessFlow slots the async ViewProjectsButton so the gold
+              traces into the button when the dot lands. */}
           <ProcessFlow
             steps={steps}
             button={
               // Pin stage: a short, dedicated containing block for the sticky
-              // button. The button pins at 40vh and is held for ~one viewport of
-              // scroll (the stage height) while it grows, then releases as the
-              // Instagram section rises up. The stage height replaces the old big
-              // bottom margin, so total scroll length is about the same. NOTE:
-              // never give this stage overflow/transform — either kills the pin.
-              <div className="vp-pin-stage mt-16 h-[80vh] sm:mt-24 sm:h-[95vh]">
+              // button. The button pins at 40vh and is held for a short beat while
+              // it grows + the gold outline traces on, then releases as the
+              // Instagram section scrolls up over it. NOTE: never give this stage
+              // overflow/transform — either kills the pin.
+              <div className="vp-pin-stage mt-14 h-[52vh] sm:mt-20 sm:h-[58vh]">
                 <ViewProjectsButton className="sticky top-[40vh]" />
               </div>
             }

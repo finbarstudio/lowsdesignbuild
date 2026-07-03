@@ -1,4 +1,4 @@
-import InstantQuoteButton from "@/app/components/InstantQuoteButton";
+import DockingCta from "@/app/components/DockingCta";
 import Wordmark from "@/app/components/Wordmark";
 import { areas, nav, site } from "@/app/lib/site";
 
@@ -21,12 +21,11 @@ export default function Footer() {
         <div className="c-ft-marquee__lead">
           <Wordmark className="c-ft-marquee__wm aspect-[121.71/55.33] w-[clamp(190px,32vw,400px)] text-tertiary" />
 
-          {/* Landing slot for the floating "Get an instant quote" CTA. The fixed
-              CTA (HomeChrome) glides in and cross-fades into this static one as
-              you reach the footer; on inner pages (no HomeChrome) this is simply
-              the footer's own CTA. */}
+          {/* The single "Get an instant quote" CTA. On the home page it floats
+              bottom-right while scrolling and docks into this slot at the footer
+              (see DockingCta); on inner pages it just sits here statically. */}
           <div id="footer-cta-slot" className="c-ft-marquee__cta-slot">
-            <InstantQuoteButton />
+            <DockingCta />
           </div>
         </div>
 
@@ -36,7 +35,9 @@ export default function Footer() {
             <ul className="c-ft-marquee__list">
               {nav.map((item) => (
                 <li key={item.href}>
-                  <a href={item.href}>{item.label}</a>
+                  <a className="link-underline" href={item.href}>
+                    {item.label}
+                  </a>
                 </li>
               ))}
             </ul>
@@ -54,22 +55,38 @@ export default function Footer() {
           <div className="c-ft-marquee__col c-ft-marquee__col--contact">
             <h2 className="c-ft-marquee__ch">Get in touch</h2>
             <address className="c-ft-marquee__addr">
-              <a className="c-ft-marquee__contact" href={`mailto:${site.email}`}>
+              <a
+                className="c-ft-marquee__contact link-underline"
+                href={`mailto:${site.email}`}
+              >
                 {site.email}
               </a>
-              <a className="c-ft-marquee__contact" href={site.phoneHref}>
+              <a
+                className="c-ft-marquee__contact link-underline"
+                href={site.phoneHref}
+              >
                 {site.phone}
               </a>
               <span className="c-ft-marquee__place">South London</span>
             </address>
             <ul className="c-ft-marquee__social" aria-label="Social">
               <li>
-                <a href={site.instagram} target="_blank" rel="noopener noreferrer">
+                <a
+                  className="link-underline"
+                  href={site.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Instagram
                 </a>
               </li>
               <li>
-                <a href={site.facebook} target="_blank" rel="noopener noreferrer">
+                <a
+                  className="link-underline"
+                  href={site.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Facebook
                 </a>
               </li>
@@ -210,22 +227,19 @@ const css = `
 .c-ft-marquee__list, .c-ft-marquee__social{ list-style:none; margin:0; padding:0; }
 .c-ft-marquee__list li{margin:0 0 11px;}
 .c-ft-marquee__list--plain li{ font-size:14px; line-height:1.4; color:var(--ink); }
+/* Links use the shared .link-underline token (a 1px line tight under the text,
+   drawn left→right on hover) — same as the top nav, cropped to the text. */
 .c-ft-marquee__list a,
 .c-ft-marquee__contact,
 .c-ft-marquee__social a{
-  --ft-marquee-uh:0%;
-  position:relative; display:inline-block;
+  display:inline-block;
   text-decoration:none; color:var(--ink);
   font-size:14px; line-height:1.4; letter-spacing:0.01em;
-  background-image:linear-gradient(var(--copper),var(--copper));
-  background-repeat:no-repeat;
-  background-position:0 100%;
-  background-size:var(--ft-marquee-uh) 1px;
-  transition:background-size .38s cubic-bezier(.2,.7,.2,1), color .3s ease;
+  transition:color .3s ease;
 }
 .c-ft-marquee__list a:hover,
 .c-ft-marquee__contact:hover,
-.c-ft-marquee__social a:hover{--ft-marquee-uh:100%; color:var(--copper-deep);}
+.c-ft-marquee__social a:hover{color:var(--copper-deep);}
 
 .c-ft-marquee__addr{font-style:normal; display:flex; flex-direction:column; gap:11px; margin-bottom:22px;}
 .c-ft-marquee__place{font-size:14px; color:var(--muted); letter-spacing:0.01em;}

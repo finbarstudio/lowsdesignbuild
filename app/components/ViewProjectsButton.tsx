@@ -217,11 +217,11 @@ const css = `
    is the dot arriving. Additive: without a ProcessFlow provider
    .vp-flow--landed never applies, so the button is unaffected.
    ============================================================ */
-/* position:relative anchors the ::before dot; the scale (driven per-frame via
-   --vp-grow by VpFlowHighlight while the button is pinned) grows the whole pill.
-   The scale lives HERE on the wrapper, while the pin (position:sticky) lives on
-   the button's outer flex row, and the hover lift lives on .vp — three separate
-   transform contexts, so none of them clobber the others. */
+/* position:relative anchors the trace SVG overlay; the scale (driven per-frame
+   via --vp-grow by VpFlowHighlight while the button is pinned) grows the whole
+   pill. The scale lives HERE on the wrapper, while the pin (position:sticky)
+   lives on the button's outer flex row, and the hover lift lives on .vp — three
+   separate transform contexts, so none of them clobber the others. */
 .vp-flow {
   position: relative;
   display: inline-flex;
@@ -231,63 +231,44 @@ const css = `
   transition: transform 0.12s linear;
   will-change: transform;
 }
-.vp-flow--landed .vp {
-  border-color: var(--tertiary);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(169, 126, 31, 0.22),
-              0 0 0 1px var(--tertiary);
-}
+/* Trace variant (home only): the pill carries NO visible outline of its own —
+   the gold SVG trace is the only outline, drawn on when the dot lands. No glow. */
+.vp-flow--trace .vp { border-color: transparent; }
 .vp-flow--landed .vp__label { color: var(--copper-deep); }
 
-/* HIT-AND-GO dot: one shot when vp-flow--landed is added. It drops onto the
-   pill's top edge (HIT — the pill is already going gold), holds for a beat, then
-   continues DOWN through and past the pill and fades (GO). Ends at opacity 0 with
-   animation-fill-mode forwards, so it can never read as parked on the button. */
-.vp-flow::before {
-  content: "";
+/* OUTLINE TRACE: an SVG overlay sized to the pill (two half-paths, top-centre →
+   each side → bottom-centre). At rest each path is fully dash-offset (invisible);
+   on landed they draw to offset 0, so the gold outline traces on from the top
+   middle down both sides to the bottom middle. No glow — just the line. */
+.vp-trace {
   position: absolute;
-  left: 50%;
-  top: -0.5rem;
-  width: 0.625rem;
-  height: 0.625rem;
-  border-radius: 999px;
-  background: var(--tertiary);
-  box-shadow: 0 0 10px 2px rgba(169, 126, 31, 0.45);
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
   pointer-events: none;
+  z-index: 2;
 }
-.vp-flow--landed::before {
-  animation: vp-dot-hitgo 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+.vp-trace__p {
+  fill: none;
+  stroke: var(--tertiary);
+  stroke-width: 1.25px;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
 }
-@keyframes vp-dot-hitgo {
-  0% {
-    transform: translate(-50%, calc(-50% - 1.5rem)) scale(0);
-    opacity: 0;
-  }
-  26% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  } /* HIT — on the pill's top edge */
-  42% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  } /* brief contact hold — the beat the pill turns gold */
-  100% {
-    transform: translate(-50%, calc(-50% + 2.4rem)) scale(0.35);
-    opacity: 0;
-  } /* GO — departs downward through the pill and fades */
+.vp-flow--landed .vp-trace__p {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.45, 0, 0.2, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* No flying dot, no growth animation — the gold border + label (on .vp /
-     .vp__label) still communicate the arrival statically. (The sticky pin is
-     plain positioning, not animation, so it is left as-is.) */
+  /* No growth animation; the trace snaps on without drawing. */
   .vp-flow {
     transform: none;
     transition: none;
   }
-  .vp-flow::before { animation: none; opacity: 0; }
+  .vp-flow--landed .vp-trace__p { transition: none; }
   .vp, .vp__label, .vp__photo { transition-duration: 0.001ms; }
   .vp:focus-visible .vp__photo--1,
   .vp:focus-visible .vp__photo--2,
