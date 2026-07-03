@@ -242,7 +242,9 @@ const css = `
 .c-ft-marquee__contact:hover,
 .c-ft-marquee__social a:hover{color:var(--copper-deep);}
 
-.c-ft-marquee__addr{font-style:normal; display:flex; flex-direction:column; gap:11px; margin-bottom:22px;}
+/* align-items:flex-start — in a flex COLUMN the links would otherwise stretch to
+   the full column width, so their hover underline drew far past the text. */
+.c-ft-marquee__addr{font-style:normal; display:flex; flex-direction:column; align-items:flex-start; gap:11px; margin-bottom:22px;}
 .c-ft-marquee__place{font-size:14px; color:var(--muted); letter-spacing:0.01em;}
 .c-ft-marquee__social{display:flex; flex-wrap:wrap; gap:10px 22px;}
 .c-ft-marquee__social a{font-size:13px;}

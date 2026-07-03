@@ -161,10 +161,12 @@ export default async function AboutPage() {
           with equal padding above and below */}
       <ViewProjectsButton className="py-20 sm:py-24" />
 
-      {/* Quality guarantee CTA — FOOT keeps a generous, consistent gap to the
-          footer (the old sm:py-24 was overriding the bottom padding on desktop) */}
+      {/* Quality guarantee CTA — generous, near-symmetric breathing room above
+          and below (FOOT = pb-[18vh] handles the footer side). The old
+          min-h + justify-center setup let the big bottom padding shove the
+          content up, which read as barely any padding at all. */}
       <section
-        className={`${PAD} ${FOOT} flex min-h-0 flex-col justify-center pt-20 text-center sm:min-h-[80vh] sm:pt-24`}
+        className={`${PAD} ${FOOT} pt-[14vh] text-center sm:pt-[16vh]`}
       >
         <Reveal>
           <p className="label !text-tertiary">Our quality guarantee</p>

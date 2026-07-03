@@ -208,15 +208,17 @@ export default function HomeChrome({
             className={`ml-auto hidden items-center gap-x-7 font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-300 sm:flex sm:text-sm ${textColor}`}
           >
             {nav.map((navItem, i) => (
-              // The clip lives on an INNER span around the label only — never on
-              // the Link — so the superscript count (which sits above the line
-              // box, and lifts further on hover) is never cut off.
+              // The clip lives on an INNER span around the label only (so the
+              // superscript is never cut off), and the Link stays INLINE — not
+              // flex — exactly like Header.tsx, so the <sup> keeps its native
+              // superscript alignment and its hover scale reads identically to
+              // every other nav.
               <Link
                 key={navItem.href}
                 href={navItem.href}
-                className="lu-group group relative flex items-start"
+                className="lu-group group"
               >
-                <span className="inline-flex overflow-hidden pb-1">
+                <span className="inline-flex overflow-hidden pb-1 align-bottom">
                   <span
                     className={`${rise} ${risePos} link-underline is-tracked`}
                     style={{ transitionDelay: `${220 + i * 90}ms` }}

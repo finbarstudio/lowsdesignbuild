@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
+
+import { smoothScrollTop } from "@/app/lib/scrollTop";
 
 /**
  * "Get an instant quote" CTA — the Spotlight design from the button studio.
@@ -21,6 +24,7 @@ export default function InstantQuoteButton({
   className?: string;
 }) {
   const ref = useRef<HTMLAnchorElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     const root = ref.current;
@@ -76,6 +80,14 @@ export default function InstantQuoteButton({
       <Link
         ref={ref}
         href="/estimate"
+        onClick={(e) => {
+          // Already on the estimate page (e.g. the footer button): glide back
+          // up to the estimator instead of a dead same-page navigation.
+          if (pathname === "/estimate") {
+            e.preventDefault();
+            smoothScrollTop();
+          }
+        }}
         className={`btn-spotlight ${className}`}
         aria-label="Get an instant quote"
       >
