@@ -263,6 +263,14 @@ html.entrance-fast .logo-mask > * {
   color: var(--muted);
 }
 
+/* Lock the page to the viewport width — no sideways scroll from transformed /
+   translated elements. overflow-x: clip (not hidden) so position: sticky keeps
+   working everywhere. */
+html,
+body {
+  overflow-x: clip;
+}
+
 /* Lenis smooth scroll */
 html.lenis,
 html.lenis body {

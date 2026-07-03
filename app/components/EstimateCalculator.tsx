@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { site } from "@/app/lib/site";
+import { FORM_CARD } from "@/app/lib/ui";
 import { submitEnquiry } from "@/app/lib/submitEnquiry";
 
 /**
@@ -537,6 +538,8 @@ export default function EstimateCalculator({
 
   return (
     <div>
+      {/* ---- card 1: the calculator itself ---- */}
+      <div className={FORM_CARD}>
       {/* mode tabs */}
       <div className="flex w-fit gap-6 border-b border-tertiary sm:gap-10">
         {(["extension", "loft"] as const).map((m) => (
@@ -671,12 +674,39 @@ export default function EstimateCalculator({
           </div>
         </div>
 
-        {/* ---- lead capture (col 1 / row 2 on desktop; below the estimate on
-            mobile so the range is seen first) ---- */}
-        <div
-          ref={formRef}
-          className="order-3 mt-24 border-t border-line pt-12 sm:mt-32 lg:mt-16 lg:pt-16 lg:col-start-1 lg:row-start-2"
-        >
+        {/* ---- result — col 2, sticky beside the inputs. On mobile it sits
+            below them (the lead form is its own card further down). ---- */}
+        <div className="order-2 self-start lg:col-start-2 lg:row-start-1 lg:sticky lg:top-24">
+          <div className="border-t border-tertiary pt-6">
+            <p className="label !text-tertiary">Estimated budget range</p>
+            <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums sm:text-4xl">
+              {gbp(lower)} – {gbp(upper)}
+            </p>
+            <p className="mt-5 text-xs leading-relaxed text-muted">
+              This estimate is intended as a budget guide only and is not a
+              formal quotation. Final costs will depend on site conditions,
+              design development, planning requirements and specification
+              choices.
+            </p>
+            <span className="mt-7 hidden overflow-hidden sm:block">
+              <button
+                type="button"
+                onClick={scrollToForm}
+                aria-hidden={atForm}
+                tabIndex={atForm ? -1 : 0}
+                style={{ transform: atForm ? "translateY(160%)" : "translateY(0)" }}
+                className="link link-underline is-tracked block w-fit transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+              >
+                Get your estimate
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      {/* ---- card 2: the detailed-estimate lead form, its own card ---- */}
+      <div ref={formRef} className={`${FORM_CARD} mt-8 sm:mt-10`}>
             <p className="label !text-ink">Get your detailed estimate</p>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">
               Send us your details and project and we&apos;ll follow up with a
@@ -746,35 +776,6 @@ export default function EstimateCalculator({
             </form>
         </div>
 
-        {/* ---- result — col 2, spans both rows so it stays sticky beside the
-            inputs *and* the form. On mobile it sits between them. ---- */}
-        <div className="order-2 self-start lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:-mt-16 lg:sticky lg:top-24">
-          <div className="border-t border-tertiary pt-6">
-            <p className="label !text-tertiary">Estimated budget range</p>
-            <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums sm:text-4xl">
-              {gbp(lower)} – {gbp(upper)}
-            </p>
-            <p className="mt-5 text-xs leading-relaxed text-muted">
-              This estimate is intended as a budget guide only and is not a
-              formal quotation. Final costs will depend on site conditions,
-              design development, planning requirements and specification
-              choices.
-            </p>
-            <span className="mt-7 block overflow-hidden">
-              <button
-                type="button"
-                onClick={scrollToForm}
-                aria-hidden={atForm}
-                tabIndex={atForm ? -1 : 0}
-                style={{ transform: atForm ? "translateY(160%)" : "translateY(0)" }}
-                className="link link-underline is-tracked block w-fit transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
-              >
-                Get your estimate
-              </button>
-            </span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

@@ -66,8 +66,8 @@ export default function EstimateGate({
 
   if (unlocked)
     return (
-      // the detailed calculator sits in the same card, at the same width
-      <div className={`mx-auto w-full max-w-6xl ${FORM_CARD}`}>{children}</div>
+      // the calculator + detailed-estimate form card themselves (two cards)
+      <div className="mx-auto w-full max-w-6xl">{children}</div>
     );
 
   return (

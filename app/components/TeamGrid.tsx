@@ -85,8 +85,14 @@ function Member({ m, delay = 0 }: { m: TeamMember; delay?: number }) {
     <div
       ref={cardRef}
       className="relative overflow-hidden"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      // pointer-type guarded: on touch, mouseenter fires on tap and never
+      // leaves, which wedged `open` true — the minus button couldn't close.
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") setHover(true);
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType === "mouse") setHover(false);
+      }}
     >
       {m.bio ? (
         <button
@@ -219,8 +225,12 @@ function DirectorsPair({
     <div
       ref={cardRef}
       className="relative sm:col-span-2"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") setHover(true);
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType === "mouse") setHover(false);
+      }}
     >
       {hasBios ? (
         <button
@@ -236,7 +246,10 @@ function DirectorsPair({
         {directors.map((d, i) => {
           const side = i === 0 ? "left" : "right";
           return (
-            <div key={d.name || i} className="relative overflow-hidden">
+            <div
+              key={d.name || i}
+              className="relative overflow-visible sm:overflow-hidden"
+            >
               {/* shorter on mobile so more of the wide photo's WIDTH reads */}
               <div
                 className="relative h-[34vh] overflow-hidden bg-background sm:h-[50vh]"
