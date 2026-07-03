@@ -13,6 +13,8 @@ export const PROJECTS_QUERY = defineQuery(`
     location,
     category,
     categories,
+    "typeTitles": typeRefs[]->title,
+    "typeTitles": typeRefs[]->title,
     year,
     palette,
     "heroPalette": mainImage.asset->metadata.palette,

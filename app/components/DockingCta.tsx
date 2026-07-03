@@ -9,6 +9,12 @@ import InstantQuoteButton from "@/app/components/InstantQuoteButton";
 // back at where you already are) — there it sits statically in the footer.
 const NO_FLOAT = new Set(["/contact", "/estimate"]);
 
+// Once the CTA has entered in this session, later mounts / client-side
+// navigations should show it INSTANTLY — no fade, no 420ms hold. The staggered
+// entrance is only for the very first paint; re-running it on every navigation
+// is what made the button flash/disappear as you moved between pages.
+let ctaSeen = false;
+
 /**
  * The single "Get an instant quote" button. There is only ONE instance: it lives
  * in the footer's CTA slot, and on every page EXCEPT contact/estimate it floats
@@ -37,8 +43,16 @@ export default function DockingCta() {
   // preloader lifts so it arrives with the rest of the chrome; elsewhere a beat.
   useEffect(() => {
     if (!canFloat) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const reveal = () => {
+      ctaSeen = true;
       setRevealed(true);
+    };
+    // Already shown once this session (or reduced motion) — appear instantly.
+    if (
+      ctaSeen ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      reveal();
       return;
     }
     const lifted = (window as unknown as { __lowsPreloaderLifted?: boolean })
@@ -47,17 +61,17 @@ export default function DockingCta() {
     let b = 0;
     if (pathname === "/" && !lifted) {
       const onDone = () => {
-        a = window.setTimeout(() => setRevealed(true), 300);
+        a = window.setTimeout(reveal, 300);
       };
       window.addEventListener("preloader:done", onDone, { once: true });
-      b = window.setTimeout(() => setRevealed(true), 3200); // fail-open
+      b = window.setTimeout(reveal, 3200); // fail-open
       return () => {
         window.removeEventListener("preloader:done", onDone);
         window.clearTimeout(a);
         window.clearTimeout(b);
       };
     }
-    a = window.setTimeout(() => setRevealed(true), 420);
+    a = window.setTimeout(reveal, 420);
     return () => window.clearTimeout(a);
   }, [canFloat, pathname]);
 
@@ -105,16 +119,25 @@ export default function DockingCta() {
       onScroll();
     };
 
+    // Re-measure + recompute on the next frame too, so a client-side navigation
+    // (new page height, scroll reset to top) re-floats the button instead of
+    // leaving it stuck in the previous page's docked/absolute position — which
+    // read as the CTA "disappearing" until you scrolled.
     measure();
     update();
+    const kick = requestAnimationFrame(() => {
+      measure();
+      update();
+    });
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
+      cancelAnimationFrame(kick);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [canFloat]);
+  }, [canFloat, pathname]);
 
   // Contact / estimate: a plain static button in the footer slot.
   if (!canFloat) return <InstantQuoteButton />;

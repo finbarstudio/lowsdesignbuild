@@ -6,6 +6,7 @@ import { estimatePageType } from "./estimatePage";
 import { familyType } from "./family";
 import { homePageType } from "./homePage";
 import { projectType } from "./project";
+import { projectCategoryType } from "./projectCategory";
 import { projectsPageType } from "./projectsPage";
 import { serviceType } from "./service";
 
@@ -19,6 +20,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     familyType,
     projectType,
     projectsPageType,
+    projectCategoryType,
     estimatePageType,
     contactType,
   ],

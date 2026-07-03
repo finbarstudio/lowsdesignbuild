@@ -10,6 +10,7 @@ export interface ProjectListItem {
   location: string | null;
   category: string | null;
   categories?: string[] | null;
+  typeTitles?: (string | null)[] | null;
   year: number | null;
   palette?: Array<{ color: string | null; name: string | null }> | null;
   heroPalette?: SanityPalette | null;

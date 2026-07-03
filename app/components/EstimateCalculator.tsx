@@ -530,10 +530,11 @@ export default function EstimateCalculator({
     const result = await submitEnquiry({
       accessKey,
       recipient: email,
+      replyTo: String(d.get("email") || ""),
       subject: `Budget calculator enquiry — ${name}`,
       message: body,
     });
-    setSent(result);
+    setSent(result === "failed" ? "mailto" : result);
   }
 
   return (

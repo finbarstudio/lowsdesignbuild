@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { CalendlyPopupButton } from "@/app/components/Calendly";
+import { submitEnquiry } from "@/app/lib/submitEnquiry";
 import { FORM_CARD, FORM_GRID } from "@/app/lib/ui";
 
 // The email is stored in localStorage so the contact form can prefill it later;
@@ -22,9 +23,15 @@ const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
  */
 export default function EstimateGate({
   calendlyUrl,
+  accessKey,
+  recipient,
   children,
 }: {
   calendlyUrl?: string | null;
+  // Web3Forms key + fallback recipient, so unlocking captures the lead (name +
+  // email) as an enquiry straight away.
+  accessKey?: string;
+  recipient?: string;
   children: React.ReactNode;
 }) {
   const [unlocked, setUnlocked] = useState(false);
@@ -61,6 +68,27 @@ export default function EstimateGate({
     } catch {
       /* ignore */
     }
+
+    // Capture the lead the moment they unlock — a silent, background send (no
+    // mailto fallback, so it never navigates them away from the calculator).
+    if (accessKey) {
+      void submitEnquiry({
+        accessKey,
+        recipient: recipient || v,
+        replyTo: v,
+        subject: `Estimator started — ${n}`,
+        message: [
+          "Someone just unlocked the estimate calculator:",
+          "",
+          `Name: ${n}`,
+          `Email: ${v}`,
+          "",
+          "They may or may not complete the detailed estimate form next.",
+        ].join("\n"),
+        noFallback: true,
+      });
+    }
+
     setUnlocked(true);
   };
 

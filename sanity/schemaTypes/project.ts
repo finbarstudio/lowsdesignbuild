@@ -7,6 +7,15 @@ export const projectType = defineType({
   name: "project",
   title: "Project",
   type: "document",
+  // the older text-based type fields are grouped + collapsed so the UI stays
+  // clean; they still drive the site wherever a project has no "Types" refs yet.
+  fieldsets: [
+    {
+      name: "legacyTypes",
+      title: "Older type fields (text)",
+      options: { collapsible: true, collapsed: true },
+    },
+  ],
   fields: [
     defineField({
       name: "title",
@@ -35,12 +44,22 @@ export const projectType = defineType({
       description: "Area / town, e.g. Beckenham",
     }),
     defineField({
-      name: "categories",
+      name: "typeRefs",
       title: "Types",
       type: "array",
+      of: [{ type: "reference", to: [{ type: "projectCategory" }] }],
+      description:
+        "What kind of work this project involved — pick up to two (e.g. Loft Conversion + Extension). Manage the full list of types under 'Project Types'; anything added there appears here automatically. Shown as pills and used by the projects-page filter.",
+      validation: (rule) => rule.max(2).unique(),
+    }),
+    defineField({
+      name: "categories",
+      title: "Types (older text list)",
+      type: "array",
+      fieldset: "legacyTypes",
       of: [{ type: "string" }],
       description:
-        "What kind of work this project involved — pick up to two (e.g. Loft Conversion + Extension). Shown as pills and used by the projects-page filter.",
+        "The previous way of tagging types. Still shown on the site when 'Types' above is empty. Prefer 'Types' above; you can clear this once switched over.",
       options: {
         list: [
           { title: "Loft Conversion", value: "Loft Conversion" },
@@ -54,10 +73,11 @@ export const projectType = defineType({
     }),
     defineField({
       name: "category",
-      title: "Category (legacy)",
+      title: "Category (single, oldest)",
       type: "string",
+      fieldset: "legacyTypes",
       description:
-        "The old single-type field — still shown on the site if 'Types' above is empty. Prefer picking Types above; you can clear this once done.",
+        "The oldest single-type field — still shown if the two fields above are empty.",
       options: {
         list: [
           { title: "Loft Conversion", value: "Loft Conversion" },

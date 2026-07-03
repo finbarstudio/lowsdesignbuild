@@ -56,7 +56,11 @@ export default async function EstimatePage() {
       <section
         className={`${PAD} flex min-h-[70svh] flex-col justify-center pb-[28vh] pt-8`}
       >
-        <EstimateGate calendlyUrl={contact?.calendlyUrl}>
+        <EstimateGate
+          calendlyUrl={contact?.calendlyUrl}
+          accessKey={contact?.formAccessKey || undefined}
+          recipient={email}
+        >
           <EstimateCalculator
             email={email}
             accessKey={contact?.formAccessKey || undefined}

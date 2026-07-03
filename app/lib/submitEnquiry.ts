@@ -7,12 +7,20 @@ export async function submitEnquiry({
   recipient,
   subject,
   message,
+  replyTo,
+  noFallback = false,
 }: {
   accessKey?: string;
   recipient: string;
   subject: string;
   message: string;
-}): Promise<"sent" | "mailto"> {
+  // reply-to address so the business can reply straight to the enquirer
+  replyTo?: string;
+  // when true, NEVER redirect to a mailto on failure — used for silent,
+  // background sends (e.g. the estimator-unlock lead) that must not navigate
+  // the visitor away. Returns "failed" instead.
+  noFallback?: boolean;
+}): Promise<"sent" | "mailto" | "failed"> {
   if (accessKey) {
     try {
       const res = await fetch("https://api.web3forms.com/submit", {
@@ -26,14 +34,16 @@ export async function submitEnquiry({
           subject,
           message,
           from_name: "Lows Design & Build website",
+          ...(replyTo ? { replyto: replyTo } : {}),
         }),
       });
       const json = await res.json().catch(() => null);
       if (json?.success) return "sent";
     } catch {
-      // fall through to mailto
+      // fall through to mailto (unless silent)
     }
   }
+  if (noFallback) return "failed";
   window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(
     subject,
   )}&body=${encodeURIComponent(message)}`;

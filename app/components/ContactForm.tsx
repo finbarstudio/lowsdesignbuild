@@ -108,10 +108,11 @@ export default function ContactForm({
     const result = await submitEnquiry({
       accessKey,
       recipient: email,
+      replyTo: String(data.get("email") || ""),
       subject: `Project enquiry from ${name}`,
       message: body,
     });
-    setSent(result);
+    setSent(result === "failed" ? "mailto" : result);
   }
 
   return (
