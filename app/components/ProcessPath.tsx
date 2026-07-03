@@ -40,6 +40,7 @@ export default function ProcessPath({
   const trailRef = useRef<SVGPathElement>(null);
   const dotRef = useRef<SVGGElement>(null);
   const btnRef = useRef<HTMLDivElement>(null);
+  const btnStageRef = useRef<HTMLDivElement>(null);
   const nodeLen = useRef<number[]>([]);
 
   const [d, setD] = useState("");
@@ -152,13 +153,19 @@ export default function ProcessPath({
           1,
         ).toFixed(3);
 
-      // Reveal the button near the end.
-      if (btnRef.current)
-        btnRef.current.style.opacity = clamp(
-          (progress - 0.9) / 0.08,
-          0,
-          1,
-        ).toFixed(3);
+      // Button pin-stage: it sits centred and pinned in its own tall stage after
+      // the line. As you scroll through: it grows in, holds (larger), then fades
+      // out as the Instagram section scrolls up over it.
+      if (btnRef.current && btnStageRef.current) {
+        const br = btnStageRef.current.getBoundingClientRect();
+        // 0 as the stage enters, 1 by the time it has scrolled a screen past.
+        const bp = clamp((vh * 0.5 - br.top) / (br.height - vh), 0, 1);
+        const fadeIn = clamp(bp / 0.14, 0, 1);
+        const fadeOut = clamp((0.9 - bp) / 0.14, 0, 1);
+        btnRef.current.style.opacity = Math.min(fadeIn, fadeOut).toFixed(3);
+        const g = clamp((bp - 0.05) / 0.6, 0, 1);
+        btnRef.current.style.transform = `scale(${(0.82 + g * 0.45).toFixed(3)})`;
+      }
 
       const landed = progress > 0.985;
       if (landed !== curLanded) {
@@ -183,6 +190,7 @@ export default function ProcessPath({
   }, [d, pts, onLanded]);
 
   return (
+    <>
     <div ref={wrapRef} className="relative mx-auto w-[86vw] max-w-[880px]">
       {/* Sticky title, faded out by the rAF as the timeline ends. */}
       <h2
@@ -217,7 +225,6 @@ export default function ProcessPath({
                 stroke="var(--tertiary)"
                 strokeWidth="2"
                 strokeLinecap="round"
-                style={{ transition: "stroke-dashoffset 0.08s linear" }}
               />
               {pts.map((p, i) => (
                 <circle
@@ -286,17 +293,25 @@ export default function ProcessPath({
           })}
         </div>
 
-        {/* the View projects button at the foot (end-sequence still to come) */}
-        {centerButton && (
-          <div
-            ref={btnRef}
-            style={{ opacity: 0 }}
-            className="vp-trace-scope mt-10 flex justify-center sm:mt-14"
-          >
-            {centerButton}
-          </div>
-        )}
       </div>
     </div>
+
+      {/* Button end-stage: pinned centre of its own tall stage. The button grows
+          in and holds, with lots of room below, then fades as the Instagram
+          section scrolls up over it. (The winding→2×2 morph is a next step.) */}
+      {centerButton && (
+        <div ref={btnStageRef} className="relative h-[130vh] sm:h-[170vh]">
+          <div className="sticky top-0 flex h-[100svh] items-center justify-center">
+            <div
+              ref={btnRef}
+              className="vp-trace-scope origin-center will-change-transform"
+              style={{ opacity: 0 }}
+            >
+              {centerButton}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

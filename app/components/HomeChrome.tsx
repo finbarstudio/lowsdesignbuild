@@ -174,13 +174,15 @@ export default function HomeChrome({
   // logo + hamburger just take the scroll-tracked colour.
   const barColor = textColor;
 
-  // Staggered entrance: each item is parked (opacity 0 + a small offset) until
-  // `entered`, then eased in with its own delay. Total run ~1.2s → comfortably
-  // inside the 4s budget after the ~2.24s preloader.
-  const item = (delay: string) =>
+  // Staggered entrance MASK reveal: each item is parked below its own clip
+  // (translate-y past 100%) until `entered`, then rises up into view with its own
+  // delay. `rise()` is the moving inner element; wrap it in `overflow-hidden`.
+  const rise = "inline-block transition-transform duration-[750ms] ease-[cubic-bezier(0.22,1,0.36,1)]";
+  const risePos = entered ? "translate-y-0" : "translate-y-[130%]";
+  const fade = (delay: number) =>
     `transition-[opacity,transform] duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
-      entered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
-    } ${delay}`;
+      entered ? "opacity-100 scale-100" : "opacity-0 scale-90"
+    } [transition-delay:${delay}ms]`;
 
   return (
     <>
@@ -188,7 +190,7 @@ export default function HomeChrome({
         <div
           className={`relative mx-auto flex h-full w-full max-w-[1900px] items-center ${EDGE}`}
         >
-          {/* logo left — the static house mark, always (like Header.tsx) */}
+          {/* logo left — mask-reveals up on entrance */}
           <Link
             href="/"
             aria-label={`${site.name}, home`}
@@ -196,18 +198,30 @@ export default function HomeChrome({
               e.preventDefault();
               smoothScrollTop();
             }}
-            className={`flex items-center transition-colors duration-300 ${barColor} ${item("[transition-delay:0ms]")}`}
+            className={`flex items-center overflow-hidden py-1 transition-colors duration-300 ${barColor}`}
           >
-            <Logomark className="h-[26px] w-[37px]" />
+            <span
+              className={`${rise} ${risePos}`}
+              style={{ transitionDelay: "80ms" }}
+            >
+              <Logomark className="h-[26px] w-[37px]" />
+            </span>
           </Link>
 
-          {/* desktop nav, top right */}
+          {/* desktop nav, top right — each item mask-reveals, staggered */}
           <nav
-            className={`ml-auto hidden items-center gap-x-7 font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-300 sm:flex sm:text-sm ${textColor} ${item("[transition-delay:140ms]")}`}
+            className={`ml-auto hidden items-center gap-x-7 font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-300 sm:flex sm:text-sm ${textColor}`}
           >
-            {nav.map((navItem) => (
-              <Link key={navItem.href} href={navItem.href} className="lu-group group">
-                <span className="link-underline is-tracked">
+            {nav.map((navItem, i) => (
+              <Link
+                key={navItem.href}
+                href={navItem.href}
+                className="lu-group group relative flex items-start overflow-hidden pb-1"
+              >
+                <span
+                  className={`${rise} ${risePos} link-underline is-tracked`}
+                  style={{ transitionDelay: `${220 + i * 90}ms` }}
+                >
                   {navItem.label}
                 </span>
                 {navItem.href === "/projects" && projectCount ? (
@@ -219,10 +233,10 @@ export default function HomeChrome({
             ))}
           </nav>
 
-          {/* mobile menu button */}
+          {/* mobile menu button — fades + scales in */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className={`ml-auto flex h-12 w-12 flex-col items-center justify-center transition-colors duration-300 sm:hidden ${barColor} ${item("[transition-delay:140ms]")}`}
+            className={`ml-auto flex h-12 w-12 flex-col items-center justify-center transition-colors duration-300 sm:hidden ${barColor} ${fade(200)}`}
             aria-label="Toggle menu"
           >
             {[0, 1, 2].map((i) => (

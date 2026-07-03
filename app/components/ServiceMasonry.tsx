@@ -29,7 +29,7 @@ function useInView(): [React.RefObject<HTMLDivElement | null>, boolean] {
           }
         });
       },
-      { threshold: 0.2, rootMargin: "0px 0px -10% 0px" },
+      { threshold: 0.25, rootMargin: "0px 0px -22% 0px" },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -44,8 +44,8 @@ function Tile({ s, delay }: { s: Service; delay: number }) {
       ref={ref}
       className="group relative aspect-[40/33] overflow-hidden bg-background"
     >
-      {/* the photo mask-rises up into the tile (over paper, so there's never a
-          visible empty box first — same reveal as the team). */}
+      {/* the WHOLE tile (photo + gradient + title) mask-rises up together over
+          paper, so there's never a visible empty box/frame first. */}
       <div
         className={`sm-rise absolute inset-0 ${inView ? "is-in" : ""}`}
         style={{ transitionDelay: `${delay}ms` }}
@@ -54,21 +54,21 @@ function Tile({ s, delay }: { s: Service; delay: number }) {
           src={s.img}
           alt={s.title}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
         />
-      </div>
-      {/* dark gradient along the bottom for the title */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-        <h3 className="text-base font-semibold uppercase leading-tight tracking-[0.08em] text-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:text-lg sm:group-hover:-translate-y-1">
-          {s.title}
-        </h3>
-        {/* description: shown by default on mobile (no hover on touch); on desktop
-            it masks up from below on hover (0fr → 1fr). */}
-        <div className="mt-2 grid grid-rows-[1fr] opacity-100 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none sm:mt-0 sm:grid-rows-[0fr] sm:opacity-0 sm:group-hover:mt-2 sm:group-hover:grid-rows-[1fr] sm:group-hover:opacity-100">
-          <p className="overflow-hidden text-xs leading-relaxed text-white/85 sm:text-sm">
-            {s.blurb}
-          </p>
+        {/* dark gradient along the bottom for the title */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+          <h3 className="text-base font-semibold uppercase leading-tight tracking-[0.08em] text-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:text-lg sm:group-hover:-translate-y-1">
+            {s.title}
+          </h3>
+          {/* description: shown by default on mobile (no hover on touch); on
+              desktop it masks up from below on hover (0fr → 1fr). */}
+          <div className="mt-2 grid grid-rows-[1fr] opacity-100 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none sm:mt-0 sm:grid-rows-[0fr] sm:opacity-0 sm:group-hover:mt-2 sm:group-hover:grid-rows-[1fr] sm:group-hover:opacity-100">
+            <p className="overflow-hidden text-xs leading-relaxed text-white/85 sm:text-sm">
+              {s.blurb}
+            </p>
+          </div>
         </div>
       </div>
     </div>

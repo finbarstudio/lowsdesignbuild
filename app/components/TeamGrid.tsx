@@ -237,7 +237,11 @@ function DirectorsPair({
                 />
               </div>
 
+              {/* text is inset by half the team grid's gap (gap-x-6 → 12px) so the
+                  two names/bios line up with the team's two columns below, while
+                  the photo above stays a full joined 2-up. */}
               <div
+                className={i === 0 ? "sm:pr-3" : "sm:pl-3"}
                 style={{
                   transform: open ? `translateY(-${lift}px)` : "translateY(0)",
                   opacity: inView ? 1 : 0,
@@ -251,7 +255,9 @@ function DirectorsPair({
               {/* desktop: bio reveals in the clipped space under each half */}
               {d.bio ? (
                 <div
-                  className="absolute inset-x-0 bottom-0 hidden sm:block"
+                  className={`absolute inset-x-0 bottom-0 hidden sm:block ${
+                    i === 0 ? "sm:pr-3" : "sm:pl-3"
+                  }`}
                   style={{
                     opacity: open ? 1 : 0,
                     transition: `opacity 0.45s ease ${open ? "0.12s" : "0s"}`,

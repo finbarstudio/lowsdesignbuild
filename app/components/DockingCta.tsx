@@ -31,6 +31,35 @@ export default function DockingCta() {
   const btnRef = useRef<HTMLDivElement>(null);
   const [floating, setFloating] = useState(true);
   const [size, setSize] = useState<{ w: number; h: number } | null>(null);
+  const [revealed, setRevealed] = useState(false);
+
+  // Entrance: scale + fade the floating button in. On home, hold until the
+  // preloader lifts so it arrives with the rest of the chrome; elsewhere a beat.
+  useEffect(() => {
+    if (!canFloat) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setRevealed(true);
+      return;
+    }
+    const lifted = (window as unknown as { __lowsPreloaderLifted?: boolean })
+      .__lowsPreloaderLifted;
+    let a = 0;
+    let b = 0;
+    if (pathname === "/" && !lifted) {
+      const onDone = () => {
+        a = window.setTimeout(() => setRevealed(true), 300);
+      };
+      window.addEventListener("preloader:done", onDone, { once: true });
+      b = window.setTimeout(() => setRevealed(true), 3200); // fail-open
+      return () => {
+        window.removeEventListener("preloader:done", onDone);
+        window.clearTimeout(a);
+        window.clearTimeout(b);
+      };
+    }
+    a = window.setTimeout(() => setRevealed(true), 420);
+    return () => window.clearTimeout(a);
+  }, [canFloat, pathname]);
 
   useEffect(() => {
     if (!canFloat) return;
@@ -98,12 +127,21 @@ export default function DockingCta() {
     >
       <div
         ref={btnRef}
-        className={`dock-cta__btn ${floating ? "is-floating" : "is-docked"}`}
+        className={`dock-cta__btn ${floating ? "is-floating" : "is-docked"} ${
+          revealed ? "is-revealed" : ""
+        }`}
       >
         <InstantQuoteButton />
       </div>
       <style>{`
         .dock-cta { position: relative; }
+        /* Entrance: scale + fade in (parked until revealed). */
+        .dock-cta__btn {
+          opacity: 0;
+          transform: scale(0.9);
+          transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1);
+        }
+        .dock-cta__btn.is-revealed { opacity: 1; transform: none; }
         /* Floating on the same edge inset as the footer gutter so it docks with no
            sideways jump. MOBILE: bottom-LEFT (matches the left-aligned footer CTA);
            DESKTOP: bottom-right (matches the right-aligned footer CTA). */

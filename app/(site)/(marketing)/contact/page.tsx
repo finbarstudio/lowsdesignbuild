@@ -1,13 +1,11 @@
 import { PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 
-import AreaPills from "@/app/components/AreaPills";
 import { CalendlyInline, CalendlyMock } from "@/app/components/Calendly";
 import ContactForm from "@/app/components/ContactForm";
 import ScrollNudge from "@/app/components/ScrollNudge";
-import ViewProjectsButton from "@/app/components/ViewProjectsButton";
 import WordReveal from "@/app/components/WordReveal";
-import { areas as fallbackAreas, site } from "@/app/lib/site";
+import { site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { CONTACT_QUERY } from "@/sanity/lib/queries";
 import type { Contact } from "@/sanity/lib/types";
@@ -24,8 +22,6 @@ export const revalidate = 60;
 
 export default async function ContactPage() {
   const contact = await client.fetch<Contact | null>(CONTACT_QUERY);
-  const areas =
-    contact?.areas && contact.areas.length > 0 ? contact.areas : fallbackAreas;
   return (
     <main>
       <ScrollNudge />
@@ -52,39 +48,25 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      {/* Areas (1/3) + form (2/3) — static, no scroll-reveal */}
-      <section className={`${PAD} pb-24 sm:pb-32`}>
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-16">
-          <div className="lg:col-span-1">
-            <p className="label mb-8 text-center !text-ink">Areas we cover</p>
-            <AreaPills
-              areas={areas}
-              align="center"
-              animate={false}
-              sizeClass="text-lg sm:text-base"
-            />
-            <ViewProjectsButton className="mt-12 mb-12 sm:mt-16 lg:mb-0" />
-          </div>
-          <div className="lg:col-span-2">
+      {/* Form + book-a-call, side by side. The Calendly booking shows a styled
+          mock until a link is set in Sanity. */}
+      <section className={`${PAD} pb-32 pt-8 sm:pb-48`}>
+        <div className="grid grid-cols-1 gap-14 lg:grid-cols-2 lg:gap-16">
+          <div>
             <p className="label mb-8 !text-ink">Tell us about your project</p>
             <ContactForm
               email={contact?.contactEmail || site.email}
               accessKey={contact?.formAccessKey || undefined}
             />
           </div>
-        </div>
-      </section>
-
-      {/* Book a call — a Calendly scheduler embedded inline (Sanity-configured).
-          Shows a styled mock until a booking link is set. */}
-      <section className={`${PAD} pb-32 pt-8 sm:pb-48`}>
-        <p className="label mb-8 text-center !text-ink">Or book a call</p>
-        <div className="mx-auto max-w-3xl">
-          {contact?.calendlyUrl ? (
-            <CalendlyInline url={contact.calendlyUrl} />
-          ) : (
-            <CalendlyMock />
-          )}
+          <div>
+            <p className="label mb-8 !text-ink">Or book a call</p>
+            {contact?.calendlyUrl ? (
+              <CalendlyInline url={contact.calendlyUrl} />
+            ) : (
+              <CalendlyMock />
+            )}
+          </div>
         </div>
       </section>
     </main>
