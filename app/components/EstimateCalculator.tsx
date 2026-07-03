@@ -209,25 +209,47 @@ function Field({
 }
 
 // An info icon that reveals an explanation on hover (desktop) and on tap
-// (mobile) — tapping toggles it, since touch devices have no hover.
+// (mobile) — tapping toggles it, since touch devices have no hover. The popup
+// is position:fixed and clamped to the viewport (measured from the icon), so it
+// can never render off-screen; the button carries an enlarged, invisible touch
+// target (p-2 -m-2) for a comfortable tap zone.
 function InfoTip({ text }: { text?: string }) {
   const [open, setOpen] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
+
+  const W = 240; // popup width (w-60)
+  const show = () => {
+    const r = btnRef.current?.getBoundingClientRect();
+    if (r) {
+      const pad = 10;
+      const left = Math.min(
+        Math.max(pad, r.left - 8),
+        window.innerWidth - W - pad,
+      );
+      setPos({ left, top: r.top - 8 });
+    }
+    setOpen(true);
+  };
+
   if (!text) return null;
   return (
     <span className="relative ml-1.5 inline-flex align-middle">
       <button
+        ref={btnRef}
         type="button"
         aria-label="More information"
         aria-expanded={open}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          setOpen((v) => !v);
+          if (open) setOpen(false);
+          else show();
         }}
-        onMouseEnter={() => setOpen(true)}
+        onMouseEnter={show}
         onMouseLeave={() => setOpen(false)}
         onBlur={() => setOpen(false)}
-        className="block text-muted transition-colors hover:text-tertiary"
+        className="-m-2 block p-2 text-muted transition-colors hover:text-tertiary"
       >
         <svg
           viewBox="0 0 24 24"
@@ -243,8 +265,13 @@ function InfoTip({ text }: { text?: string }) {
         </svg>
       </button>
       <span
-        className={`absolute bottom-full left-0 z-30 mb-2 w-60 rounded bg-ink px-3 py-2 text-xs font-normal normal-case leading-relaxed text-background shadow-xl transition-opacity duration-200 ${
-          open ? "opacity-100" : "pointer-events-none opacity-0"
+        style={
+          pos
+            ? { left: pos.left, top: pos.top, transform: "translateY(-100%)" }
+            : undefined
+        }
+        className={`fixed z-30 w-60 rounded bg-ink px-3 py-2 text-xs font-normal normal-case leading-relaxed text-background shadow-xl transition-opacity duration-200 ${
+          open && pos ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
         {text}
@@ -399,7 +426,9 @@ function CountRow({
             onChange(clamped);
           }
         }}
-        className="h-6 w-9 shrink-0 rounded-sm border border-line bg-transparent text-center text-sm tabular-nums text-ink outline-none transition-colors focus:border-tertiary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        // 16px font on mobile — anything smaller makes iOS zoom the page in on
+        // focus (and leave it at a weird zoom level after).
+        className="h-6 w-9 shrink-0 rounded-sm border border-line bg-transparent text-center text-[16px] tabular-nums text-ink outline-none transition-colors focus:border-tertiary sm:text-sm [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
       <span className="pt-0.5 leading-snug">
         {label}{" "}
@@ -711,14 +740,19 @@ export default function EstimateCalculator({
               <div className="mt-7 grid grid-cols-1 gap-x-10 gap-y-4 sm:grid-cols-2">
                 {ADVANCED.map((a) => (
                   <label key={a.key} className="flex cursor-pointer items-start gap-3 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={Boolean(toggles[a.key])}
-                      onChange={(e) =>
-                        setToggles((s) => ({ ...s, [a.key]: e.target.checked }))
-                      }
-                      className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--tertiary)]"
-                    />
+                    {/* the checkbox sits in a fixed slot the same width as the
+                        party-wall count box below, so every row's label starts
+                        on the same line */}
+                    <span className="w-9 shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(toggles[a.key])}
+                        onChange={(e) =>
+                          setToggles((s) => ({ ...s, [a.key]: e.target.checked }))
+                        }
+                        className="mt-0.5 h-4 w-4 accent-[var(--tertiary)]"
+                      />
+                    </span>
                     <span className="leading-snug">
                       {a.label}{" "}
                       <span className="whitespace-nowrap text-muted">
