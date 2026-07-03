@@ -1,4 +1,4 @@
-import { FOOT, PAD } from "@/app/lib/ui";
+import { FOOT, FORM_CARD, PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 
 import { CalendlyInline, CalendlyMock } from "@/app/components/Calendly";
@@ -54,7 +54,9 @@ export default async function ContactPage() {
         {/* capped narrower than the page gutter so the two columns don't
             stretch across the whole viewport */}
         <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-14 lg:grid-cols-2 lg:gap-16">
-          <div>
+          {/* FORM_CARD: on mobile the form sits in a subtle card so it separates
+              cleanly from the booking card below it */}
+          <div className={FORM_CARD}>
             <p className="label mb-8 !text-ink">Tell us about your project</p>
             <ContactForm
               email={contact?.contactEmail || site.email}

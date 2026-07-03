@@ -20,7 +20,8 @@ export default function InstagramFeed({ feedId }: { feedId: string }) {
   }, []);
 
   return (
-    <div className="mx-auto max-w-[1900px] px-[10%] sm:px-6">
+    // standard page gutter (was px-[10%] on mobile — far too much inset)
+    <div className="mx-auto max-w-[1900px] px-4 sm:px-6">
       {createElement("behold-widget", { "feed-id": feedId })}
     </div>
   );

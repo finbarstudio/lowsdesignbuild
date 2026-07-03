@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { CalendlyPopupButton } from "@/app/components/Calendly";
+import { FORM_CARD } from "@/app/lib/ui";
 
 // The email is stored in localStorage so the contact form can prefill it later;
 // the UNLOCK is only kept for the tab session, so the estimator re-hides behind
@@ -58,8 +59,9 @@ export default function EstimateGate({
 
   return (
     <div className="mx-auto grid max-w-4xl grid-cols-1 gap-14 md:grid-cols-2 md:gap-16">
-      {/* Left — unlock the estimator with your email */}
-      <div className="flex flex-col">
+      {/* Left — unlock the estimator with your email. On mobile it sits in a
+          subtle card so it separates cleanly from the book-a-call column. */}
+      <div className={`flex flex-col ${FORM_CARD}`}>
         <p className="label mb-6 !text-ink">View the estimator</p>
         <p className="max-w-sm text-base leading-relaxed text-muted">
           Pop in your email and we&apos;ll unlock the instant estimate
