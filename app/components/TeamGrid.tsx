@@ -126,7 +126,12 @@ function Member({ m, delay = 0 }: { m: TeamMember; delay?: number }) {
           className="object-cover"
           style={{
             transform: inView ? "translateY(0)" : "translateY(101%)",
-            filter: open ? "grayscale(0)" : "grayscale(1)",
+            // the member photos are mono stock, so plain grayscale(0) has no
+            // colour to reveal — this warm hand-tint grade "colourises" them
+            // on hover instead (and still reads fine on colour uploads).
+            filter: open
+              ? "sepia(0.5) saturate(1.45) hue-rotate(-12deg) contrast(0.98)"
+              : "grayscale(1)",
             transition: `transform 0.9s ${RISE} ${delay}ms, filter 0.6s ease`,
           }}
         />
