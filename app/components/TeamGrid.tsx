@@ -123,10 +123,11 @@ function Member({ m, delay = 0 }: { m: TeamMember; delay?: number }) {
           fill
           loading="eager"
           sizes="(max-width: 1024px) 100vw, 33vw"
-          className="object-cover grayscale"
+          className="object-cover"
           style={{
             transform: inView ? "translateY(0)" : "translateY(101%)",
-            transition: `transform 0.9s ${RISE} ${delay}ms`,
+            filter: open ? "grayscale(0)" : "grayscale(1)",
+            transition: `transform 0.9s ${RISE} ${delay}ms, filter 0.6s ease`,
           }}
         />
       </div>
@@ -251,10 +252,11 @@ function DirectorsPair({
                 <img
                   src={img}
                   alt={d.name}
-                  className="absolute top-0 h-full max-w-none object-cover grayscale"
+                  className="absolute top-0 h-full max-w-none object-cover"
                   style={{
                     width: "200%",
                     [side]: 0,
+                    filter: open ? "grayscale(0)" : "grayscale(1)",
                     transform: inView ? "translateY(0)" : "translateY(101%)",
                     // No per-half stagger: both halves rise in perfect sync so the
                     // split photo reads as ONE image lifting in, not two.
