@@ -131,33 +131,24 @@ function Member({ m, delay = 0 }: { m: TeamMember; delay?: number }) {
         />
       </div>
 
+      {/* ONE text block: name + role + bio in normal flow. The negative bottom
+          margin cancels the bio's height from layout, so it hangs below the
+          card's edge, hidden by the card's overflow mask. On open the whole
+          block slides up as one piece and the bio emerges from that mask. */}
       <div
-        className="relative"
         style={{
           transform: open ? `translateY(-${lift}px)` : "translateY(0)",
+          marginBottom: m.bio ? -bioH : undefined,
           opacity: inView ? 1 : 0,
           transition: `transform 0.6s ${EASE}, opacity 0.6s ease ${delay + 120}ms`,
         }}
       >
         <p className="mt-4 text-base font-medium">{m.name}</p>
         <p className="text-sm text-muted">{m.role}</p>
-
-        {/* bio: anchored to the name block (top-full → its top is stuck to the
-            bottom of the name/role, riding up with it), and the text rises up
-            out of a mask at its bottom edge rather than fading in. */}
         {m.bio ? (
-          <div className="absolute inset-x-0 top-full overflow-hidden">
-            <p
-              ref={bioRef}
-              className="pt-2 text-sm leading-relaxed text-muted"
-              style={{
-                transform: open ? "translateY(0)" : "translateY(103%)",
-                transition: `transform 0.6s ${EASE}`,
-              }}
-            >
-              {m.bio}
-            </p>
-          </div>
+          <p ref={bioRef} className="pt-2 text-sm leading-relaxed text-muted">
+            {m.bio}
+          </p>
         ) : null}
       </div>
     </div>
@@ -184,7 +175,10 @@ function DirectorsPair({
   const [isMobile, setIsMobile] = useState(false);
   const bio0 = useRef<HTMLParagraphElement>(null);
   const bio1 = useRef<HTMLParagraphElement>(null);
-  const [bioH, setBioH] = useState(0);
+  // per-half bio heights: each half hangs its OWN bio below the mask (a shared
+  // max would leave the shorter bio peeking when closed); the LIFT uses the max
+  // so both halves open in sync.
+  const [bioHs, setBioHs] = useState<[number, number]>([0, 0]);
 
   // ResizeObserver on both bios (see Member) — a stale height clips the taller
   // bio's tail off against the card edge once fonts/layout settle.
@@ -192,14 +186,16 @@ function DirectorsPair({
     const els = [bio0.current, bio1.current].filter(Boolean) as HTMLElement[];
     if (!els.length) return;
     const measure = () =>
-      setBioH(
-        Math.max(bio0.current?.offsetHeight ?? 0, bio1.current?.offsetHeight ?? 0),
-      );
+      setBioHs([
+        bio0.current?.offsetHeight ?? 0,
+        bio1.current?.offsetHeight ?? 0,
+      ]);
     measure();
     const ro = new ResizeObserver(measure);
     els.forEach((el) => ro.observe(el));
     return () => ro.disconnect();
   }, [directors]);
+  const bioH = Math.max(bioHs[0], bioHs[1]);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 639px)");
@@ -273,10 +269,17 @@ function DirectorsPair({
                   lifts as the bio reveals beneath its half. On MOBILE the name +
                   role + bio move together into the single-column stack below when
                   expanded, so this above-photo name fades out (no duplication). */}
+              {/* ONE text block (desktop): name + role + bio in normal flow —
+                  the negative bottom margin cancels the bio's height from
+                  layout so it hangs below the half's overflow mask; the whole
+                  block slides up as one piece and the bio emerges from the
+                  half's bottom edge. On mobile the bio is display:none here
+                  (it lives in the single-column stack below instead). */}
               <div
-                className={`relative ${i === 0 ? "sm:pr-3" : "sm:pl-3"}`}
+                className={i === 0 ? "sm:pr-3" : "sm:pl-3"}
                 style={{
                   transform: !isMobile && open ? `translateY(-${lift}px)` : "translateY(0)",
+                  marginBottom: !isMobile && d.bio ? -bioHs[i] : undefined,
                   opacity: inView ? (isMobile && open ? 0 : 1) : 0,
                   transition: `transform 0.6s ${EASE}, opacity 0.4s ease ${
                     isMobile && open ? "0s" : "120ms"
@@ -285,28 +288,13 @@ function DirectorsPair({
               >
                 <p className="mt-4 text-base font-medium">{d.name}</p>
                 <p className="text-sm text-muted">{d.role}</p>
-
-                {/* desktop: bio anchored under the name/role (top-full — its
-                    top stays stuck to them as they lift), text rising up out of
-                    a mask at its bottom edge. Absolute children ignore the
-                    container's padding, so the column inset is re-applied. */}
                 {d.bio ? (
-                  <div
-                    className={`absolute inset-x-0 top-full hidden overflow-hidden sm:block ${
-                      i === 0 ? "sm:pr-3" : "sm:pl-3"
-                    }`}
+                  <p
+                    ref={i === 0 ? bio0 : bio1}
+                    className="hidden pt-2 text-sm leading-relaxed text-muted sm:block"
                   >
-                    <p
-                      ref={i === 0 ? bio0 : bio1}
-                      className="pt-2 text-sm leading-relaxed text-muted"
-                      style={{
-                        transform: open ? "translateY(0)" : "translateY(103%)",
-                        transition: `transform 0.6s ${EASE}`,
-                      }}
-                    >
-                      {d.bio}
-                    </p>
-                  </div>
+                    {d.bio}
+                  </p>
                 ) : null}
               </div>
             </div>
