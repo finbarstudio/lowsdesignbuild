@@ -1,6 +1,7 @@
 import CustomCursor from "@/app/components/CustomCursor";
 import Footer from "@/app/components/Footer";
 import Preloader from "@/app/components/Preloader";
+import AutoTour from "@/app/components/AutoTour";
 import ScrollHint from "@/app/components/ScrollHint";
 import SmoothScroll from "@/app/components/SmoothScroll";
 import { areas, services, site, siteUrl } from "@/app/lib/site";
@@ -54,6 +55,8 @@ export default function SiteLayout({
       <CustomCursor />
       {/* mobile-only subtle scroll indicator, bottom-right of every hero */}
       <ScrollHint />
+      {/* ?autoscroll=1 demo glide for social recordings — inert otherwise */}
+      <AutoTour />
       {children}
       <Footer />
     </>
