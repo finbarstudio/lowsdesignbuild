@@ -237,7 +237,9 @@ const css = `
   cursor: zoom-out;
   animation: lb-pop .3s cubic-bezier(0.22,1,0.36,1) both;
 }
-.lb__img--low{ filter: blur(6px); transform: scale(1.008); }
+/* while the full-res loads: the low-res shows as-is (no blur), just dimmed a
+   touch so the drawing house mark reads over it */
+.lb__img--low{ filter: brightness(0.7); }
 @keyframes lb-pop{ from{ opacity:0 } to{ opacity:1 } }
 /* Bare glyph controls — no bubbles. A soft shadow keeps them legible on any image. */
 .lb__btn{
@@ -257,9 +259,9 @@ const css = `
 /* full-res load indicator — the LOWS house mark drawing itself on loop (same
    stroke draw as the preloader), riding just above the dots */
 .lb__loading{
-  position: absolute; bottom: 5.6vh; left: 50%; transform: translateX(-50%);
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
   z-index: 2; pointer-events: none;
-  width: 44px; height: 31px;
+  width: 52px; height: 37px;
   overflow: visible;
   filter: drop-shadow(0 1px 8px rgba(0,0,0,.45));
 }
