@@ -154,14 +154,18 @@ export default function ProjectGallery({
         )}
 
         {!fullReady && (
-          <span className="lb__loading" aria-hidden="true">
-            Loading
-            <span className="lb__loading-dots">
-              <i>.</i>
-              <i>.</i>
-              <i>.</i>
-            </span>
-          </span>
+          <svg
+            className="lb__loading"
+            aria-hidden="true"
+            viewBox="0 0 121.43 86.64"
+          >
+            <polyline
+              className="lb__loading-path"
+              points="2 84.64 2 56.06 27.52 38.21 27.52 3.23 96.77 37.67 96.77 3.59 49.38 3.59 49.38 84.64 71.25 84.64 71.25 55.88 119.43 55.88 119.43 84.64"
+              pathLength={1}
+              fill="none"
+            />
+          </svg>
         )}
 
         {count > 1 && (
@@ -250,19 +254,31 @@ const css = `
 .lb__nav:hover{ transform: translateY(-50%) scale(1.12); }
 .lb__nav--prev{ left: 1.5vw; }
 .lb__nav--next{ right: 1.5vw; }
-/* full-res load indicator — mono caps, riding just above the dots */
+/* full-res load indicator — the LOWS house mark drawing itself on loop (same
+   stroke draw as the preloader), riding just above the dots */
 .lb__loading{
-  position: absolute; bottom: 6vh; left: 50%; transform: translateX(-50%);
+  position: absolute; bottom: 5.6vh; left: 50%; transform: translateX(-50%);
   z-index: 2; pointer-events: none;
-  font-family: var(--font-mono-stack, monospace);
-  font-size: 11px; text-transform: uppercase; letter-spacing: .18em;
-  color: rgba(255,255,255,.75);
-  text-shadow: 0 1px 10px rgba(0,0,0,.55);
+  width: 44px; height: 31px;
+  overflow: visible;
+  filter: drop-shadow(0 1px 8px rgba(0,0,0,.45));
 }
-.lb__loading-dots i{ font-style: normal; animation: lb-dot 1.2s infinite; }
-.lb__loading-dots i:nth-child(2){ animation-delay: .2s; }
-.lb__loading-dots i:nth-child(3){ animation-delay: .4s; }
-@keyframes lb-dot{ 0%, 60%, 100%{ opacity: .25 } 30%{ opacity: 1 } }
+.lb__loading-path{
+  stroke: rgba(255,255,255,.85);
+  stroke-width: 4px;
+  stroke-linecap: square;
+  stroke-miterlimit: 10;
+  stroke-dasharray: 1;
+  animation: lb-draw 1.6s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+@keyframes lb-draw{
+  0%   { stroke-dashoffset: 1; opacity: 1; }
+  70%  { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce){
+  .lb__loading-path{ animation: none; stroke-dashoffset: 0; }
+}
 .lb__dots{
   position: absolute; bottom: 2.4vh; left: 50%; transform: translateX(-50%);
   display: flex; gap: 9px;
