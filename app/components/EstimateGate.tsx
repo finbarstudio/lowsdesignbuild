@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 
 import { CalendlyPopupButton } from "@/app/components/Calendly";
+import DrawCard from "@/app/components/DrawCard";
 import { submitEnquiry } from "@/app/lib/submitEnquiry";
-import { FORM_CARD, FORM_GRID } from "@/app/lib/ui";
+import { FORM_GRID } from "@/app/lib/ui";
 
 // The email is stored in localStorage so the contact form can prefill it later;
 // the UNLOCK is only kept for the tab session, so the estimator re-hides behind
@@ -118,18 +119,8 @@ export default function EstimateGate({
   return (
     <div className={FORM_GRID}>
       {/* Left — the ESTIMATOR card: this is the tool we want visitors to see,
-          so it carries a gold accent — a slow, subtle breathing gold border. */}
-      <div className={`estimator-card flex flex-col ${FORM_CARD}`}>
-        <style>{`
-          .estimator-card { animation: est-breathe 3.4s ease-in-out infinite; }
-          @keyframes est-breathe {
-            0%, 100% { border-color: rgba(169,126,31,.4); box-shadow: 0 0 0 0 rgba(169,126,31,0); }
-            50% { border-color: rgba(169,126,31,.85); box-shadow: 0 0 24px -8px rgba(169,126,31,.35); }
-          }
-          @media (prefers-reduced-motion: reduce) {
-            .estimator-card { animation: none; border-color: rgba(169,126,31,.6); }
-          }
-        `}</style>
+          so its outline draws in gold and it keeps a soft breathing glow. */}
+      <DrawCard gold delay={600} className="flex flex-col">
         <p className="label mb-6 !text-copper-deep">View the estimator</p>
         <p className="max-w-sm text-base leading-relaxed text-muted">
           Pop in your name and email and we&apos;ll unlock the instant estimate
@@ -182,7 +173,7 @@ export default function EstimateGate({
           </button>
           {err && <p className="mt-3 text-sm text-tertiary">{err}</p>}
         </form>
-      </div>
+      </DrawCard>
 
       {/* Right — skip the calculator and book a call. Same card as the email
           column, so the two options read as consistent siblings. The WHOLE
@@ -190,17 +181,21 @@ export default function EstimateGate({
       {calendlyUrl ? (
         <CalendlyPopupButton
           url={calendlyUrl}
-          className={`group flex cursor-pointer flex-col text-left no-underline ${FORM_CARD}`}
+          className="group block cursor-pointer text-left no-underline"
         >
-          <BookCallCardBody />
+          <DrawCard delay={800} className="flex flex-col">
+            <BookCallCardBody />
+          </DrawCard>
         </CalendlyPopupButton>
       ) : (
         // No link set yet — point at the Contact page's booking section.
         <a
           href="/contact"
-          className={`group flex cursor-pointer flex-col text-left no-underline ${FORM_CARD}`}
+          className="group block cursor-pointer text-left no-underline"
         >
-          <BookCallCardBody />
+          <DrawCard delay={800} className="flex flex-col">
+            <BookCallCardBody />
+          </DrawCard>
         </a>
       )}
     </div>

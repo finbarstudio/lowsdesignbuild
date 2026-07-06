@@ -1,8 +1,9 @@
-import { FOOT, FORM_CARD, FORM_GRID, PAD } from "@/app/lib/ui";
+import { FOOT, FORM_GRID, PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 
 import { CalendlyInline, CalendlyMock } from "@/app/components/Calendly";
 import ContactForm from "@/app/components/ContactForm";
+import DrawCard from "@/app/components/DrawCard";
 import HeroIntro from "@/app/components/HeroIntro";
 import WordReveal from "@/app/components/WordReveal";
 import { site } from "@/app/lib/site";
@@ -25,10 +26,11 @@ export default async function ContactPage() {
   const heroText = contact?.contactHeroText || "Let's discuss your next project";
   return (
     <main>
-      {/* Hero — full screen: big centred slogan reveals first; the phone +
-          email fade in once it has finished */}
+      {/* Hero — just short of full screen so the tops of the two cards below
+          peek in at the bottom edge; the big slogan reveals first, then the
+          phone + email fade in once it has finished */}
       <section
-        className={`${PAD} flex min-h-[100svh] flex-col items-center justify-center text-center`}
+        className={`${PAD} flex min-h-[calc(100svh-7rem)] flex-col items-center justify-center text-center`}
       >
         <h1 className="mx-auto max-w-6xl font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
           <WordReveal text={heroText} />
@@ -57,26 +59,26 @@ export default async function ContactPage() {
         {/* shared two-column form layout — identical sizing/spacing to the
             estimate gate */}
         <div className={FORM_GRID}>
-          {/* FORM_CARD: on mobile the form sits in a subtle card so it separates
-              cleanly from the booking card below it */}
-          <div className={FORM_CARD}>
+          {/* the cards' outlines draw in on load, staggered — their titles
+              already peek into the hero viewport above */}
+          <DrawCard delay={600}>
             <p className="label mb-8 !text-ink">Tell us about your project</p>
             <ContactForm
               email={contact?.contactEmail || site.email}
               accessKey={contact?.formAccessKey || undefined}
             />
-          </div>
+          </DrawCard>
           {/* same card treatment as the form column — label inside the card,
               one "book a call" heading only (the mock carries no heading of
               its own and goes borderless inside this card on mobile) */}
-          <div className={FORM_CARD}>
+          <DrawCard delay={800}>
             <p className="label mb-8 !text-ink">Or book a call</p>
             {contact?.calendlyUrl ? (
               <CalendlyInline url={contact.calendlyUrl} />
             ) : (
               <CalendlyMock />
             )}
-          </div>
+          </DrawCard>
         </div>
       </section>
     </main>

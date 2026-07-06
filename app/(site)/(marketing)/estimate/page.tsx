@@ -37,10 +37,11 @@ export default async function EstimatePage() {
 
   return (
     <main>
-      {/* Hero — full screen: big slogan reveals first; the intro fades in once
-          it has finished, like contact */}
+      {/* Hero — just short of full screen so the tops of the gate cards peek
+          in at the bottom edge; the big slogan reveals first, then the intro
+          fades in, like contact */}
       <section
-        className={`${PAD} flex min-h-[100svh] flex-col items-center justify-center text-center`}
+        className={`${PAD} flex min-h-[calc(100svh-7rem)] flex-col items-center justify-center text-center`}
       >
         <h1 className="mx-auto max-w-6xl font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
           <WordReveal text={heroText} />
@@ -57,7 +58,7 @@ export default async function EstimatePage() {
           comfortable min-height so the (short) gate is centred with real breathing
           room above the footer; once unlocked the calculator fills it. */}
       <section
-        className={`${PAD} flex min-h-[70svh] flex-col justify-center pb-[28vh] pt-8`}
+        className={`${PAD} flex min-h-[70svh] flex-col justify-start pb-[28vh] pt-8`}
       >
         <EstimateGate
           calendlyUrl={contact?.calendlyUrl}
