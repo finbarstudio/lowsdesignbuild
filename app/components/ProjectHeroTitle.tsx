@@ -108,8 +108,10 @@ export default function ProjectHeroTitle({ title }: { title: string }) {
   return (
     <h1
       ref={ref}
-      style={{ color }}
-      className="fixed left-0 top-0 z-50 whitespace-nowrap font-mono uppercase leading-none tracking-[0.14em] will-change-transform"
+      // colour animates on the SAME 300ms curve as the header logo/nav
+      // (transition-colors duration-300), so the two flip in perfect sync
+      style={{ color, transition: "color 0.3s" }}
+      className="fixed left-0 top-0 z-50 whitespace-nowrap font-sans font-bold uppercase leading-none tracking-tight will-change-transform"
     >
       <WordReveal text={title} />
     </h1>
