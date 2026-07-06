@@ -149,7 +149,7 @@ export default async function HomePage() {
           <StickySlogan>
             <div className="mx-auto w-full max-w-[1900px] px-[10%] sm:px-6">
               <h1 className="mx-auto max-w-6xl text-center font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
-                <WordReveal text={heroText} />
+                <WordReveal text={heroText} delay={200} />
               </h1>
             </div>
           </StickySlogan>

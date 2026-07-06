@@ -36,7 +36,7 @@ const CX = 60.715,
 // timeline (ms): draw → hold → the slit opens. Kept tight (~2.35s total) so the
 // preloader + the staggered chrome entrance that follows it finish under 4s.
 const DRAW = 1050,
-  HOLD = 200,
+  HOLD = 400,
   REVEAL = 1050;
 const holdEnd = DRAW + HOLD;
 const endAll = holdEnd + REVEAL + 40;
@@ -154,6 +154,9 @@ export default function Preloader() {
     ro.observe(root);
     layout();
     render(0); // paint the settled curtain before the first rAF tick
+    // the masked SVG curtain is now settled — drop the opaque backdrop so the
+    // keyhole cut can see through to the page
+    root.style.background = "transparent";
     raf = requestAnimationFrame(frame);
     // belt-and-braces: if rAF is throttled/stalled (e.g. backgrounded tab), still
     // tear the curtain down.
@@ -177,7 +180,10 @@ export default function Preloader() {
       className="preloader"
       ref={rootRef}
       aria-hidden="true"
-      style={{ position: "fixed", inset: 0, zIndex: 80 }}
+      // Solid paper backdrop from the very first paint: the SVG curtain below
+      // takes over the moment the timeline starts (the JS clears this), so the
+      // page can never flash through before the mask is ready.
+      style={{ position: "fixed", inset: 0, zIndex: 80, background: "#f4f1ea" }}
     >
       <svg
         className="preloader__svg"

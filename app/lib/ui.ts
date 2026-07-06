@@ -15,5 +15,7 @@ export const FORM_CARD =
 
 // The shared two-column layout for the form pages (contact / estimate gate):
 // identical width, columns and gap so both pages read the same.
+// items-start: each card hugs its own content — a shorter card never stretches
+// to match its taller sibling (which read as empty space at its bottom).
 export const FORM_GRID =
-  "mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 lg:grid-cols-2";
+  "mx-auto grid w-full max-w-6xl grid-cols-1 items-start gap-10 lg:grid-cols-2";

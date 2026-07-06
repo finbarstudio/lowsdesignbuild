@@ -132,11 +132,11 @@ const DEFAULT_INFO: Record<string, string> = {
   finish:
     "Standard is a quality, functional finish. High-end adds 10% for premium materials and detailing; luxury adds 20% for bespoke, top-tier specification throughout.",
   complexity:
-    "Reflects how involved the build is — awkward layouts, structural challenges or phasing push this from standard to moderate or high.",
+    "Reflects how involved the build is: awkward layouts, structural challenges or phasing push this from standard to moderate or high.",
   steel:
-    "How much structural steelwork the design needs — larger spans and multiple beams increase complexity.",
+    "How much structural steelwork the design needs. Larger spans and multiple beams increase complexity.",
   opening:
-    "The opening between the existing house and the new space — wider, full-width openings need more steel support.",
+    "The opening between the existing house and the new space. Wider, full-width openings need more steel support.",
   access:
     "How easily materials and skips can reach the work area. Restricted or no side access adds labour and time.",
   conservation:
@@ -587,9 +587,9 @@ export default function EstimateCalculator({
     } else {
       lines.push(`Project: ${LOFT_TYPES[loft.type].label}`);
       lines.push(`Bedrooms: ${BEDROOMS[loft.bedrooms].label}`);
-      lines.push(`Ensuites — standard: ${loft.ensuiteStd}, premium: ${loft.ensuitePrem}`);
+      lines.push(`Ensuites · standard: ${loft.ensuiteStd}, premium: ${loft.ensuitePrem}`);
       lines.push(
-        `Rooflights — standard: ${loft.rlStd}, premium: ${loft.rlPrem}, cabrio: ${loft.rlCabrio}`,
+        `Rooflights · standard: ${loft.rlStd}, premium: ${loft.rlPrem}, cabrio: ${loft.rlCabrio}`,
       );
       lines.push(`Staircase: ${STAIRCASE[loft.staircase].label}`);
       lines.push(`Joinery: ${JOINERY[loft.joinery].label}`);
@@ -624,7 +624,7 @@ export default function EstimateCalculator({
       accessKey,
       recipient: email,
       replyTo: String(d.get("email") || ""),
-      subject: `Budget calculator enquiry — ${name}`,
+      subject: `Budget calculator enquiry · ${name}`,
       message: body,
     });
     setSent(result === "failed" ? "mailto" : result);
@@ -729,7 +729,7 @@ export default function EstimateCalculator({
               </span>
             </button>
             <p className="mt-1 text-xs text-muted">
-              Optional — planning, logistics, services and structural extras.
+              Optional: planning, logistics, services and structural extras.
             </p>
 
             {showAdv && (
@@ -763,7 +763,7 @@ export default function EstimateCalculator({
                   </label>
                 ))}
                 <CountRow
-                  label="Party wall — adjoining neighbours"
+                  label="Party wall agreements"
                   price="£3,000 each"
                   info={info("partyWall")}
                   value={partyWall}
@@ -865,7 +865,7 @@ export default function EstimateCalculator({
 
               {sent === "sent" && (
                 <p className="text-sm text-muted">
-                  Thanks — your enquiry and estimate are on their way to us.
+                  Thanks, your enquiry and estimate are on their way to us.
                   We&apos;ll be in touch shortly.
                 </p>
               )}

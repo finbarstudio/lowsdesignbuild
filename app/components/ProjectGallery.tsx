@@ -199,6 +199,7 @@ const css = `
   padding: 3vmin;
   background: rgba(18,18,16,0.96);
   animation: lb-fade .28s ease both;
+  cursor: pointer; /* the backdrop itself closes — signal it */
   -webkit-tap-highlight-color: transparent;
 }
 @keyframes lb-fade{ from{ opacity:0 } to{ opacity:1 } }

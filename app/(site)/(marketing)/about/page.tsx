@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import AreaPills from "@/app/components/AreaPills";
-import ScrollNudge from "@/app/components/ScrollNudge";
 import ScrollText from "@/app/components/ScrollText";
 import TeamGrid from "@/app/components/TeamGrid";
 import ViewProjectsButton from "@/app/components/ViewProjectsButton";
@@ -112,7 +111,6 @@ export default async function AboutPage() {
 
   return (
     <main>
-      <ScrollNudge />
       {/* Intro — a hero like the home slogan: word-by-word reveal, with the
           "design + build" lockup inlined from the logotype */}
       <section

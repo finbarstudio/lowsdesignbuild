@@ -14,6 +14,7 @@ export default function WordReveal({
   className = "",
   stagger = 160,
   duration = 0.7,
+  delay = 0,
 }: {
   text?: string;
   /** mixed tokens (words and/or elements) to reveal one by one; overrides text */
@@ -25,6 +26,8 @@ export default function WordReveal({
   stagger?: number;
   /** each word's transition duration in seconds */
   duration?: number;
+  /** ms before the first word starts */
+  delay?: number;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const [shown, setShown] = useState(false);
@@ -98,7 +101,7 @@ export default function WordReveal({
             style={{
               transform: shown ? "translateY(0)" : "translateY(110%)",
               transition: `transform ${duration}s cubic-bezier(0.22,1,0.36,1)`,
-              transitionDelay: `${i * stagger}ms`,
+              transitionDelay: `${delay + i * stagger}ms`,
             }}
           >
             {typeof tok === "string" ? kernedWord(tok) : tok}

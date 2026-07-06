@@ -15,12 +15,17 @@ const REF = 100; // reference font-size we measure at
 const TRAIL = 0.28 * REF;
 type Mode = "hero" | "ink" | "footer";
 
+// Docked resting place: just right of the logomark in the bar (the logomark is
+// 37px wide at the sm edge inset of 28px, plus a small gap).
+const DOCK_X = 28 + 37 + 18;
+
 /**
- * The project h1 — bold caps (same face as the featured-project thumbnails). At
- * rest it's sized to fill the viewport width (whatever the title length); as you
- * scroll it shrinks to nav-item size and travels into the centre of the nav bar,
- * staying centred and taking the logo's scroll-driven colour. On mobile it fills
- * the width and simply scrolls away with the hero.
+ * The project h1 — Space Mono caps, so once it docks in the nav it reads as a
+ * native nav item. At rest it's sized to fill the viewport width (whatever the
+ * title length); as you scroll it shrinks to nav-item size and travels to the
+ * TOP LEFT, parking beside the logo in the bar and taking the logo's
+ * scroll-driven colour. On mobile it fills the width and simply scrolls away
+ * with the hero.
  */
 export default function ProjectHeroTitle({ title }: { title: string }) {
   const ref = useRef<HTMLHeadingElement>(null);
@@ -49,7 +54,8 @@ export default function ProjectHeroTitle({ title }: { title: string }) {
       const f = fit + (NAV - fit) * p; // rest → nav size
       const w = (w0 * f) / REF;
       const h = (h0 * f) / REF;
-      const x = (vw - w) / 2; // centred
+      const x0 = (vw - w) / 2; // centred at rest
+      const x = mobile ? x0 : x0 + (DOCK_X - x0) * p; // → beside the logo
       const top0 = vh * HERO - BOTTOM - h; // anchored to the (80vh) hero bottom
       const top1 = (BAR - h) / 2; // centred in the bar
       const top = mobile ? top0 - y : top0 + (top1 - top0) * p;
@@ -59,7 +65,10 @@ export default function ProjectHeroTitle({ title }: { title: string }) {
 
       const footer = document.getElementById("site-footer");
       const atFooter = footer ? y + BAR >= footer.offsetTop : false;
-      const dark = y >= vh * HERO - BAR;
+      // Turn ink only once the content sheet has actually covered the docked
+      // title (content top reaches ~the bar), not while it's still over the
+      // last strip of the hero image.
+      const dark = y >= vh * HERO - 20;
       setMode(atFooter ? "footer" : dark ? "ink" : "hero");
     };
 
@@ -96,7 +105,7 @@ export default function ProjectHeroTitle({ title }: { title: string }) {
     <h1
       ref={ref}
       style={{ color }}
-      className="fixed left-0 top-0 z-50 whitespace-nowrap font-sans font-bold uppercase leading-none tracking-tight will-change-transform"
+      className="fixed left-0 top-0 z-50 whitespace-nowrap font-mono uppercase leading-none tracking-[0.14em] will-change-transform"
     >
       <WordReveal text={title} />
     </h1>

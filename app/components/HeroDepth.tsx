@@ -38,7 +38,10 @@ export default function HeroDepth({
       );
       const eq = q * q * (3 - 2 * q); // smoothstep
       const s = startScale + (endScale - startScale) * eq;
-      img.style.transform = `translate3d(0, ${(-eq * rise).toFixed(1)}px, 0) scale(${s.toFixed(3)})`;
+      // parallax: the image slides down at a fraction of the scroll speed (like
+      // the home hero) — well within the startScale overscan headroom
+      const par = Math.min(window.scrollY, vh * span) * 0.12;
+      img.style.transform = `translate3d(0, ${(par - eq * rise).toFixed(1)}px, 0) scale(${s.toFixed(3)})`;
       img.style.opacity = `${(1 - fade * eq).toFixed(3)}`;
     };
     const onScroll = () => {

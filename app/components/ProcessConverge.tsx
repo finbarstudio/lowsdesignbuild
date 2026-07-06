@@ -156,11 +156,13 @@ export default function ProcessConverge({
         c.style.opacity = fade < 1 ? fade.toFixed(3) : "";
       });
 
-      // Button: grows in as the stage assembles, holds, and fades with the rest.
+      // Button: grows in as the stage assembles and STAYS — it doesn't fade
+      // with the grid, so it's still visible as Instagram scrolls up over the
+      // stage (the tiles simply cover it where they overlap).
       if (btnRef.current) {
         btnRef.current.style.opacity = reduce
           ? "1"
-          : (clamp((q - 0.7) / 0.22, 0, 1) * fade).toFixed(3);
+          : clamp((q - 0.7) / 0.22, 0, 1).toFixed(3);
         btnRef.current.style.transform = reduce
           ? "none"
           : `scale(${(0.92 + g * 0.35).toFixed(3)})`;

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 import { CalendlyInline, CalendlyMock } from "@/app/components/Calendly";
 import ContactForm from "@/app/components/ContactForm";
-import ScrollNudge from "@/app/components/ScrollNudge";
+import HeroIntro from "@/app/components/HeroIntro";
 import WordReveal from "@/app/components/WordReveal";
 import { site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
@@ -22,19 +22,22 @@ export const revalidate = 60;
 
 export default async function ContactPage() {
   const contact = await client.fetch<Contact | null>(CONTACT_QUERY);
+  const heroText = contact?.contactHeroText || "Let's discuss your next project";
   return (
     <main>
-      <ScrollNudge />
-      {/* Hero — full screen: big centred slogan like the home page, with the
-          phone + email sitting beneath it */}
+      {/* Hero — full screen: big centred slogan reveals first; the phone +
+          email fade in once it has finished */}
       <section
         className={`${PAD} flex min-h-[100svh] flex-col items-center justify-center text-center`}
       >
         <h1 className="mx-auto max-w-6xl font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
-          <WordReveal text={contact?.contactHeroText || "Let's discuss your next project"} />
+          <WordReveal text={heroText} />
         </h1>
 
-        <div className="mt-12 flex w-full max-w-full flex-col items-center gap-3 sm:mt-16 sm:gap-4">
+        <HeroIntro
+          delay={heroText.split(" ").length * 160 + 500}
+          className="mt-12 flex w-full max-w-full flex-col items-center gap-3 sm:mt-16 sm:gap-4"
+        >
           <h2 className="text-[clamp(1.25rem,6vw,2.25rem)] font-medium tracking-tight">
             <a href={site.phoneHref} className="link-underline">
               {site.phone}
@@ -45,7 +48,7 @@ export default async function ContactPage() {
               {site.email}
             </a>
           </h2>
-        </div>
+        </HeroIntro>
       </section>
 
       {/* Form + book-a-call, side by side. The Calendly booking shows a styled

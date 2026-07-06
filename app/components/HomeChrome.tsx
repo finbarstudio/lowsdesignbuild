@@ -102,7 +102,7 @@ export default function HomeChrome({
     // Fail-open safety net: never let the chrome stay hidden even if the
     // preloader event never arrives (stalled tab, JS edge cases). Sits just past
     // the preloader's own end (~2.34s) so it only ever catches a genuine stall.
-    const safety = window.setTimeout(start, 2800);
+    const safety = window.setTimeout(start, 3000);
 
     return () => {
       window.removeEventListener("preloader:done", start);
@@ -124,8 +124,11 @@ export default function HomeChrome({
       const dark = window.scrollY >= heroH - BAR;
       setMode(atFooter ? "footer" : dark ? "ink" : "hero");
 
-      // Hero image holds for the first ~10% of scroll, then recedes (scale
-      // down + drift up + fade) so it falls away with depth as you scroll on.
+      // Hero image: PARALLAX on scroll (the image slides down at a fraction of
+      // the scroll speed, so it lags behind the section) plus the existing
+      // depth-recede (drift + fade) as you scroll on. The downward slide can
+      // never reveal an edge: the section's visible top is always deeper into
+      // the image than the parallax offset.
       const heroImg = document.getElementById("home-hero-img");
       if (heroImg) {
         const vh = window.innerHeight;
@@ -134,7 +137,8 @@ export default function HomeChrome({
           Math.max(0, (window.scrollY - vh * 0.1) / (vh * 0.75)),
         );
         const eq = q * q * (3 - 2 * q); // smoothstep
-        heroImg.style.transform = `translate3d(0, ${(-eq * 20).toFixed(1)}px, 0) scale(1.06)`;
+        const par = window.scrollY * 0.25;
+        heroImg.style.transform = `translate3d(0, ${(par - eq * 20).toFixed(1)}px, 0) scale(1.06)`;
         heroImg.style.opacity = `${(1 - 0.4 * eq).toFixed(3)}`;
       }
 

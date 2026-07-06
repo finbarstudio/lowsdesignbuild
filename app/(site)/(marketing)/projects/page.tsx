@@ -2,8 +2,8 @@ import { FOOT, PAD } from "@/app/lib/ui";
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import HeroIntro from "@/app/components/HeroIntro";
 import ProjectsGrid from "@/app/components/ProjectsGrid";
-import ScrollNudge from "@/app/components/ScrollNudge";
 import WordReveal from "@/app/components/WordReveal";
 import { client } from "@/sanity/lib/client";
 import { PROJECTS_PAGE_QUERY, PROJECTS_QUERY } from "@/sanity/lib/queries";
@@ -25,21 +25,24 @@ export default async function ProjectsPage() {
     client.fetch<ProjectsPage | null>(PROJECTS_PAGE_QUERY),
   ]);
 
+  const heroText = page?.heroText || "Our pride is in our projects";
+
   return (
     <main>
-      <ScrollNudge />
-
-      {/* Hero — full screen, big word-by-word reveal like the other pages */}
+      {/* Hero — full screen, big word-by-word reveal first; the intro fades in
+          only after the slogan has finished */}
       <section
         className={`${PAD} flex min-h-[100svh] flex-col items-center justify-center text-center`}
       >
         <h1 className="mx-auto max-w-6xl font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
-          <WordReveal text={page?.heroText || "Our pride is in our projects"} />
+          <WordReveal text={heroText} />
         </h1>
-        <p className="mt-10 max-w-xl text-base leading-relaxed text-muted sm:mt-14 sm:text-lg">
-          {page?.heroIntro ||
-            "A selection of recent loft conversions, extensions and full refurbishments across London and surrounding areas."}
-        </p>
+        <HeroIntro delay={heroText.split(" ").length * 160 + 500}>
+          <p className="mt-10 max-w-xl text-base leading-relaxed text-muted sm:mt-14 sm:text-lg">
+            {page?.heroIntro ||
+              "A selection of recent loft conversions, extensions and full refurbishments across London and surrounding areas."}
+          </p>
+        </HeroIntro>
       </section>
 
       {/* Grid — full-bleed portrait cards. The image fills a frame whose aspect

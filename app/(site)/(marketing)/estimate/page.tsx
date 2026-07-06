@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 import EstimateCalculator from "@/app/components/EstimateCalculator";
 import EstimateGate from "@/app/components/EstimateGate";
-import ScrollNudge from "@/app/components/ScrollNudge";
+import HeroIntro from "@/app/components/HeroIntro";
 import WordReveal from "@/app/components/WordReveal";
 import { site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
@@ -33,21 +33,24 @@ export default async function EstimatePage() {
     if (t.key && t.text) infoOverrides[t.key] = t.text;
   }
 
+  const heroText = estimate?.heroText || "Estimate your project";
+
   return (
     <main>
-      <ScrollNudge />
-
-      {/* Hero — full screen: big slogan with the intro beneath, like contact */}
+      {/* Hero — full screen: big slogan reveals first; the intro fades in once
+          it has finished, like contact */}
       <section
         className={`${PAD} flex min-h-[100svh] flex-col items-center justify-center text-center`}
       >
         <h1 className="mx-auto max-w-6xl font-sans text-3xl font-bold uppercase leading-[1.05] sm:text-6xl sm:tracking-tight lg:text-7xl">
-          <WordReveal text={estimate?.heroText || "Estimate your project"} />
+          <WordReveal text={heroText} />
         </h1>
-        <p className="mt-10 max-w-xl text-base leading-relaxed text-muted sm:mt-14 sm:text-lg">
-          {estimate?.heroIntro ||
-            "Get a rough cost for your project in a few seconds. Pick the options that match your plans and we'll do the maths, then get in touch for an accurate quote."}
-        </p>
+        <HeroIntro delay={heroText.split(" ").length * 160 + 500}>
+          <p className="mt-10 max-w-xl text-base leading-relaxed text-muted sm:mt-14 sm:text-lg">
+            {estimate?.heroIntro ||
+              "Get a rough cost for your project in a few seconds. Pick the options that match your plans and we'll do the maths, then get in touch for an accurate quote."}
+          </p>
+        </HeroIntro>
       </section>
 
       {/* Calculator — gated behind an email (or book a call). The section holds a

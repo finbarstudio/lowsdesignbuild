@@ -14,6 +14,23 @@ export const ESTIMATE_NAME_KEY = "lows_estimate_name";
 const UNLOCK_KEY = "lows_estimate_unlocked";
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
+// The book-a-call card's contents — shared by the Calendly popup trigger and
+// the /contact fallback link so both render identically.
+function BookCallCardBody() {
+  return (
+    <>
+      <p className="label mb-6 !text-ink">Or already know your scope?</p>
+      <p className="max-w-sm text-base leading-relaxed text-muted">
+        Skip the calculator and book a call. We&apos;ll talk through your
+        project and give you a proper steer.
+      </p>
+      <span className="link link-underline is-tracked mt-8 block w-fit">
+        Book a call
+      </span>
+    </>
+  );
+}
+
 /**
  * Gates the estimate calculator behind an email. Two columns: enter your email
  * to unlock the estimator on the left, or — if you already know your scope —
@@ -116,7 +133,7 @@ export default function EstimateGate({
         <p className="label mb-6 !text-copper-deep">View the estimator</p>
         <p className="max-w-sm text-base leading-relaxed text-muted">
           Pop in your name and email and we&apos;ll unlock the instant estimate
-          calculator — we&apos;ll use them to send your figures across.
+          calculator. We&apos;ll use them to send your figures across.
         </p>
         <form onSubmit={submit} className="mt-8 space-y-8">
           <label className="group block">
@@ -168,30 +185,24 @@ export default function EstimateGate({
       </div>
 
       {/* Right — skip the calculator and book a call. Same card as the email
-          column, so the two options read as consistent siblings. */}
-      <div className={`flex flex-col ${FORM_CARD}`}>
-        <p className="label mb-6 !text-ink">Or already know your scope?</p>
-        <p className="max-w-sm text-base leading-relaxed text-muted">
-          Skip the calculator and book a call — we&apos;ll talk through your
-          project and give you a proper steer.
-        </p>
-        {calendlyUrl ? (
-          <CalendlyPopupButton
-            url={calendlyUrl}
-            className="link link-underline is-tracked mt-8 block w-fit"
-          >
-            Book a call
-          </CalendlyPopupButton>
-        ) : (
-          // No link set yet — point at the Contact page's booking section.
-          <a
-            href="/contact"
-            className="link link-underline is-tracked mt-8 block w-fit"
-          >
-            Book a call
-          </a>
-        )}
-      </div>
+          column, so the two options read as consistent siblings. The WHOLE
+          card is the click target, not just the link. */}
+      {calendlyUrl ? (
+        <CalendlyPopupButton
+          url={calendlyUrl}
+          className={`group flex cursor-pointer flex-col text-left no-underline ${FORM_CARD}`}
+        >
+          <BookCallCardBody />
+        </CalendlyPopupButton>
+      ) : (
+        // No link set yet — point at the Contact page's booking section.
+        <a
+          href="/contact"
+          className={`group flex cursor-pointer flex-col text-left no-underline ${FORM_CARD}`}
+        >
+          <BookCallCardBody />
+        </a>
+      )}
     </div>
   );
 }

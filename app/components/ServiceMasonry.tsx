@@ -59,7 +59,7 @@ function Tile({ s, delay }: { s: Service; delay: number }) {
           src={s.img}
           alt={s.title}
           loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
+          className="absolute inset-0 h-full w-full object-cover"
         />
         {/* dark gradient along the bottom for the title */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />

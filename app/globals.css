@@ -212,11 +212,12 @@ button:active {
   animation: logo-rise 0.8s cubic-bezier(0.76, 0, 0.24, 1) 3.6s forwards;
 }
 /* JS path: a TRANSITION (not a re-declared animation) so the rise always plays
-   when entrance-go is added — sequenced just after the nav has come in. */
+   when entrance-go is added — in the SAME beat as the nav items (their stagger
+   starts at 220ms). */
 html.entrance-go .logo-mask > * {
   animation: none;
   transform: translateY(0);
-  transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1) 0.5s;
+  transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1) 0.22s;
 }
 /* Fast path (client-side return to home / no preloader): the wordmark is simply
    there — no delay, no rise. Must sit AFTER the entrance-go rule to win. */
