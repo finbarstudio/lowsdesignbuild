@@ -5,8 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import WordReveal from "@/app/components/WordReveal";
 
 const BAR = 64;
-const EDGE = 10; // tiny side breathing room when filling the width
 const BOTTOM = 22; // bottom padding at rest
+const EDGE = BOTTOM; // side padding matches the bottom gap, so the title sits in an even inset
 const NAV = 14; // docked size — same as the nav items
 const HERO = 0.8; // hero height as a fraction of the viewport (matches h-[80svh])
 const REF = 100; // reference font-size we measure at
