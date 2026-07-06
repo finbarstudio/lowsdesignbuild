@@ -161,7 +161,7 @@ const css = `
      the matching EDGE gutter — so the footer's left/right edges align exactly
      with the nav items above on every viewport. */
   width:100%; max-width:1900px; margin:0 auto;
-  padding:clamp(44px,6vw,72px) var(--ft-marquee-pad) clamp(26px,4vw,40px);
+  padding:clamp(44px,6vw,72px) var(--ft-marquee-pad) 16px;
 }
 @media (min-width:640px){
   .c-ft-marquee{ --ft-marquee-pad: 28px; }
@@ -243,13 +243,17 @@ const css = `
 .c-ft-marquee__social{display:flex; flex-wrap:wrap; gap:10px 22px;}
 .c-ft-marquee__social a{font-size:13px;}
 
+/* legal bar: copyright hard left, credit hard right, tight padding */
 .c-ft-marquee__bar{
   display:flex; flex-wrap:wrap; align-items:center;
-  gap:10px 28px; padding-top:clamp(22px,3vw,30px);
+  justify-content:space-between;
+  gap:10px 28px; padding-top:14px;
   border-top:1px solid var(--line);
 }
 .c-ft-marquee__legal{margin:0; font-size:12px; letter-spacing:0.01em; color:var(--muted);}
-.c-ft-marquee__credit{ text-decoration:none; }
+/* hard right (margin-left, not just space-between, so it stays right even if
+   the bar ever wraps). Declared after __legal's margin:0 reset so it wins. */
+.c-ft-marquee__credit{ text-decoration:none; margin-left:auto; }
 .c-ft-marquee__credit:hover{ color:var(--copper-deep); }
 
 .c-ft-marquee a:focus-visible{ outline:2px solid var(--slate-blue); outline-offset:4px; border-radius:1px; }
