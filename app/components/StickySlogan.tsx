@@ -26,10 +26,10 @@ export default function StickySlogan({
       }
       const vh = window.innerHeight;
       const top = card.getBoundingClientRect().top;
-      // Fades out early: starts as the process section rises to ~0.85vh and is
-      // completely gone by ~0.62vh — well before the "Our process" title
+      // Fades out early: starts as the process section rises to ~0.78vh and is
+      // completely gone by ~0.55vh — still before the "Our process" title
       // (which rides at the section top) reaches the slogan.
-      const p = Math.min(1, Math.max(0, (vh * 0.85 - top) / (vh * 0.23)));
+      const p = Math.min(1, Math.max(0, (vh * 0.78 - top) / (vh * 0.23)));
       el.style.opacity = `${(1 - p).toFixed(3)}`;
     };
     const onScroll = () => {
