@@ -207,7 +207,7 @@ export default function ProjectGallery({
                 sizes="(max-width: 640px) 100vw, 50vw"
                 placeholder={im.lqip ? "blur" : undefined}
                 blurDataURL={im.lqip ?? undefined}
-                className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]"
+                className="object-cover"
               />
             </button>
           </WipeReveal>
