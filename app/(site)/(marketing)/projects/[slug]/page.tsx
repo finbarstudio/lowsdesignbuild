@@ -107,17 +107,16 @@ export default async function ProjectPage({
       {/* ---------------- Intro statement ---------------- */}
       {project.description && (
         <section className={`${PAD} py-16 sm:py-28 lg:py-40`}>
-          <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-12 lg:gap-x-10">
-            {/* left rail: tags + colour tiles, both mask-revealing */}
-            <div className="lg:col-span-4">
-              <ProjectAside
-                tags={[...projectCats(project), project.location, project.year]
-                  .filter(Boolean)
-                  .map(String)}
-                colours={deriveColours(project.palette, project.heroPalette)}
-              />
-            </div>
-            <Reveal className="lg:col-span-7 lg:col-start-6">
+          {/* centred 70vw column: header row (tags left, palette squares
+              right) above the copy, both aligned to the copy's edges */}
+          <div className="mx-auto w-full sm:w-[70vw]">
+            <ProjectAside
+              tags={[...projectCats(project), project.location, project.year]
+                .filter(Boolean)
+                .map(String)}
+              colours={deriveColours(project.palette, project.heroPalette)}
+            />
+            <Reveal className="mt-10 block sm:mt-12">
               <p className="serif text-xl leading-[1.3] sm:text-2xl lg:text-3xl">
                 {project.description}
               </p>

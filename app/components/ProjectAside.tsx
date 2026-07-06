@@ -4,28 +4,11 @@ import { useEffect, useRef, useState } from "react";
 
 export type Swatch = { hex: string; name: string };
 
-// Relative luminance → pick black/white text for contrast.
-function isDark(hex: string): boolean {
-  const m = hex.replace("#", "");
-  const full =
-    m.length === 3
-      ? m
-          .split("")
-          .map((c) => c + c)
-          .join("")
-      : m;
-  const r = parseInt(full.slice(0, 2), 16) / 255;
-  const g = parseInt(full.slice(2, 4), 16) / 255;
-  const b = parseInt(full.slice(4, 6), 16) / 255;
-  const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  return lum < 0.55;
-}
-
 /**
- * The left rail of a project's intro: the tags (inline, wrapping) and a stack of
- * colour tiles, all of which mask-reveal from the left when scrolled into view.
- * The colour stack fills the column height (which matches the body copy), and
- * shows fewer tiles when there's less room.
+ * The header row above a project's intro copy: the tags inline on the LEFT
+ * (aligned to the copy's left edge) and the palette as small colour SQUARES on
+ * the RIGHT — the same height as the tag pills, so the row reads as one line.
+ * Everything mask-reveals from the left when scrolled into view.
  */
 export default function ProjectAside({
   tags,
@@ -35,26 +18,7 @@ export default function ProjectAside({
   colours: Swatch[];
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const stackRef = useRef<HTMLDivElement>(null);
-  const [count, setCount] = useState(Math.min(5, colours.length));
   const [shown, setShown] = useState(false);
-
-  // how many tiles fit (≥56px each), capped at 5 and the number of colours
-  useEffect(() => {
-    const el = stackRef.current;
-    if (!el) return;
-    const measure = () => {
-      const h = el.clientHeight;
-      const max = Math.min(5, colours.length);
-      const min = Math.min(3, colours.length); // always show at least 3
-      const fit = Math.max(min, Math.min(max, Math.floor(h / 56)));
-      setCount(fit);
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [colours.length]);
 
   // reveal when scrolled into view (scroll + getBoundingClientRect, no observer)
   useEffect(() => {
@@ -90,66 +54,50 @@ export default function ProjectAside({
   }, []);
 
   const ease = "cubic-bezier(0.76,0,0.24,1)";
-  const items = colours.slice(0, count);
+  const swatches = colours.slice(0, 5);
 
   return (
-    <div ref={rootRef} className="flex h-full flex-col gap-6">
+    <div
+      ref={rootRef}
+      className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3"
+    >
       {/* tags — inline, wrapping; each masks in from the left */}
-      {tags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {tags.map((t, i) => (
-            <span key={t} className="inline-flex overflow-hidden">
-              <span
-                className="pill text-ink"
-                style={{
-                  transform: shown ? "translateX(0)" : "translateX(-110%)",
-                  transition: `transform 0.6s ${ease}`,
-                  transitionDelay: `${i * 90}ms`,
-                }}
-              >
-                {t}
-              </span>
+      <div className="flex flex-wrap gap-2">
+        {tags.map((t, i) => (
+          <span key={t} className="inline-flex overflow-hidden">
+            <span
+              className="pill text-ink"
+              style={{
+                transform: shown ? "translateX(0)" : "translateX(-110%)",
+                transition: `transform 0.6s ${ease}`,
+                transitionDelay: `${i * 90}ms`,
+              }}
+            >
+              {t}
             </span>
+          </span>
+        ))}
+      </div>
+
+      {/* colour squares — pill-height, right-aligned; each wipes in from the
+          left on a stagger after the tags */}
+      {swatches.length > 0 && (
+        <div className="ml-auto flex gap-2">
+          {swatches.map((c, i) => (
+            <span
+              key={`${c.hex}-${i}`}
+              title={c.name || c.hex}
+              className="block h-[28px] w-[28px]"
+              style={{
+                background: c.hex,
+                clipPath: shown ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
+                transition: `clip-path 0.6s ${ease}`,
+                transitionDelay: `${tags.length * 90 + 150 + i * 90}ms`,
+              }}
+            />
           ))}
         </div>
       )}
-
-      {/* colour tiles — fill the remaining height; each wipes in from the left
-          revealing its name in mono type */}
-      <div
-        ref={stackRef}
-        className="flex min-h-[15rem] flex-1 flex-col gap-2 lg:min-h-0"
-      >
-        {items.map((c, i) => {
-          const delay = tags.length * 90 + 150 + i * 110;
-          return (
-            <div key={`${c.hex}-${i}`} className="relative flex-1 overflow-hidden">
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: c.hex,
-                  clipPath: shown ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
-                  transition: `clip-path 0.7s ${ease}`,
-                  transitionDelay: `${delay}ms`,
-                }}
-              />
-              {c.name && (
-                <span
-                  className="absolute inset-0 flex items-center px-4 font-mono text-[0.7rem] uppercase tracking-[0.12em]"
-                  style={{
-                    color: isDark(c.hex) ? "#ffffff" : "#1a1a1a",
-                    opacity: shown ? 1 : 0,
-                    transition: "opacity 0.5s ease",
-                    transitionDelay: `${delay + 280}ms`,
-                  }}
-                >
-                  {c.name}
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </div>
     </div>
   );
 }
