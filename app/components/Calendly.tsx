@@ -9,6 +9,7 @@ const CAL_JS = "https://assets.calendly.com/assets/external/widget.js";
 type CalendlyApi = {
   initPopupWidget: (o: { url: string }) => void;
   initInlineWidget: (o: { url: string; parentElement: HTMLElement }) => void;
+  closePopupWidget: () => void;
 };
 
 const getCalendly = () =>
@@ -22,10 +23,10 @@ const themed = (url: string) =>
 
 /**
  * "Book a call" — opens Calendly's own native popup widget, restyled only so
- * far as its backdrop matches the project gallery lightbox (same near-black,
- * pointer cursor — Calendly already closes on backdrop click). Falls back to
- * opening the link in a new tab if the widget script hasn't loaded. The URL is
- * set in Sanity (Contact → Calendly booking link).
+ * far as its backdrop matches the project gallery lightbox: same near-black,
+ * hand cursor, and clicking the greyed-out area closes it (like the carousel).
+ * Falls back to opening the link in a new tab if the widget script hasn't
+ * loaded. The URL is set in Sanity (Contact → Calendly booking link).
  */
 export function CalendlyPopupButton({
   url,
@@ -48,13 +49,31 @@ export function CalendlyPopupButton({
     [url],
   );
 
+  // Backdrop click closes the popup (Calendly's own overlay doesn't). The
+  // overlay is injected outside our tree, so listen at the document level and
+  // only act on clicks landing on the overlay itself, not the scheduler.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const t = e.target as HTMLElement;
+      if (t.classList?.contains("calendly-overlay") || t.classList?.contains("calendly-close-overlay")) {
+        getCalendly()?.closePopupWidget();
+      }
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
+
   return (
     <>
       <link rel="stylesheet" href={CAL_CSS} />
       <Script src={CAL_JS} strategy="lazyOnload" />
-      {/* backdrop matches the gallery lightbox (.lb); nothing else changes */}
+      {/* backdrop matches the gallery lightbox (.lb); nothing else changes.
+          The hand cursor covers both the overlay and Calendly's own invisible
+          close-overlay layer (whichever catches the click). */}
       <style>{`
         .calendly-overlay{ background: rgba(18,18,16,0.96) !important; cursor: pointer; }
+        .calendly-overlay .calendly-close-overlay{ cursor: pointer; }
+        .calendly-overlay .calendly-popup{ cursor: auto; }
       `}</style>
       <a
         href={url}
