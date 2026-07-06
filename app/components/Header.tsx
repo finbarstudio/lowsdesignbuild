@@ -24,7 +24,10 @@ export default function Header({ projectCount }: { projectCount?: number }) {
 
   useEffect(() => {
     const f = () => {
-      const threshold = isProjectDetail ? window.innerHeight - BAR : 40;
+      // Project detail: switch to ink at the SAME moment as the travelling
+      // project title (content sheet reaching the bar over the 80svh hero) so
+      // the logo and title change colour together.
+      const threshold = isProjectDetail ? window.innerHeight * 0.8 - 20 : 40;
       setScrolled(window.scrollY > threshold);
       const footer = document.getElementById("site-footer");
       setAtFooter(footer ? window.scrollY + BAR >= footer.offsetTop : false);

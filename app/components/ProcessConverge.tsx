@@ -156,16 +156,22 @@ export default function ProcessConverge({
         c.style.opacity = fade < 1 ? fade.toFixed(3) : "";
       });
 
-      // Button: grows in as the stage assembles and STAYS — it doesn't fade
-      // with the grid, so it's still visible as Instagram scrolls up over the
-      // stage (the tiles simply cover it where they overlap).
+      // Button: grows in as the stage assembles and STAYS (no fade). Once
+      // Instagram starts entering, the button rides up locked to the page
+      // scroll (translating exactly with the incoming section), so it scrolls
+      // away naturally instead of sitting pinned underneath the grid.
       if (btnRef.current) {
+        let dy = 0;
+        if (ig) {
+          const igTop = ig.getBoundingClientRect().top;
+          if (igTop < vh) dy = igTop - vh;
+        }
         btnRef.current.style.opacity = reduce
           ? "1"
           : clamp((q - 0.7) / 0.22, 0, 1).toFixed(3);
         btnRef.current.style.transform = reduce
           ? "none"
-          : `scale(${(0.92 + g * 0.35).toFixed(3)})`;
+          : `translateY(${dy.toFixed(1)}px) scale(${(0.92 + g * 0.35).toFixed(3)})`;
       }
 
       const isLanded = q >= 0.96;

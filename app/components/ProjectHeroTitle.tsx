@@ -54,8 +54,12 @@ export default function ProjectHeroTitle({ title }: { title: string }) {
       const f = fit + (NAV - fit) * p; // rest → nav size
       const w = (w0 * f) / REF;
       const h = (h0 * f) / REF;
-      const x0 = (vw - w) / 2; // centred at rest
-      const x = mobile ? x0 : x0 + (DOCK_X - x0) * p; // → beside the logo
+      const x0 = (vw - w) / 2; // centred at rest (≈ EDGE while full width)
+      // Desktop: travel STRAIGHT up-left — the left edge glides from its
+      // resting inset directly to the dock beside the logo (interpolating from
+      // the centred position instead would bow the path towards the middle as
+      // the line shrinks, then swing back left).
+      const x = mobile ? x0 : EDGE + (DOCK_X - EDGE) * p;
       const top0 = vh * HERO - BOTTOM - h; // anchored to the (80vh) hero bottom
       const top1 = (BAR - h) / 2; // centred in the bar
       const top = mobile ? top0 - y : top0 + (top1 - top0) * p;

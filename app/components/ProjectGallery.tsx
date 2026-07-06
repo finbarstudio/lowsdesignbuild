@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import WipeReveal from "@/app/components/WipeReveal";
@@ -29,6 +29,9 @@ export default function ProjectGallery({
   const [open, setOpen] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
   const [fullReady, setFullReady] = useState(false);
+  // full-res URLs that have already loaded this page-view — those slides show
+  // the sharp original IMMEDIATELY, no low-res/blur pass at all
+  const loadedFulls = useRef<Set<string>>(new Set());
   const count = images.length;
 
   useEffect(() => setMounted(true), []);
@@ -48,19 +51,28 @@ export default function ProjectGallery({
     [count],
   );
 
-  // Preload the FULL image for the open slide; show the low-res until it's ready.
+  // Preload the FULL image for the open slide; show the low-res until it's
+  // ready. Already-loaded fulls skip the low-res pass entirely.
   useEffect(() => {
     if (open === null) return;
-    setFullReady(false);
-    const img = new window.Image();
-    img.src = images[open].full;
-    if (img.complete) {
+    const full = images[open].full;
+    if (loadedFulls.current.has(full)) {
       setFullReady(true);
       return;
     }
-    const onLoad = () => setFullReady(true);
-    img.addEventListener("load", onLoad);
-    return () => img.removeEventListener("load", onLoad);
+    setFullReady(false);
+    const img = new window.Image();
+    img.src = full;
+    const done = () => {
+      loadedFulls.current.add(full);
+      setFullReady(true);
+    };
+    if (img.complete) {
+      done();
+      return;
+    }
+    img.addEventListener("load", done);
+    return () => img.removeEventListener("load", done);
   }, [open, images]);
 
   // Keyboard + scroll lock while open.
@@ -139,6 +151,17 @@ export default function ProjectGallery({
           >
             ›
           </button>
+        )}
+
+        {!fullReady && (
+          <span className="lb__loading" aria-hidden="true">
+            Loading
+            <span className="lb__loading-dots">
+              <i>.</i>
+              <i>.</i>
+              <i>.</i>
+            </span>
+          </span>
         )}
 
         {count > 1 && (
@@ -227,6 +250,19 @@ const css = `
 .lb__nav:hover{ transform: translateY(-50%) scale(1.12); }
 .lb__nav--prev{ left: 1.5vw; }
 .lb__nav--next{ right: 1.5vw; }
+/* full-res load indicator — mono caps, riding just above the dots */
+.lb__loading{
+  position: absolute; bottom: 6vh; left: 50%; transform: translateX(-50%);
+  z-index: 2; pointer-events: none;
+  font-family: var(--font-mono-stack, monospace);
+  font-size: 11px; text-transform: uppercase; letter-spacing: .18em;
+  color: rgba(255,255,255,.75);
+  text-shadow: 0 1px 10px rgba(0,0,0,.55);
+}
+.lb__loading-dots i{ font-style: normal; animation: lb-dot 1.2s infinite; }
+.lb__loading-dots i:nth-child(2){ animation-delay: .2s; }
+.lb__loading-dots i:nth-child(3){ animation-delay: .4s; }
+@keyframes lb-dot{ 0%, 60%, 100%{ opacity: .25 } 30%{ opacity: 1 } }
 .lb__dots{
   position: absolute; bottom: 2.4vh; left: 50%; transform: translateX(-50%);
   display: flex; gap: 9px;
