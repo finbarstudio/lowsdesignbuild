@@ -11,6 +11,7 @@ import ProjectHeroTitle from "@/app/components/ProjectHeroTitle";
 import Reveal from "@/app/components/Reveal";
 import { deriveColours } from "@/app/lib/colours";
 import { projectCats } from "@/app/lib/projectCats";
+import { siteUrl } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { urlFor, urlForOriginal } from "@/sanity/lib/image";
 import { PROJECT_QUERY, PROJECT_SLUGS_QUERY } from "@/sanity/lib/queries";
@@ -50,6 +51,9 @@ export async function generateMetadata({
       title: project.title ?? "Project",
       description,
       type: "article",
+      url: `/projects/${slug}`,
+      siteName: "Lows Design & Build",
+      locale: "en_GB",
       ...(ogImage ? { images: [{ url: ogImage, width: 1200, height: 630 }] } : {}),
     },
   };
@@ -71,8 +75,26 @@ export default async function ProjectPage({
 
   const gallery = project.gallery ?? [];
 
+  // Breadcrumb structured data — helps search results show the page's place in
+  // the site (Home → Projects → this project). Invisible on the page.
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Projects", item: `${siteUrl}/projects` },
+      { "@type": "ListItem", position: 3, name: project.title ?? "Project", item: `${siteUrl}/projects/${slug}` },
+    ],
+  };
+
   return (
-    <main>
+    <main id="main-content">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbs).replace(/</g, "\\u003c"),
+        }}
+      />
       {/* the h1 itself travels up into the nav as you scroll */}
       <ProjectHeroTitle title={project.title ?? ""} />
 

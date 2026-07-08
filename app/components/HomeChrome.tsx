@@ -209,6 +209,7 @@ export default function HomeChrome({
 
           {/* desktop nav, top right — each item mask-reveals, staggered */}
           <nav
+            aria-label="Primary"
             className={`ml-auto hidden items-center gap-x-7 font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-300 sm:flex sm:text-sm ${textColor}`}
           >
             {nav.map((navItem, i) => (

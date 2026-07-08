@@ -5,7 +5,7 @@ import EstimateCalculator from "@/app/components/EstimateCalculator";
 import EstimateGate from "@/app/components/EstimateGate";
 import HeroIntro from "@/app/components/HeroIntro";
 import WordReveal from "@/app/components/WordReveal";
-import { site } from "@/app/lib/site";
+import { ogFor, site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { CONTACT_QUERY, ESTIMATE_PAGE_QUERY } from "@/sanity/lib/queries";
 import type { Contact, EstimatePage } from "@/sanity/lib/types";
@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   description:
     "Get an instant indicative cost for your loft conversion or home extension with our free estimate tool.",
   alternates: { canonical: "/estimate" },
+  openGraph: ogFor(
+    "Estimate Calculator · Lows Design & Build",
+    "Get an instant indicative cost for your loft conversion or home extension with our free estimate tool.",
+    "/estimate",
+  ),
 };
 
 export const revalidate = 60;
@@ -36,7 +41,7 @@ export default async function EstimatePage() {
   const heroText = estimate?.heroText || "Estimate your project";
 
   return (
-    <main>
+    <main id="main-content">
       {/* Hero — just short of full screen so the tops of the gate cards peek
           in at the bottom edge; the big slogan reveals first, then the intro
           fades in, like contact */}

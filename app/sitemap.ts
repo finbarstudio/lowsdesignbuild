@@ -2,21 +2,28 @@ import type { MetadataRoute } from "next";
 
 import { client } from "@/sanity/lib/client";
 import { siteUrl } from "@/app/lib/site";
-import { PROJECT_SLUGS_QUERY } from "@/sanity/lib/queries";
 
 const BASE = siteUrl;
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const slugs = await client.fetch<Array<{ slug: string | null }>>(
-    PROJECT_SLUGS_QUERY,
-  );
+  // slug + real last-edit time, so <lastmod> reflects when the client actually
+  // updated each project in the CMS
+  const slugs = await client.fetch<
+    Array<{ slug: string | null; updated: string | null }>
+  >(`*[_type == "project" && defined(slug.current)]{
+    "slug": slug.current,
+    "updated": _updatedAt
+  }`);
 
   const projects: MetadataRoute.Sitemap = slugs
-    .filter((s): s is { slug: string } => Boolean(s.slug))
+    .filter((s): s is { slug: string; updated: string | null } =>
+      Boolean(s.slug),
+    )
     .map((s) => ({
       url: `${BASE}/projects/${s.slug}`,
+      ...(s.updated ? { lastModified: new Date(s.updated) } : {}),
       changeFrequency: "monthly",
       priority: 0.7,
     }));

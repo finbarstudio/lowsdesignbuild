@@ -227,6 +227,31 @@ html.entrance-fast .logo-mask > * {
   transition: none;
 }
 
+/* ---- Skip link ----
+   Visually hidden until keyboard focus lands on it (first tab stop), then it
+   appears top-left so keyboard/screen-reader users can jump past the fixed
+   chrome. Never visible to mouse/touch users. */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 12px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--ink);
+  color: var(--background);
+  font-family: var(--font-mono-stack);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 2px;
+}
+.skip-link:focus-visible {
+  top: 12px;
+  outline: 2px solid var(--tertiary);
+  outline-offset: 2px;
+}
+
 /* Hide the scrollbar on a horizontally-scrollable strip (the Instagram feed) */
 .no-scrollbar {
   -ms-overflow-style: none;

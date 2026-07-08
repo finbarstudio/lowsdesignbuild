@@ -32,7 +32,7 @@ const jsonLd = {
     "@type": "Offer",
     itemOffered: { "@type": "Service", name: s.title },
   })),
-  sameAs: [site.instagram],
+  sameAs: [site.instagram, site.facebook],
 };
 
 // Chrome shared by the home page + all marketing pages (never the Studio).

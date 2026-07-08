@@ -24,6 +24,11 @@ const spaceMono = Space_Mono({
   weight: ["400", "700"],
 });
 
+// theme-color tints the browser UI (mobile address bar etc.) to the site paper.
+export const viewport = {
+  themeColor: "#f4f1ea",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
@@ -74,7 +79,15 @@ export default function RootLayout({
           revealed when HomeChrome adds `entrance-go`, so it never flashes in and
           jumps to hidden — no pre-paint script needed. A CSS fallback reveals it
           if JS never fires (see globals.css). */}
-      <body>{children}</body>
+      <body>
+        {/* Keyboard/screen-reader shortcut past the fixed chrome. Visually
+            hidden until it receives keyboard focus (see .skip-link in
+            globals.css) — invisible to mouse/touch users. */}
+        <a href="#main-content" className="skip-link">
+          Skip to content
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

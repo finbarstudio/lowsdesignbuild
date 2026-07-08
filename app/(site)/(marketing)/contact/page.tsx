@@ -6,7 +6,7 @@ import ContactForm from "@/app/components/ContactForm";
 import DrawCard from "@/app/components/DrawCard";
 import HeroIntro from "@/app/components/HeroIntro";
 import WordReveal from "@/app/components/WordReveal";
-import { site } from "@/app/lib/site";
+import { ogFor, site } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { CONTACT_QUERY } from "@/sanity/lib/queries";
 import type { Contact } from "@/sanity/lib/types";
@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   description:
     "Get in touch with Lows Design & Build for a free, no-obligation estimate on your loft conversion, extension or refurbishment.",
   alternates: { canonical: "/contact" },
+  openGraph: ogFor(
+    "Contact · Lows Design & Build",
+    "Get in touch with Lows Design & Build for a free, no-obligation estimate on your loft conversion, extension or refurbishment.",
+    "/contact",
+  ),
 };
 
 export const revalidate = 60;
@@ -25,7 +30,7 @@ export default async function ContactPage() {
   const contact = await client.fetch<Contact | null>(CONTACT_QUERY);
   const heroText = contact?.contactHeroText || "Let's discuss your next project";
   return (
-    <main>
+    <main id="main-content">
       {/* Hero — just short of full screen so the tops of the two cards below
           peek in at the bottom edge; the big slogan reveals first, then the
           phone + email fade in once it has finished */}

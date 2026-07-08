@@ -5,6 +5,7 @@ import Link from "next/link";
 import HeroIntro from "@/app/components/HeroIntro";
 import ProjectsGrid from "@/app/components/ProjectsGrid";
 import WordReveal from "@/app/components/WordReveal";
+import { ogFor } from "@/app/lib/site";
 import { client } from "@/sanity/lib/client";
 import { PROJECTS_PAGE_QUERY, PROJECTS_QUERY } from "@/sanity/lib/queries";
 import type { ProjectListItem, ProjectsPage } from "@/sanity/lib/types";
@@ -17,6 +18,11 @@ export const metadata: Metadata = {
   description:
     "Loft conversions, extensions and refurbishments across South London by Lows Design & Build.",
   alternates: { canonical: "/projects" },
+  openGraph: ogFor(
+    "Projects · Lows Design & Build",
+    "Loft conversions, extensions and refurbishments across South London by Lows Design & Build.",
+    "/projects",
+  ),
 };
 
 export default async function ProjectsPage() {
@@ -28,7 +34,7 @@ export default async function ProjectsPage() {
   const heroText = page?.heroText || "Our pride is in our projects";
 
   return (
-    <main>
+    <main id="main-content">
       {/* Hero — full screen, big word-by-word reveal first; the intro fades in
           only after the slogan has finished */}
       <section

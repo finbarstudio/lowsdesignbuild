@@ -68,6 +68,7 @@ export default function Header({ projectCount }: { projectCount?: number }) {
 
         {/* nav right */}
         <nav
+          aria-label="Primary"
           className={`ml-auto hidden items-center gap-x-7 font-mono text-xs uppercase tracking-[0.14em] transition-colors duration-300 sm:flex sm:text-sm ${textColor}`}
         >
           {nav.map((item) => {

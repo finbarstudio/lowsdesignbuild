@@ -79,6 +79,9 @@ export default async function HomePage() {
     <>
       <HomeChrome projectCount={projects.length} />
 
+      {/* main landmark — the skip link target; a plain block element, so the
+          sticky/z-index choreography inside is unaffected */}
+      <main id="main-content">
       {/* ---------------- Hero ---------------- */}
       <section
         id="home-hero"
@@ -200,6 +203,7 @@ export default async function HomePage() {
           </section>
         )}
       </div>
+      </main>
     </>
   );
 }

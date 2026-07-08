@@ -10,6 +10,7 @@ import WordReveal from "@/app/components/WordReveal";
 import Reveal from "@/app/components/Reveal";
 import ServiceMasonry from "@/app/components/ServiceMasonry";
 import {
+  ogFor,
   areas,
   services,
   site,
@@ -45,6 +46,11 @@ export const metadata: Metadata = {
   description:
     "Lows Design & Build is a family-run design and build company based in Greater London, providing an end-to-end service from design to completion.",
   alternates: { canonical: "/about" },
+  openGraph: ogFor(
+    "About · Lows Design & Build",
+    "Lows Design & Build is a family-run design and build company based in Greater London, providing an end-to-end service from design to completion.",
+    "/about",
+  ),
 };
 
 export const revalidate = 60;
@@ -110,7 +116,7 @@ export default async function AboutPage() {
         }));
 
   return (
-    <main>
+    <main id="main-content">
       {/* Intro — a hero like the home slogan: word-by-word reveal, with the
           "design + build" lockup inlined from the logotype */}
       <section

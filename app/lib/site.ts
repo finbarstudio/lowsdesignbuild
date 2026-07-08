@@ -1,10 +1,29 @@
 // Central site content. Later this moves into Sanity (siteSettings); for now
 // it's the real copy/contact details pulled from the existing site.
 
-// Single source of truth for the canonical origin. Set NEXT_PUBLIC_SITE_URL in
-// the environment when the custom domain (lowsdesignandbuild.com) goes live.
+// Single source of truth for the canonical origin. The custom domain is live —
+// www is the canonical host (the apex 301s to it). NEXT_PUBLIC_SITE_URL still
+// overrides for previews/staging.
 export const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lows-site.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.lowsdesignandbuild.com";
+
+// Per-page Open Graph block. Next.js replaces the layout's `openGraph` object
+// wholesale when a page defines its own (top-level keys are shallow-merged),
+// so pages use this helper to keep the shared fields while pointing
+// og:title / og:url at the page itself.
+export function ogFor(title: string, description: string, path: string) {
+  return {
+    title,
+    description,
+    url: path,
+    type: "website" as const,
+    locale: "en_GB",
+    siteName: "Lows Design & Build",
+    images: [
+      { url: "/og.jpg", width: 1200, height: 630, alt: "Lows Design & Build" },
+    ],
+  };
+}
 
 export const site = {
   name: "Lows Design & Build",
