@@ -48,21 +48,36 @@ export default function ProjectHeroTitle({ title }: { title: string }) {
       // font-size that makes the line exactly fill the viewport width
       const fit = ((vw - 2 * EDGE) * REF) / w0;
       const mobile = vw < 640;
+
+      // MOBILE: STATIC — no scroll-driven motion at all. The title is laid out
+      // once in document coordinates (absolute, not fixed) at the hero's bottom
+      // edge and simply scrolls away with the page. The old fixed+per-scroll
+      // repositioning fought the mobile address-bar viewport changes and
+      // juddered; this can't.
+      if (mobile) {
+        const w = (w0 * fit) / REF;
+        const h = (h0 * fit) / REF;
+        el.style.position = "absolute";
+        el.style.fontSize = `${fit.toFixed(2)}px`;
+        el.style.transform = `translate(${((vw - w) / 2).toFixed(1)}px, ${(vh * HERO - BOTTOM - h).toFixed(1)}px)`;
+        setMode("hero"); // it only ever sits over the hero image
+        return;
+      }
+      el.style.position = "fixed";
+
       // Dock over the course of the (80vh) hero.
-      const p = mobile ? 0 : Math.min(1, Math.max(0, y / (vh * HERO * 0.9)));
+      const p = Math.min(1, Math.max(0, y / (vh * HERO * 0.9)));
 
       const f = fit + (NAV - fit) * p; // rest → nav size
-      const w = (w0 * f) / REF;
       const h = (h0 * f) / REF;
-      const x0 = (vw - w) / 2; // centred at rest (≈ EDGE while full width)
       // Desktop: travel STRAIGHT up-left — the left edge glides from its
       // resting inset directly to the dock beside the logo (interpolating from
       // the centred position instead would bow the path towards the middle as
       // the line shrinks, then swing back left).
-      const x = mobile ? x0 : EDGE + (DOCK_X - EDGE) * p;
+      const x = EDGE + (DOCK_X - EDGE) * p;
       const top0 = vh * HERO - BOTTOM - h; // anchored to the (80vh) hero bottom
       const top1 = (BAR - h) / 2; // centred in the bar
-      const top = mobile ? top0 - y : top0 + (top1 - top0) * p;
+      const top = top0 + (top1 - top0) * p;
 
       el.style.fontSize = `${f.toFixed(2)}px`;
       el.style.transform = `translate(${x.toFixed(1)}px, ${top.toFixed(1)}px)`;
@@ -85,8 +100,20 @@ export default function ProjectHeroTitle({ title }: { title: string }) {
     };
 
     const onScroll = () => {
+      // mobile is fully static — nothing is scroll-driven there
+      if (window.innerWidth < 640) return;
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(update);
+    };
+
+    // Re-measure only when the layout genuinely changes (width). Mobile
+    // browsers fire resize as the address bar collapses on scroll (height
+    // only) — re-laying-out on those was the judder.
+    let lastW = window.innerWidth;
+    const onResize = () => {
+      if (window.innerWidth === lastW) return;
+      lastW = window.innerWidth;
+      measure();
     };
 
     // measure after paint, and again once the web font has loaded (its metrics
@@ -94,10 +121,10 @@ export default function ProjectHeroTitle({ title }: { title: string }) {
     requestAnimationFrame(measure);
     (document as Document & { fonts?: FontFaceSet }).fonts?.ready.then(measure);
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", measure);
+    window.addEventListener("resize", onResize);
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", measure);
+      window.removeEventListener("resize", onResize);
       cancelAnimationFrame(raf);
     };
   }, []);
