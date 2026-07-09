@@ -31,6 +31,17 @@ export default function InstagramFeed({ feedId }: { feedId: string }) {
         try {
           const data = await res.clone().json();
           data.showBranding = false;
+          // Force a 2×2 grid on mobile. Breakpoint keys are MAX container
+          // widths (the widget picks the smallest key that still fits), so a
+          // "639" entry applies whenever the feed is phone-width. Desktop
+          // keeps the dashboard-configured default (4 across).
+          if (data.widgetSettings?.breakpoints?.default) {
+            data.widgetSettings.breakpoints["639"] = {
+              ...data.widgetSettings.breakpoints.default,
+              numColumns: 2,
+              numPosts: 4,
+            };
+          }
           return new Response(JSON.stringify(data), {
             status: res.status,
             headers: { "Content-Type": "application/json" },
