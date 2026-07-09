@@ -10,6 +10,37 @@ import { createElement, useEffect } from "react";
  */
 export default function InstagramFeed({ feedId }: { feedId: string }) {
   useEffect(() => {
+    // The widget renders in a CLOSED shadow root, so its "Made with Behold"
+    // badge can't be reached with CSS. It is, however, driven by a
+    // `showBranding` flag in the feed JSON the widget fetches — so wrap
+    // window.fetch (before the widget script loads) and flip the flag on
+    // Behold feed responses. Everything else passes through untouched.
+    const w = window as unknown as { __beholdDebranded?: boolean };
+    if (!w.__beholdDebranded) {
+      w.__beholdDebranded = true;
+      const orig = window.fetch.bind(window);
+      window.fetch = async (input, init) => {
+        const url =
+          typeof input === "string"
+            ? input
+            : input instanceof URL
+              ? input.href
+              : input.url;
+        const res = await orig(input, init);
+        if (!url.includes("feeds.behold.so")) return res;
+        try {
+          const data = await res.clone().json();
+          data.showBranding = false;
+          return new Response(JSON.stringify(data), {
+            status: res.status,
+            headers: { "Content-Type": "application/json" },
+          });
+        } catch {
+          return res; // not JSON / parse failure — hand back the original
+        }
+      };
+    }
+
     const id = "behold-widget-script";
     if (document.getElementById(id)) return;
     const s = document.createElement("script");
