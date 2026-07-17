@@ -33,7 +33,7 @@ export default function SmoothScroll() {
       touchMultiplier: 1.6,
     });
     lenis.scrollTo(0, { immediate: true });
-    // expose the instance so other components (e.g. ScrollNudge) can drive a
+    // expose the instance so other components can drive a
     // programmatic scroll through Lenis itself, matching the site's glide
     (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
     let raf = 0;
