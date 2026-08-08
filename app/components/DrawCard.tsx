@@ -80,7 +80,9 @@ const css = `
   rx: 2px;
   fill: none;
   stroke-width: 1px;
-  vector-effect: non-scaling-stroke;
+  /* NOTE: no vector-effect: non-scaling-stroke here — it makes browsers compute
+     dashes in screen px, ignoring pathLength={1}, which turns dasharray:1 into
+     literal 1px dashes (a shifting half-drawn outline). No viewBox = already 1:1. */
   stroke-dasharray: 1;
   transition: stroke-dashoffset 1.1s cubic-bezier(0.45, 0, 0.2, 1);
 }

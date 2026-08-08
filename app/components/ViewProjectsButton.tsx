@@ -246,7 +246,10 @@ const css = `
   fill: none;
   stroke: var(--tertiary);
   stroke-width: 1.25px;
-  vector-effect: non-scaling-stroke;
+  /* NOTE: no vector-effect: non-scaling-stroke here — it makes browsers compute
+     dashes in screen px, ignoring pathLength={1}, which turns dasharray:1 into
+     literal 1px dashes (a shifting half-drawn outline). viewBox is measured to
+     pixel size, so the stroke is 1:1 without it. */
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
 }
