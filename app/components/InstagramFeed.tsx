@@ -1,6 +1,7 @@
 "use client";
 
 import { createElement, useEffect } from "react";
+import { preconnect } from "react-dom";
 
 /**
  * Live Instagram feed via Behold.so — a `<behold-widget>` web component fed by a
@@ -9,6 +10,11 @@ import { createElement, useEffect } from "react";
  * Loads Behold's module script once on mount.
  */
 export default function InstagramFeed({ feedId }: { feedId: string }) {
+  // Open the Behold connections during page load, so the feed is not waiting
+  // on DNS + TLS when its script is injected after hydration.
+  preconnect("https://w.behold.so", { crossOrigin: "anonymous" });
+  preconnect("https://feeds.behold.so", { crossOrigin: "anonymous" });
+
   useEffect(() => {
     // The widget renders in a CLOSED shadow root, so its "Made with Behold"
     // badge can't be reached with CSS. It is, however, driven by a

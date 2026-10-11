@@ -41,6 +41,8 @@ export default async function ViewProjectsButton({
           .width(228)
           .height(168)
           .fit("crop")
+          .auto("format")
+          .quality(70)
           .url(),
       );
   } catch {
